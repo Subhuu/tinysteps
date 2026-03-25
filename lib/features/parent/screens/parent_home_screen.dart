@@ -2,18 +2,59 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/constants/app_theme.dart';
+import '../../../core/widgets/bottom_nav_bar.dart';
 import '../widgets/child_avatar.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/qr_display_sheet.dart';
 
-/// Parent Home Screen — Squad B's home base
-/// TODO (Child Profiles Squad): Replace placeholder cards with child list
-class ParentHomeScreen extends StatelessWidget {
+/// Parent Home Screen — with bottom navigation
+class ParentHomeScreen extends StatefulWidget {
   const ParentHomeScreen({super.key});
+
+  @override
+  State<ParentHomeScreen> createState() => _ParentHomeScreenState();
+}
+
+class _ParentHomeScreenState extends State<ParentHomeScreen> {
+  int _currentIndex = 0;
+
+  final List<Widget> _screens = [
+    const _ParentDashboard(),
+    const _PlaceholderScreen(title: 'My Children', icon: Icons.face_rounded),
+    const _PlaceholderScreen(title: 'Attendance', icon: Icons.assignment_rounded),
+    const _PlaceholderScreen(title: 'Account', icon: Icons.settings_rounded),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: IndexedStack(
+        index: _currentIndex,
+        children: _screens,
+      ),
+      extendBody: true,
+      bottomNavigationBar: BottomNavBar(
+        currentIndex: _currentIndex,
+        onTap: (index) => setState(() => _currentIndex = index),
+        items: const [
+          BottomNavBarItem(icon: Icons.home_rounded, label: 'Home'),
+          BottomNavBarItem(icon: Icons.face_rounded, label: 'Children'),
+          BottomNavBarItem(icon: Icons.assignment_rounded, label: 'Attendance'),
+          BottomNavBarItem(icon: Icons.settings_rounded, label: 'Account'),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Dashboard tab (was the old ParentHomeScreen)
+// ─────────────────────────────────────────────────────────────────────────────
+class _ParentDashboard extends StatelessWidget {
+  const _ParentDashboard();
 
   Future<void> _signOut(BuildContext context) async {
     await Supabase.instance.client.auth.signOut();
-    // Router will auto-redirect to /login
   }
 
   @override
@@ -49,11 +90,10 @@ class ParentHomeScreen extends StatelessWidget {
             Wrap(
               spacing: AppSpacing.md,
               runSpacing: AppSpacing.md,
-              children: [
-                const ChildAvatar(name: 'Leo', status: 'In Class', color: Colors.blue, size: 60),
-                const ChildAvatar(name: 'Mia', status: 'Checked Out', color: Colors.orange, size: 60),
-                const ChildAvatar(name: 'Sam', status: 'In Class', color: Colors.green, size: 60),
-                const ChildAvatar(name: 'Riya', status: 'At Home', color: Colors.pink, size: 60),
+              children: const [
+                ChildAvatar(name: 'Leo', status: 'In Class', color: Colors.blue, size: 60),
+                ChildAvatar(name: 'Mia', status: 'Checked Out', color: Colors.orange, size: 60),
+                ChildAvatar(name: 'S', status: 'Large Demo', color: Colors.purple, size: 80),
               ],
             ),
             
@@ -74,10 +114,26 @@ class ParentHomeScreen extends StatelessWidget {
             ),
 
             const SizedBox(height: AppSpacing.xl),
-
-            // Messages Section
-            Text('Messages', style: AppTextStyles.heading2),
-            const SizedBox(height: AppSpacing.sm),
+            Text('Quick Examples (Squad B)', style: AppTextStyles.labelBold.copyWith(color: AppColors.textMuted)),
+            const SizedBox(height: AppSpacing.md),
+            
+            // Status Badges
+            Text('Status Badges:', style: AppTextStyles.caption),
+            const SizedBox(height: AppSpacing.xs),
+            const Wrap(
+              spacing: AppSpacing.sm,
+              children: [
+                StatusChip(status: 'Checked In'),
+                StatusChip(status: 'At Home'),
+                StatusChip(status: 'Checked Out'),
+              ],
+            ),
+            
+            const SizedBox(height: AppSpacing.lg),
+            
+            // Empty State for messages
+            Text('Empty Messages List:', style: AppTextStyles.caption),
+            const SizedBox(height: AppSpacing.xs),
             Container(
               width: double.infinity,
               decoration: BoxDecoration(
@@ -90,12 +146,12 @@ class ParentHomeScreen extends StatelessWidget {
                 icon: Icons.forum_outlined,
               ),
             ),
-
-            const SizedBox(height: AppSpacing.xl),
-
-            // Upcoming Events Section
-            Text('Upcoming Events', style: AppTextStyles.heading2),
-            const SizedBox(height: AppSpacing.sm),
+            
+            const SizedBox(height: AppSpacing.md),
+            
+            // Empty State for calendar
+            Text('Empty Calendar:', style: AppTextStyles.caption),
+            const SizedBox(height: AppSpacing.xs),
             Container(
               width: double.infinity,
               decoration: BoxDecoration(
@@ -117,7 +173,42 @@ class ParentHomeScreen extends StatelessWidget {
   }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Placeholder screens for other tabs
+// ─────────────────────────────────────────────────────────────────────────────
+class _PlaceholderScreen extends StatelessWidget {
+  final String title;
+  final IconData icon;
 
+  const _PlaceholderScreen({required this.title, required this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Scaffold(
+      backgroundColor: AppColors.bgLight,
+      appBar: AppBar(
+        title: Text(title, style: AppTextStyles.heading2),
+        backgroundColor: AppColors.bgLight,
+        elevation: 0,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 64, color: colorScheme.primary.withValues(alpha: 0.5)),
+            const SizedBox(height: AppSpacing.md),
+            Text('$title Coming Soon...', style: AppTextStyles.bodyLarge),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Quick action card widget
+// ─────────────────────────────────────────────────────────────────────────────
 class _QuickActionCard extends StatelessWidget {
   const _QuickActionCard({
     required this.icon,
