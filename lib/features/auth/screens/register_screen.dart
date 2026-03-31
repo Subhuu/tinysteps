@@ -3,8 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../core/constants/app_theme.dart';
-import '../widgets/auth_widgets.dart';
+import 'package:tinysteps/core/constants/app_theme.dart';
+import 'package:tinysteps/features/auth/widgets/auth_widgets.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // RegisterScreen — Multi-step signup

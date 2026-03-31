@@ -1,8 +1,11 @@
+import 'dart:async';
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'dart:convert';
-import '../../../core/constants/app_theme.dart';
+import 'package:tinysteps/core/constants/app_theme.dart';
 
+// ── Public helper to show the QR sheet ────────────────────────────────────────
 void showQRDisplaySheet(
   BuildContext context, {
   required String childId,
@@ -16,21 +19,110 @@ void showQRDisplaySheet(
   );
 }
 
-class _QRDisplaySheet extends StatelessWidget {
+// ── QR token helpers ───────────────────────────────────────────────────────────
+
+/// Returns the 5-minute epoch window index for a given moment.
+/// window = floor(unix_seconds / 300)
+int _currentWindow([DateTime? at]) {
+  final t = at ?? DateTime.now();
+  return t.millisecondsSinceEpoch ~/ 1000 ~/ 300;
+}
+
+/// Returns Unix seconds when the current window expires (start of next window).
+int _windowExpiry([DateTime? at]) => (_currentWindow(at) + 1) * 300;
+
+/// Seconds remaining in the current 5-minute window.
+int _secondsRemaining([DateTime? at]) {
+  final now = (at ?? DateTime.now()).millisecondsSinceEpoch ~/ 1000;
+  return _windowExpiry(at) - now;
+}
+
+/// HMAC-SHA256 token for this childId + window.
+/// Both parent (generator) and teacher (validator) compute the same value.
+String buildQrToken(String childId, {DateTime? at}) {
+  final window = _currentWindow(at);
+  final key = utf8.encode(childId); // deterministic key from child's permanent ID
+  final msg = utf8.encode('$childId:$window');
+  final hmac = Hmac(sha256, key);
+  final digest = hmac.convert(msg);
+  return digest.toString().substring(0, 16); // 16-char prefix is enough
+}
+
+/// Full JSON payload encoded into the QR image.
+String buildQrPayload(String childId, {DateTime? at}) {
+  final token = buildQrToken(childId, at: at);
+  final expires = _windowExpiry(at);
+  return jsonEncode({
+    'child_id': childId,
+    'token': token,
+    'expires': expires,
+  });
+}
+
+// ── Sheet widget ───────────────────────────────────────────────────────────────
+class _QRDisplaySheet extends StatefulWidget {
   final String childId;
   final String childName;
 
-  const _QRDisplaySheet({
-    required this.childId,
-    required this.childName,
-  });
+  const _QRDisplaySheet({required this.childId, required this.childName});
+
+  @override
+  State<_QRDisplaySheet> createState() => _QRDisplaySheetState();
+}
+
+class _QRDisplaySheetState extends State<_QRDisplaySheet> {
+  late Timer _timer;
+  late int _secondsLeft;
+  late String _qrPayload;
+
+  @override
+  void initState() {
+    super.initState();
+    _refresh();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (!mounted) return;
+      final sLeft = _secondsRemaining();
+      if (sLeft <= 0) {
+        // Window rolled — regenerate QR
+        setState(() => _refresh());
+      } else {
+        setState(() => _secondsLeft = sLeft);
+      }
+    });
+  }
+
+  void _refresh() {
+    _secondsLeft = _secondsRemaining();
+    _qrPayload = buildQrPayload(widget.childId);
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  String _formatTime(int seconds) {
+    final m = (seconds ~/ 60).toString().padLeft(1, '0');
+    final s = (seconds % 60).toString().padLeft(2, '0');
+    return '$m:$s';
+  }
+
+  Color _timerColor() {
+    if (_secondsLeft > 120) return AppColors.success;
+    if (_secondsLeft > 60) return AppColors.warning;
+    return AppColors.danger;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final qrData = jsonEncode({'child_id': childId, 'type': 'checkin'});
-
     return Container(
-      padding: const EdgeInsets.all(AppSpacing.xl),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.xl,
+        AppSpacing.lg,
+        AppSpacing.xl,
+        AppSpacing.xl,
+      ),
       decoration: BoxDecoration(
         color: AppColors.bgLight,
         borderRadius: AppRadius.sheetRadius,
@@ -38,6 +130,7 @@ class _QRDisplaySheet extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          // Handle bar
           Container(
             width: 40,
             height: 4,
@@ -48,12 +141,14 @@ class _QRDisplaySheet extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.lg),
 
-          Text('Check-In QR Code', style: AppTextStyles.heading2),
+          // Title
+          Text('Child Check-In QR', style: AppTextStyles.heading2),
           const SizedBox(height: AppSpacing.xs),
-          Text(childName, style: AppTextStyles.bodyMuted),
+          Text(widget.childName, style: AppTextStyles.bodyMuted),
 
           const SizedBox(height: AppSpacing.xl),
 
+          // QR Code card
           Container(
             padding: const EdgeInsets.all(AppSpacing.lg),
             decoration: BoxDecoration(
@@ -62,7 +157,7 @@ class _QRDisplaySheet extends StatelessWidget {
               boxShadow: AppShadows.card,
             ),
             child: QrImageView(
-              data: qrData,
+              data: _qrPayload,
               size: 220,
               backgroundColor: AppColors.bgSurface,
               eyeStyle: const QrEyeStyle(
@@ -78,30 +173,73 @@ class _QRDisplaySheet extends StatelessWidget {
 
           const SizedBox(height: AppSpacing.lg),
 
+          // Countdown timer row
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.timer_outlined, size: 16, color: _timerColor()),
+              const SizedBox(width: 6),
+              Text(
+                'Refreshes in ',
+                style: AppTextStyles.bodySmall,
+              ),
+              Text(
+                _formatTime(_secondsLeft),
+                style: AppTextStyles.labelBold.copyWith(color: _timerColor()),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.xs),
           Text(
-            'Show this to your teacher to check in',
-            style: AppTextStyles.bodySmall,
+            'QR rotates every 5 minutes for security',
+            style: AppTextStyles.caption,
             textAlign: TextAlign.center,
           ),
 
-          const SizedBox(height: AppSpacing.xl),
+          const SizedBox(height: AppSpacing.lg),
 
+          // Instruction
+          Container(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            decoration: BoxDecoration(
+              color: AppColors.primaryLight.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(AppRadius.md),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.info_outline, color: AppColors.primary, size: 18),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Text(
+                    'Show this to the teacher at drop-off or pickup. '
+                    'They will scan it to mark attendance.',
+                    style: AppTextStyles.bodySmall
+                        .copyWith(color: AppColors.primary),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: AppSpacing.lg),
+
+          // Close button
           SizedBox(
             width: double.infinity,
             child: OutlinedButton(
               onPressed: () => Navigator.pop(context),
               style: OutlinedButton.styleFrom(
                 side: const BorderSide(color: AppColors.border),
-                padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                padding:
+                    const EdgeInsets.symmetric(vertical: AppSpacing.md),
                 shape: RoundedRectangleBorder(
                   borderRadius: AppRadius.buttonRadius,
                 ),
               ),
               child: Text(
                 'Close',
-                style: AppTextStyles.labelBold.copyWith(
-                  color: AppColors.textMedium,
-                ),
+                style:
+                    AppTextStyles.labelBold.copyWith(color: AppColors.textMedium),
               ),
             ),
           ),

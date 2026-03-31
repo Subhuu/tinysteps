@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_theme.dart';
+import 'package:tinysteps/core/constants/app_theme.dart';
 
 class ChildProfileScreen extends StatefulWidget {
   final String childId;
@@ -111,7 +111,8 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
 
             // Gender
             DropdownButtonFormField<String>(
-              value: _selectedGender,
+              key: ValueKey(_selectedGender),
+              initialValue: _selectedGender,
               decoration: _inputDecoration(label: 'Gender', icon: Icons.people_outline),
               items: ['Male', 'Female', 'Other']
                   .map((g) => DropdownMenuItem(value: g, child: Text(g)))

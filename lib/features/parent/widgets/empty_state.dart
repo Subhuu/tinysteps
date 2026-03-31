@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_theme.dart';
+import 'package:tinysteps/core/constants/app_theme.dart';
 
 /// A simple column with an icon and text for when a list has nothing to show yet
 class EmptyState extends StatelessWidget {

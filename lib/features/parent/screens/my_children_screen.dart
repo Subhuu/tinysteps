@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_theme.dart';
-import 'child_profile_screen.dart';
-import 'add_child_screen.dart';
+import 'package:go_router/go_router.dart';
+import 'package:tinysteps/core/constants/app_theme.dart';
 
 class MyChildrenScreen extends StatelessWidget {
   const MyChildrenScreen({super.key});
@@ -26,7 +25,7 @@ class MyChildrenScreen extends StatelessWidget {
           : ListView.separated(
               padding: const EdgeInsets.all(AppSpacing.lg),
               itemCount: _placeholderChildren.length,
-              separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.md),
+              separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
               itemBuilder: (context, index) {
                 final child = _placeholderChildren[index];
                 return _ChildCard(
@@ -38,10 +37,7 @@ class MyChildrenScreen extends StatelessWidget {
               },
             ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const AddChildScreen()),
-        ),
+        onPressed: () => context.push('/parent/children/add'),
         backgroundColor: AppColors.primary,
         child: const Icon(Icons.add, color: AppColors.white),
       ),
@@ -53,18 +49,11 @@ class MyChildrenScreen extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.child_care_rounded,
-            size: 64,
-            color: AppColors.primary.withValues(alpha: 0.3),
-          ),
+          Icon(Icons.child_care_rounded, size: 64, color: AppColors.primary.withValues(alpha: 0.3)),
           const SizedBox(height: AppSpacing.md),
           Text('No children added yet', style: AppTextStyles.heading3),
           const SizedBox(height: AppSpacing.sm),
-          Text(
-            'Tap the + button to add your child',
-            style: AppTextStyles.bodyMuted,
-          ),
+          Text('Tap the + button to add your child', style: AppTextStyles.bodyMuted),
         ],
       ),
     );
@@ -87,12 +76,7 @@ class _ChildCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ChildProfileScreen(childId: childId, childName: name),
-        ),
-      ),
+      onTap: () => context.push('/parent/children/$childId?name=${Uri.encodeComponent(name)}'),
       borderRadius: BorderRadius.circular(AppRadius.xl),
       child: Container(
         padding: const EdgeInsets.all(AppSpacing.md),
@@ -108,11 +92,7 @@ class _ChildCard extends StatelessWidget {
               backgroundColor: AppColors.primary.withValues(alpha: 0.15),
               child: Text(
                 name[0].toUpperCase(),
-                style: TextStyle(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
+                style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 20),
               ),
             ),
             const SizedBox(width: AppSpacing.md),

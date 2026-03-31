@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_theme.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:tinysteps/core/constants/app_theme.dart';
 
 class AddChildScreen extends StatefulWidget {
   const AddChildScreen({super.key});
@@ -16,6 +17,9 @@ class _AddChildScreenState extends State<AddChildScreen> {
 
   String _selectedGender = 'Male';
   DateTime? _selectedDob;
+  bool _isLoading = false;
+
+  final _supabase = Supabase.instance.client;
 
   @override
   void dispose() {
@@ -35,7 +39,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
     if (picked != null) setState(() => _selectedDob = picked);
   }
 
-  void _submit() {
+  Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedDob == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -44,14 +48,59 @@ class _AddChildScreenState extends State<AddChildScreen> {
       return;
     }
 
-    // TODO: Insert to Supabase children table with parent_id = currentUser.id
+    final uid = _supabase.auth.currentUser?.id;
+    if (uid == null) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Child added! Awaiting classroom assignment.'),
-      ),
-    );
-    Navigator.pop(context);
+    setState(() => _isLoading = true);
+
+    try {
+      // Generate a UUID for qr_code upfront
+      final qrCode = DateTime.now().microsecondsSinceEpoch.toRadixString(36) +
+          _nameController.text.trim().hashCode.toRadixString(36);
+
+      // Insert child row with qr_code in one atomic operation
+      await _supabase
+          .from('children')
+          .insert({
+            'full_name': _nameController.text.trim(),
+            'date_of_birth': _selectedDob!.toIso8601String().substring(0, 10),
+            'gender': _selectedGender,
+            'allergies': _allergiesController.text.trim().isEmpty
+                ? null
+                : _allergiesController.text.trim(),
+            'medical_notes': _medicalNotesController.text.trim().isEmpty
+                ? null
+                : _medicalNotesController.text.trim(),
+            'parent_id': uid,
+            'status': 'active',
+            'qr_code': qrCode,
+          });
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: AppColors.success,
+          content: Text(
+            '${_nameController.text.trim()} added successfully!',
+            style: AppTextStyles.bodySmall.copyWith(color: AppColors.white),
+          ),
+        ),
+      );
+      Navigator.pop(context, true); // true = child was added, parent should refresh
+    } on PostgrestException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: AppColors.danger,
+          content: Text(
+            'Failed to add child: ${e.message}',
+            style: AppTextStyles.bodySmall.copyWith(color: AppColors.white),
+          ),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   @override
@@ -102,8 +151,9 @@ class _AddChildScreenState extends State<AddChildScreen> {
               TextFormField(
                 controller: _nameController,
                 style: AppTextStyles.bodyLarge,
+                textCapitalization: TextCapitalization.words,
                 validator: (val) =>
-                    (val == null || val.isEmpty) ? 'Full name is required' : null,
+                    (val == null || val.trim().isEmpty) ? 'Full name is required' : null,
                 decoration: _inputDecoration(
                   label: 'Full Name',
                   icon: Icons.person_outline,
@@ -133,7 +183,8 @@ class _AddChildScreenState extends State<AddChildScreen> {
 
               // Gender
               DropdownButtonFormField<String>(
-                value: _selectedGender,
+                key: ValueKey(_selectedGender),
+                initialValue: _selectedGender,
                 decoration: _inputDecoration(
                   label: 'Gender',
                   icon: Icons.people_outline,
@@ -150,7 +201,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
                 controller: _allergiesController,
                 style: AppTextStyles.bodyLarge,
                 decoration: _inputDecoration(
-                  label: 'Allergies (if any)',
+                  label: 'Allergies (optional)',
                   icon: Icons.warning_amber_outlined,
                 ),
               ),
@@ -162,7 +213,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
                 maxLines: 3,
                 style: AppTextStyles.bodyLarge,
                 decoration: _inputDecoration(
-                  label: 'Medical Notes (if any)',
+                  label: 'Medical Notes (optional)',
                   icon: Icons.medical_information_outlined,
                 ),
               ),
@@ -179,15 +230,25 @@ class _AddChildScreenState extends State<AddChildScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: _submit,
+                  onPressed: _isLoading ? null : _submit,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
+                    disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.6),
                     shape: RoundedRectangleBorder(
                       borderRadius: AppRadius.buttonRadius,
                     ),
                     padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
                   ),
-                  child: Text('Add Child', style: AppTextStyles.buttonLabel),
+                  child: _isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            color: AppColors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : Text('Add Child', style: AppTextStyles.buttonLabel),
                 ),
               ),
             ],

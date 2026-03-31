@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../core/constants/app_theme.dart';
-import '../../../core/widgets/bottom_nav_bar.dart';
-import '../widgets/child_avatar.dart';
-import '../widgets/empty_state.dart';
-import '../widgets/qr_display_sheet.dart';
+import 'package:tinysteps/core/constants/app_theme.dart';
+import 'package:tinysteps/core/widgets/bottom_nav_bar.dart';
+import 'package:tinysteps/features/parent/screens/my_children_screen.dart';
+import 'package:tinysteps/features/parent/screens/parent_profile_screen.dart';
+import 'package:tinysteps/features/parent/screens/attendance_history_screen.dart';
+import 'package:tinysteps/features/parent/widgets/child_avatar.dart';
+import 'package:tinysteps/features/parent/widgets/empty_state.dart';
+import 'package:tinysteps/features/parent/widgets/qr_display_sheet.dart';
 
-/// Parent Home Screen — with bottom navigation
+/// Parent Home Screen — shell with bottom navigation
 class ParentHomeScreen extends StatefulWidget {
   const ParentHomeScreen({super.key});
 
@@ -20,46 +23,89 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
 
   final List<Widget> _screens = [
     const _ParentDashboard(),
-    const _PlaceholderScreen(title: 'My Children', icon: Icons.face_rounded),
-    const _PlaceholderScreen(title: 'Attendance', icon: Icons.assignment_rounded),
-    const _PlaceholderScreen(title: 'Account', icon: Icons.settings_rounded),
+    const MyChildrenScreen(),
+    const AttendanceHistoryScreen(),
+    const ParentProfileScreen(),
   ];
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
-      ),
-      extendBody: true,
-      bottomNavigationBar: BottomNavBar(
-        currentIndex: _currentIndex,
-        onTap: (index) => setState(() => _currentIndex = index),
-        items: const [
-          BottomNavBarItem(icon: Icons.home_rounded, label: 'Home'),
-          BottomNavBarItem(icon: Icons.face_rounded, label: 'Children'),
-          BottomNavBarItem(icon: Icons.assignment_rounded, label: 'Attendance'),
-          BottomNavBarItem(icon: Icons.settings_rounded, label: 'Account'),
-        ],
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+        if (_currentIndex != 0) {
+          setState(() => _currentIndex = 0);
+        }
+      },
+      child: Scaffold(
+        body: IndexedStack(
+          index: _currentIndex,
+          children: _screens,
+        ),
+        bottomNavigationBar: BottomNavBar(
+          currentIndex: _currentIndex,
+          onTap: (index) => setState(() => _currentIndex = index),
+          items: const [
+            BottomNavBarItem(icon: Icons.home_rounded, label: 'Home'),
+            BottomNavBarItem(icon: Icons.face_rounded, label: 'Children'),
+            BottomNavBarItem(icon: Icons.assignment_rounded, label: 'Attendance'),
+            BottomNavBarItem(icon: Icons.settings_rounded, label: 'Account'),
+          ],
+        ),
       ),
     );
   }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Dashboard tab (was the old ParentHomeScreen)
+// Dashboard tab — loads real children from DB
 // ─────────────────────────────────────────────────────────────────────────────
-class _ParentDashboard extends StatelessWidget {
+class _ParentDashboard extends StatefulWidget {
   const _ParentDashboard();
 
-  Future<void> _signOut(BuildContext context) async {
-    await Supabase.instance.client.auth.signOut();
+  @override
+  State<_ParentDashboard> createState() => _ParentDashboardState();
+}
+
+class _ParentDashboardState extends State<_ParentDashboard> {
+  final _supabase = Supabase.instance.client;
+  late Future<List<dynamic>> _childrenFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadChildren();
   }
+
+  void _loadChildren() {
+    final uid = _supabase.auth.currentUser?.id;
+    if (uid == null) {
+      _childrenFuture = Future.value([]);
+      return;
+    }
+    // Projected query — only columns we need
+    _childrenFuture = _supabase
+        .from('children')
+        .select('id, full_name, status, qr_code')
+        .eq('parent_id', uid);
+  }
+
+  Future<void> _signOut() async {
+    await _supabase.auth.signOut();
+    // GoRouter _SupabaseAuthNotifier handles redirect to /login
+  }
+
+  // Maps child status string → avatar color
+  Color _statusColor(String? status) => switch (status) {
+        'checked_in' => AppColors.success,
+        'checked_out' => AppColors.textMuted,
+        _ => AppColors.primary, // active / default
+      };
 
   @override
   Widget build(BuildContext context) {
-    final user = Supabase.instance.client.auth.currentUser;
+    final user = _supabase.auth.currentUser;
     final name = user?.userMetadata?['full_name'] as String? ?? 'Parent';
 
     return Scaffold(
@@ -71,192 +117,112 @@ class _ParentDashboard extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () => _signOut(context),
+            onPressed: _signOut,
             tooltip: 'Sign Out',
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Greeting
-            Text('Hello, $name 👋', style: AppTextStyles.heading1),
-            Text('Your children are doing great today!', style: AppTextStyles.bodyMuted),
-            const SizedBox(height: AppSpacing.lg),
+      body: RefreshIndicator(
+        color: AppColors.primary,
+        onRefresh: () async => setState(() => _loadChildren()),
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.xxl + 80, // clear floating nav bar
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Greeting
+              Text('Hello, $name 👋', style: AppTextStyles.heading1),
+              Text(
+                'Here\'s a quick look at your children today.',
+                style: AppTextStyles.bodyMuted,
+              ),
+              const SizedBox(height: AppSpacing.xl),
 
-            // Children List
-            Wrap(
-              spacing: AppSpacing.md,
-              runSpacing: AppSpacing.md,
-              children: const [
-                ChildAvatar(name: 'Leo', status: 'In Class', color: Colors.blue, size: 60),
-                ChildAvatar(name: 'Mia', status: 'Checked Out', color: Colors.orange, size: 60),
-                ChildAvatar(name: 'S', status: 'Large Demo', color: Colors.purple, size: 80),
-              ],
-            ),
-            
-            const SizedBox(height: AppSpacing.xl),
-            Text('Quick Actions', style: AppTextStyles.heading2),
-            const SizedBox(height: AppSpacing.md),
+              // ── Children from DB ──────────────────────────────────────────
+              Text('Your Children', style: AppTextStyles.heading2),
+              const SizedBox(height: AppSpacing.md),
 
-            // Quick-action cards
-            _QuickActionCard(
-              icon: Icons.qr_code,
-              label: 'Show My QR Code',
-              color: AppColors.secondary,
-              onTap: () => showQRDisplaySheet(
-                context,
-                childId: 'dummy-child-001',
-                childName: 'Leo Smith',
-              ),
-            ),
+              FutureBuilder<List<dynamic>>(
+                future: _childrenFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(AppSpacing.xl),
+                        child: CircularProgressIndicator(color: AppColors.primary),
+                      ),
+                    );
+                  }
 
-            const SizedBox(height: AppSpacing.xl),
-            Text('Quick Examples (Squad B)', style: AppTextStyles.labelBold.copyWith(color: AppColors.textMuted)),
-            const SizedBox(height: AppSpacing.md),
-            
-            // Status Badges
-            Text('Status Badges:', style: AppTextStyles.caption),
-            const SizedBox(height: AppSpacing.xs),
-            const Wrap(
-              spacing: AppSpacing.sm,
-              children: [
-                StatusChip(status: 'Checked In'),
-                StatusChip(status: 'At Home'),
-                StatusChip(status: 'Checked Out'),
-              ],
-            ),
-            
-            const SizedBox(height: AppSpacing.lg),
-            
-            // Empty State for messages
-            Text('Empty Messages List:', style: AppTextStyles.caption),
-            const SizedBox(height: AppSpacing.xs),
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: AppColors.white,
-                border: Border.all(color: AppColors.border),
-                borderRadius: BorderRadius.circular(AppRadius.md),
-              ),
-              child: const EmptyState(
-                label: 'No messages yet.\nCheck back later for teacher updates!',
-                icon: Icons.forum_outlined,
-              ),
-            ),
-            
-            const SizedBox(height: AppSpacing.md),
-            
-            // Empty State for calendar
-            Text('Empty Calendar:', style: AppTextStyles.caption),
-            const SizedBox(height: AppSpacing.xs),
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: AppColors.white,
-                border: Border.all(color: AppColors.border),
-                borderRadius: BorderRadius.circular(AppRadius.md),
-              ),
-              child: const EmptyState(
-                label: 'No events scheduled for this week.',
-                icon: Icons.event_busy_outlined,
-              ),
-            ),
+                  final children = snapshot.data ?? [];
 
-            const SizedBox(height: AppSpacing.xl),
-          ],
+                  if (children.isEmpty) {
+                    return Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: AppColors.white,
+                        border: Border.all(color: AppColors.border),
+                        borderRadius: BorderRadius.circular(AppRadius.md),
+                      ),
+                      child: const EmptyState(
+                        label: 'No children added yet.\nTap "Children" below to add your first child.',
+                        icon: Icons.child_care_outlined,
+                      ),
+                    );
+                  }
+
+                  return Wrap(
+                    spacing: AppSpacing.md,
+                    runSpacing: AppSpacing.md,
+                    children: children.map((c) {
+                      final child = c as Map<String, dynamic>;
+                      final childId = child['id'] as String;
+                      final childName = child['full_name'] as String? ?? 'Child';
+                      final status = child['status'] as String?;
+
+                      return GestureDetector(
+                        onTap: () => showQRDisplaySheet(
+                          context,
+                          childId: childId,
+                          childName: childName,
+                        ),
+                        child: ChildAvatar(
+                          name: childName,
+                          status: _statusLabel(status),
+                          color: _statusColor(status),
+                          size: 60,
+                        ),
+                      );
+                    }).toList(),
+                  );
+                },
+              ),
+
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                'Tap a child to show their check-in QR code',
+                style: AppTextStyles.caption,
+              ),
+
+              const SizedBox(height: AppSpacing.xxl),
+            ],
+          ),
         ),
       ),
     );
   }
+
+  String _statusLabel(String? status) => switch (status) {
+        'checked_in' => 'In Class',
+        'checked_out' => 'Picked Up',
+        _ => 'Enrolled',
+      };
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Placeholder screens for other tabs
-// ─────────────────────────────────────────────────────────────────────────────
-class _PlaceholderScreen extends StatelessWidget {
-  final String title;
-  final IconData icon;
 
-  const _PlaceholderScreen({required this.title, required this.icon});
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return Scaffold(
-      backgroundColor: AppColors.bgLight,
-      appBar: AppBar(
-        title: Text(title, style: AppTextStyles.heading2),
-        backgroundColor: AppColors.bgLight,
-        elevation: 0,
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 64, color: colorScheme.primary.withValues(alpha: 0.5)),
-            const SizedBox(height: AppSpacing.md),
-            Text('$title Coming Soon...', style: AppTextStyles.bodyLarge),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Quick action card widget
-// ─────────────────────────────────────────────────────────────────────────────
-class _QuickActionCard extends StatelessWidget {
-  const _QuickActionCard({
-    required this.icon,
-    required this.label,
-    required this.color,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final String label;
-  final Color color;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(AppRadius.lg),
-      child: Container(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        decoration: BoxDecoration(
-          color: AppColors.white,
-          borderRadius: BorderRadius.circular(AppRadius.lg),
-          boxShadow: [
-            BoxShadow(
-              color: color.withValues(alpha: 0.12),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(AppRadius.md),
-              ),
-              child: Icon(icon, color: color, size: 28),
-            ),
-            const SizedBox(width: AppSpacing.md),
-            Text(label, style: AppTextStyles.heading2),
-            const Spacer(),
-            Icon(Icons.arrow_forward_ios, color: AppColors.textMuted, size: 16),
-          ],
-        ),
-      ),
-    );
-  }
-}

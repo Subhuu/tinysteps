@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_theme.dart';
+import 'package:tinysteps/core/constants/app_theme.dart';
 
 /// A circular avatar for displaying a child's initials and status
 class ChildAvatar extends StatelessWidget {

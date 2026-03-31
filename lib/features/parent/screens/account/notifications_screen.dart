@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../core/constants/app_theme.dart';
+import 'package:tinysteps/core/constants/app_theme.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -92,7 +92,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         padding: const EdgeInsets.only(top: 4),
         child: Text(subtitle, style: AppTextStyles.bodySmall),
       ),
-      activeColor: AppColors.primary,
+      activeThumbColor: AppColors.primary,
+      activeTrackColor: AppColors.primaryLight,
       value: value,
       onChanged: onChanged,
     );

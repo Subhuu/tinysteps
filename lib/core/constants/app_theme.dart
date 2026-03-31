@@ -433,6 +433,32 @@ ThemeData sunriseLightTheme() {
         return AppColors.border;
       }),
     ),
+    // ── Dialog & Popup global theming ────────────────────────────────────
+    dialogTheme: DialogThemeData(
+      backgroundColor: AppColors.bgLight,
+      surfaceTintColor: Colors.transparent,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+      ),
+      titleTextStyle: AppTextStyles.heading3,
+      contentTextStyle: AppTextStyles.bodyMedium,
+    ),
+    popupMenuTheme: PopupMenuThemeData(
+      color: AppColors.bgSurface,
+      surfaceTintColor: Colors.transparent,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.md),
+      ),
+      textStyle: AppTextStyles.bodyMedium,
+    ),
+    // ── Smooth page transitions ──────────────────────────────────────────
+    pageTransitionsTheme: const PageTransitionsTheme(
+      builders: {
+        TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.windows: FadeUpwardsPageTransitionsBuilder(),
+      },
+    ),
   );
 }
 
@@ -521,6 +547,30 @@ ThemeData sunriseDarkTheme() {
     iconTheme: const IconThemeData(
       color: AppColors.textDarkMode,
       size: 24,
+    ),
+    dialogTheme: DialogThemeData(
+      backgroundColor: AppColors.bgDarkSurface,
+      surfaceTintColor: Colors.transparent,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+      ),
+      titleTextStyle: AppTextStyles.heading3.copyWith(color: AppColors.textDarkMode),
+      contentTextStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.textDarkMode),
+    ),
+    popupMenuTheme: PopupMenuThemeData(
+      color: AppColors.bgDarkMuted,
+      surfaceTintColor: Colors.transparent,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.md),
+      ),
+      textStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.textDarkMode),
+    ),
+    pageTransitionsTheme: const PageTransitionsTheme(
+      builders: {
+        TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.windows: FadeUpwardsPageTransitionsBuilder(),
+      },
     ),
   );
 }

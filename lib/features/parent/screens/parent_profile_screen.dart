@@ -1,13 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../core/constants/app_theme.dart';
-import 'account/personal_details_screen.dart';
-import 'account/pickup_authorization_screen.dart';
-import 'account/notifications_screen.dart';
-import 'account/payments_screen.dart';
-import 'account/support_screen.dart';
-import 'account/app_settings_screen.dart';
-import 'account/about_app_screen.dart';
+import 'package:go_router/go_router.dart';
+import 'package:tinysteps/core/constants/app_theme.dart';
 
 /// Parent Profile (Account) Screen
 class ParentProfileScreen extends StatelessWidget {
@@ -25,7 +19,7 @@ class ParentProfileScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // 1. Profile Header (WhatsApp Style)
+            // 1. Profile Header
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.md),
               child: Builder(builder: (context) {
@@ -56,59 +50,38 @@ class ParentProfileScreen extends StatelessWidget {
               }),
             ),
 
-            // 2. Settings List - Floating Card Style
+            // 2. Settings List
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.md),
               child: Container(
                 decoration: BoxDecoration(
                   color: AppColors.bgSurface,
-                  borderRadius: BorderRadius.circular(AppRadius.sm),   // mild 12px, not pill
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                   border: Border.all(color: AppColors.border),
                   boxShadow: AppShadows.card,
                 ),
                 child: Column(
                   children: [
-                    _buildSettingsTile(
-                      icon: Icons.person_outline,
-                      title: 'Personal Details',
-                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PersonalDetailsScreen())),
-                    ),
+                    _buildSettingsTile(icon: Icons.person_outline, title: 'Personal Details',
+                        onTap: () => context.push('/parent/account/personal')),
                     const Divider(height: 1, color: AppColors.border),
-                    _buildSettingsTile(
-                      icon: Icons.verified_user_outlined,
-                      title: 'Pickup Authorization',
-                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PickupAuthorizationScreen())),
-                    ),
+                    _buildSettingsTile(icon: Icons.verified_user_outlined, title: 'Pickup Authorization',
+                        onTap: () => context.push('/parent/account/pickup')),
                     const Divider(height: 1, color: AppColors.border),
-                    _buildSettingsTile(
-                      icon: Icons.notifications_none,
-                      title: 'Notifications',
-                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationsScreen())),
-                    ),
+                    _buildSettingsTile(icon: Icons.notifications_none, title: 'Notifications',
+                        onTap: () => context.push('/parent/account/notifications')),
                     const Divider(height: 1, color: AppColors.border),
-                    _buildSettingsTile(
-                      icon: Icons.payment_outlined,
-                      title: 'Payments',
-                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PaymentsScreen())),
-                    ),
+                    _buildSettingsTile(icon: Icons.payment_outlined, title: 'Payments',
+                        onTap: () => context.push('/parent/account/payments')),
                     const Divider(height: 1, color: AppColors.border),
-                    _buildSettingsTile(
-                      icon: Icons.help_outline,
-                      title: 'Support & Help',
-                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SupportScreen())),
-                    ),
+                    _buildSettingsTile(icon: Icons.help_outline, title: 'Support & Help',
+                        onTap: () => context.push('/parent/account/support')),
                     const Divider(height: 1, color: AppColors.border),
-                    _buildSettingsTile(
-                      icon: Icons.settings_outlined,
-                      title: 'Settings',
-                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AppSettingsScreen())),
-                    ),
+                    _buildSettingsTile(icon: Icons.settings_outlined, title: 'Settings',
+                        onTap: () => context.push('/parent/account/settings')),
                     const Divider(height: 1, color: AppColors.border),
-                    _buildSettingsTile(
-                      icon: Icons.info_outline,
-                      title: 'About App',
-                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AboutAppScreen())),
-                    ),
+                    _buildSettingsTile(icon: Icons.info_outline, title: 'About App',
+                        onTap: () => context.push('/parent/account/about')),
                   ],
                 ),
               ),
@@ -122,25 +95,24 @@ class ParentProfileScreen extends StatelessWidget {
               child: SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
-                  onPressed: () {
-                    // TODO: Call Supabase sign out
+                  onPressed: () async {
+                    await Supabase.instance.client.auth.signOut();
+                    // GoRouter _SupabaseAuthNotifier will redirect to /login
                   },
                   icon: const Icon(Icons.logout, color: AppColors.danger),
                   label: Text(
-                    'Log Out', 
+                    'Log Out',
                     style: AppTextStyles.buttonLabel.copyWith(color: AppColors.danger),
                   ),
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: AppColors.danger, width: 1.5),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: AppRadius.buttonRadius, // Pill shape
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: AppRadius.buttonRadius),
                     padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
                   ),
                 ),
               ),
             ),
-            
+
             const SizedBox(height: AppSpacing.xxl),
           ],
         ),

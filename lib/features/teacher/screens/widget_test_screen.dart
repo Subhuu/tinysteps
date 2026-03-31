@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import '../widgets/child_avatar.dart';
-import '../widgets/section_header.dart';
-import '../widgets/attendance_card.dart';
-import '../widgets/empty_state.dart';
-import '../widgets/status_chip.dart';
+import 'package:tinysteps/features/teacher/widgets/child_avatar.dart';
+import 'package:tinysteps/features/teacher/widgets/section_header.dart';
+import 'package:tinysteps/features/teacher/widgets/attendance_card.dart';
+import 'package:tinysteps/features/teacher/widgets/empty_state.dart';
+import 'package:tinysteps/features/teacher/widgets/status_chip.dart';
 
 class WidgetTestScreen extends StatelessWidget {
   const WidgetTestScreen({super.key});
