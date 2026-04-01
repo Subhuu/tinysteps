@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tinysteps/core/constants/app_theme.dart';
+import 'package:tinysteps/core/widgets/logout_dialog.dart'; // ✅ ADD THIS
 
 /// Parent Profile (Account) Screen
 class ParentProfileScreen extends StatelessWidget {
@@ -32,7 +33,14 @@ class ParentProfileScreen extends StatelessWidget {
                     CircleAvatar(
                       radius: 36,
                       backgroundColor: AppColors.primary.withValues(alpha: 0.2),
-                      child: Text(initial, style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 32)),
+                      child: Text(
+                        initial,
+                        style: const TextStyle(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 32,
+                        ),
+                      ),
                     ),
                     const SizedBox(width: AppSpacing.lg),
                     Expanded(
@@ -62,25 +70,39 @@ class ParentProfileScreen extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    _buildSettingsTile(icon: Icons.person_outline, title: 'Personal Details',
+                    _buildSettingsTile(
+                        icon: Icons.person_outline,
+                        title: 'Personal Details',
                         onTap: () => context.push('/parent/account/personal')),
                     const Divider(height: 1, color: AppColors.border),
-                    _buildSettingsTile(icon: Icons.verified_user_outlined, title: 'Pickup Authorization',
+                    _buildSettingsTile(
+                        icon: Icons.verified_user_outlined,
+                        title: 'Pickup Authorization',
                         onTap: () => context.push('/parent/account/pickup')),
                     const Divider(height: 1, color: AppColors.border),
-                    _buildSettingsTile(icon: Icons.notifications_none, title: 'Notifications',
+                    _buildSettingsTile(
+                        icon: Icons.notifications_none,
+                        title: 'Notifications',
                         onTap: () => context.push('/parent/account/notifications')),
                     const Divider(height: 1, color: AppColors.border),
-                    _buildSettingsTile(icon: Icons.payment_outlined, title: 'Payments',
+                    _buildSettingsTile(
+                        icon: Icons.payment_outlined,
+                        title: 'Payments',
                         onTap: () => context.push('/parent/account/payments')),
                     const Divider(height: 1, color: AppColors.border),
-                    _buildSettingsTile(icon: Icons.help_outline, title: 'Support & Help',
+                    _buildSettingsTile(
+                        icon: Icons.help_outline,
+                        title: 'Support & Help',
                         onTap: () => context.push('/parent/account/support')),
                     const Divider(height: 1, color: AppColors.border),
-                    _buildSettingsTile(icon: Icons.settings_outlined, title: 'Settings',
+                    _buildSettingsTile(
+                        icon: Icons.settings_outlined,
+                        title: 'Settings',
                         onTap: () => context.push('/parent/account/settings')),
                     const Divider(height: 1, color: AppColors.border),
-                    _buildSettingsTile(icon: Icons.info_outline, title: 'About App',
+                    _buildSettingsTile(
+                        icon: Icons.info_outline,
+                        title: 'About App',
                         onTap: () => context.push('/parent/account/about')),
                   ],
                 ),
@@ -89,15 +111,17 @@ class ParentProfileScreen extends StatelessWidget {
 
             const SizedBox(height: AppSpacing.sm),
 
-            // 3. Logout Button
+            // 3. Logout Button (✅ FIXED)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
               child: SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
                   onPressed: () async {
-                    await Supabase.instance.client.auth.signOut();
-                    // GoRouter _SupabaseAuthNotifier will redirect to /login
+                    final confirmed = await showLogoutDialog(context); // ✅ dialog
+                    if (confirmed) {
+                      await Supabase.instance.client.auth.signOut();
+                    }
                   },
                   icon: const Icon(Icons.logout, color: AppColors.danger),
                   label: Text(

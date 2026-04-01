@@ -3,6 +3,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:tinysteps/core/constants/app_theme.dart';
 import 'package:tinysteps/core/widgets/bottom_nav_bar.dart';
+import 'package:tinysteps/core/widgets/logout_dialog.dart'; // ✅ ADDED
+
 import 'package:tinysteps/features/parent/screens/my_children_screen.dart';
 import 'package:tinysteps/features/parent/screens/parent_profile_screen.dart';
 import 'package:tinysteps/features/parent/screens/attendance_history_screen.dart';
@@ -84,23 +86,26 @@ class _ParentDashboardState extends State<_ParentDashboard> {
       _childrenFuture = Future.value([]);
       return;
     }
-    // Projected query — only columns we need
+
     _childrenFuture = _supabase
         .from('children')
         .select('id, full_name, status, qr_code')
         .eq('parent_id', uid);
   }
 
+  // ✅ UPDATED LOGOUT WITH CONFIRMATION
   Future<void> _signOut() async {
-    await _supabase.auth.signOut();
-    // GoRouter _SupabaseAuthNotifier handles redirect to /login
+    final confirmed = await showLogoutDialog(context);
+
+    if (confirmed) {
+      await _supabase.auth.signOut();
+    }
   }
 
-  // Maps child status string → avatar color
   Color _statusColor(String? status) => switch (status) {
         'checked_in' => AppColors.success,
         'checked_out' => AppColors.textMuted,
-        _ => AppColors.primary, // active / default
+        _ => AppColors.primary,
       };
 
   @override
@@ -117,7 +122,7 @@ class _ParentDashboardState extends State<_ParentDashboard> {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: _signOut,
+            onPressed: _signOut, // ✅ CONNECTED
             tooltip: 'Sign Out',
           ),
         ],
@@ -131,12 +136,11 @@ class _ParentDashboardState extends State<_ParentDashboard> {
             AppSpacing.lg,
             AppSpacing.lg,
             AppSpacing.lg,
-            AppSpacing.xxl + 80, // clear floating nav bar
+            AppSpacing.xxl + 80,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Greeting
               Text('Hello, $name 👋', style: AppTextStyles.heading1),
               Text(
                 'Here\'s a quick look at your children today.',
@@ -144,7 +148,6 @@ class _ParentDashboardState extends State<_ParentDashboard> {
               ),
               const SizedBox(height: AppSpacing.xl),
 
-              // ── Children from DB ──────────────────────────────────────────
               Text('Your Children', style: AppTextStyles.heading2),
               const SizedBox(height: AppSpacing.md),
 
@@ -224,5 +227,3 @@ class _ParentDashboardState extends State<_ParentDashboard> {
         _ => 'Enrolled',
       };
 }
-
-
