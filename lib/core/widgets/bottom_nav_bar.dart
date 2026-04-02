@@ -25,21 +25,23 @@ class BottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get bottom padding to safely extend behind the system navigation bar (e.g., iOS home indicator)
     final bottomPadding = MediaQuery.of(context).padding.bottom;
 
-    // ColoredBox fills the entire bottomNavigationBar slot with bgLight so
-    // the area behind the floating pill doesn't go black on Android.
     return ColoredBox(
       color: AppColors.bgLight,
       child: Container(
         margin: EdgeInsets.only(
           left: AppSpacing.md,
           right: AppSpacing.md,
-          bottom: bottomPadding > 0 ? bottomPadding + AppSpacing.md : AppSpacing.lg,
+          bottom: bottomPadding > 0
+              ? bottomPadding + AppSpacing.md
+              : AppSpacing.lg,
           top: AppSpacing.sm,
         ),
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: AppSpacing.sm),
+        padding: const EdgeInsets.symmetric(
+          vertical: 12,
+          horizontal: AppSpacing.sm,
+        ),
         decoration: BoxDecoration(
           color: AppColors.bgSurface,
           borderRadius: BorderRadius.circular(999),
@@ -51,48 +53,54 @@ class BottomNavBar extends StatelessWidget {
             ),
           ],
         ),
+
+        // ✅ FIXED ROW
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: List.generate(items.length, (index) {
             final isSelected = index == currentIndex;
             final item = items[index];
 
-            return GestureDetector(
-              onTap: () => onTap(index),
-              behavior: HitTestBehavior.opaque,
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 250),
-                curve: Curves.easeOut,
-                padding: isSelected
-                    ? const EdgeInsets.symmetric(horizontal: 20, vertical: 10)
-                    : const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                decoration: BoxDecoration(
-                  color: isSelected ? AppColors.primaryLight : Colors.transparent,
-                  borderRadius: BorderRadius.circular(999),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      item.icon,
-                      color: isSelected ? AppColors.primary : AppColors.textMuted,
-                      size: 24,
-                    ),
-                    if (isSelected) ...[
-                      const SizedBox(width: AppSpacing.xs),
-                      Text(
-                        item.label,
-                        style: AppTextStyles.labelMedium.copyWith(
-                          color: AppColors.primary,
-                        ),
+            return Expanded(
+              child: GestureDetector(
+                onTap: () => onTap(index),
+                behavior: HitTestBehavior.opaque,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  curve: Curves.easeOut,
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? AppColors.primaryLight
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        item.icon,
+                        color: isSelected
+                            ? AppColors.primary
+                            : AppColors.textMuted,
+                        size: 22,
                       ),
+                      if (isSelected) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          item.label,
+                          style: AppTextStyles.labelMedium.copyWith(
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
               ),
             );
           }),
-        ),
+        ), // ✅ CLOSE ROW
       ),
     );
   }

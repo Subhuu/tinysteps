@@ -6,6 +6,7 @@ import 'package:tinysteps/core/widgets/bottom_nav_bar.dart';
 import 'package:tinysteps/features/admin/screens/users_screen.dart';
 import 'package:tinysteps/features/admin/screens/classrooms_screen.dart';
 import 'package:tinysteps/features/admin/screens/children_overview_screen.dart';
+import 'package:tinysteps/features/admin/screens/profile_screen.dart';
 
 /// Admin Home Screen — shell with bottom navigation
 class AdminHomeScreen extends StatefulWidget {
@@ -19,11 +20,12 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _tabs = const [
-    _AdminDashboardContent(),
-    UsersScreen(),
-    ClassroomsScreen(),
-    ChildrenOverviewScreen(),
-  ];
+  _AdminDashboardContent(),
+  UsersScreen(),
+  ClassroomsScreen(),
+  ChildrenOverviewScreen(),
+  ProfileScreen(), // 
+];
 
   @override
   Widget build(BuildContext context) {
@@ -39,11 +41,12 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           currentIndex: _currentIndex,
           onTap: (index) => setState(() => _currentIndex = index),
           items: const [
-            BottomNavBarItem(icon: Icons.dashboard_rounded, label: 'Dashboard'),
-            BottomNavBarItem(icon: Icons.people_rounded, label: 'Users'),
-            BottomNavBarItem(icon: Icons.class_rounded, label: 'Classrooms'),
-            BottomNavBarItem(icon: Icons.child_care_rounded, label: 'Children'),
-          ],
+          BottomNavBarItem(icon: Icons.dashboard_rounded, label: 'Dashboard'),
+          BottomNavBarItem(icon: Icons.people_rounded, label: 'Users'),
+          BottomNavBarItem(icon: Icons.class_rounded, label: 'Classrooms'),
+          BottomNavBarItem(icon: Icons.child_care_rounded, label: 'Children'),
+          BottomNavBarItem(icon: Icons.person, label: 'Profile'), 
+           ],
         ),
       ),
     );
