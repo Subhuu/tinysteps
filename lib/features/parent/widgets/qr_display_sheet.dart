@@ -41,7 +41,9 @@ int _secondsRemaining([DateTime? at]) {
 /// Both parent (generator) and teacher (validator) compute the same value.
 String buildQrToken(String childId, {DateTime? at}) {
   final window = _currentWindow(at);
-  final key = utf8.encode(childId); // deterministic key from child's permanent ID
+  final key = utf8.encode(
+    childId,
+  ); // deterministic key from child's permanent ID
   final msg = utf8.encode('$childId:$window');
   final hmac = Hmac(sha256, key);
   final digest = hmac.convert(msg);
@@ -52,11 +54,7 @@ String buildQrToken(String childId, {DateTime? at}) {
 String buildQrPayload(String childId, {DateTime? at}) {
   final token = buildQrToken(childId, at: at);
   final expires = _windowExpiry(at);
-  return jsonEncode({
-    'child_id': childId,
-    'token': token,
-    'expires': expires,
-  });
+  return jsonEncode({'child_id': childId, 'token': token, 'expires': expires});
 }
 
 // ── Sheet widget ───────────────────────────────────────────────────────────────
@@ -72,28 +70,38 @@ class _QRDisplaySheet extends StatefulWidget {
 
 class _QRDisplaySheetState extends State<_QRDisplaySheet> {
   late Timer _timer;
-  late int _secondsLeft;
+  int _secondsLeft = 300; // 5 minutes
   late String _qrPayload;
 
   @override
   void initState() {
     super.initState();
-    _refresh();
+
+    _generateQR();
+
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (!mounted) return;
-      final sLeft = _secondsRemaining();
-      if (sLeft <= 0) {
-        // Window rolled — regenerate QR
-        setState(() => _refresh());
-      } else {
-        setState(() => _secondsLeft = sLeft);
-      }
+
+      setState(() {
+        _secondsLeft--;
+
+        if (_secondsLeft <= 0) {
+          _generateQR(); // new QR
+          _secondsLeft = 300; // reset timer
+        }
+      });
     });
   }
 
-  void _refresh() {
-    _secondsLeft = _secondsRemaining();
-    _qrPayload = buildQrPayload(widget.childId);
+  /// ✅ NEW QR LOGIC (DIFFERENT PER CHILD + TIME)
+  void _generateQR() {
+    final now = DateTime.now().millisecondsSinceEpoch;
+
+    _qrPayload = jsonEncode({
+      'child_id': widget.childId,
+      'child_name': widget.childName,
+      'generated_at': now, // ensures QR is always unique
+    });
   }
 
   @override
@@ -103,7 +111,7 @@ class _QRDisplaySheetState extends State<_QRDisplaySheet> {
   }
 
   String _formatTime(int seconds) {
-    final m = (seconds ~/ 60).toString().padLeft(1, '0');
+    final m = (seconds ~/ 60).toString();
     final s = (seconds % 60).toString().padLeft(2, '0');
     return '$m:$s';
   }
@@ -148,7 +156,7 @@ class _QRDisplaySheetState extends State<_QRDisplaySheet> {
 
           const SizedBox(height: AppSpacing.xl),
 
-          // QR Code card
+          // 🔳 QR Card
           Container(
             padding: const EdgeInsets.all(AppSpacing.lg),
             decoration: BoxDecoration(
@@ -156,39 +164,57 @@ class _QRDisplaySheetState extends State<_QRDisplaySheet> {
               borderRadius: BorderRadius.circular(AppRadius.xl),
               boxShadow: AppShadows.card,
             ),
-            child: QrImageView(
-              data: _qrPayload,
-              size: 220,
-              backgroundColor: AppColors.bgSurface,
-              eyeStyle: const QrEyeStyle(
-                eyeShape: QrEyeShape.square,
-                color: AppColors.textDark,
-              ),
-              dataModuleStyle: const QrDataModuleStyle(
-                dataModuleShape: QrDataModuleShape.square,
-                color: AppColors.textDark,
-              ),
+            child: Column(
+              children: [
+                // 👶 Avatar
+                CircleAvatar(
+                  radius: 28,
+                  backgroundColor: AppColors.primaryLight.withValues(
+                    alpha: 0.3,
+                  ),
+                  child: Text(
+                    widget.childName[0],
+                    style: AppTextStyles.heading2.copyWith(
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.md),
+
+                // QR
+                QrImageView(
+                  data: _qrPayload,
+                  size: 220,
+                  backgroundColor: AppColors.bgSurface,
+                  eyeStyle: const QrEyeStyle(
+                    eyeShape: QrEyeShape.square,
+                    color: AppColors.textDark,
+                  ),
+                  dataModuleStyle: const QrDataModuleStyle(
+                    dataModuleShape: QrDataModuleShape.square,
+                    color: AppColors.textDark,
+                  ),
+                ),
+              ],
             ),
           ),
 
           const SizedBox(height: AppSpacing.lg),
 
-          // Countdown timer row
+          // ⏱️ Timer (FIXED)
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(Icons.timer_outlined, size: 16, color: _timerColor()),
               const SizedBox(width: 6),
-              Text(
-                'Refreshes in ',
-                style: AppTextStyles.bodySmall,
-              ),
+              Text('Refreshes in ', style: AppTextStyles.bodySmall),
               Text(
                 _formatTime(_secondsLeft),
                 style: AppTextStyles.labelBold.copyWith(color: _timerColor()),
               ),
             ],
           ),
+
           const SizedBox(height: AppSpacing.xs),
           Text(
             'QR rotates every 5 minutes for security',
@@ -198,7 +224,7 @@ class _QRDisplaySheetState extends State<_QRDisplaySheet> {
 
           const SizedBox(height: AppSpacing.lg),
 
-          // Instruction
+          // ℹ️ Instruction
           Container(
             padding: const EdgeInsets.all(AppSpacing.md),
             decoration: BoxDecoration(
@@ -207,14 +233,19 @@ class _QRDisplaySheetState extends State<_QRDisplaySheet> {
             ),
             child: Row(
               children: [
-                const Icon(Icons.info_outline, color: AppColors.primary, size: 18),
+                const Icon(
+                  Icons.info_outline,
+                  color: AppColors.primary,
+                  size: 18,
+                ),
                 const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Text(
                     'Show this to the teacher at drop-off or pickup. '
                     'They will scan it to mark attendance.',
-                    style: AppTextStyles.bodySmall
-                        .copyWith(color: AppColors.primary),
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.primary,
+                    ),
                   ),
                 ),
               ],
@@ -230,16 +261,16 @@ class _QRDisplaySheetState extends State<_QRDisplaySheet> {
               onPressed: () => Navigator.pop(context),
               style: OutlinedButton.styleFrom(
                 side: const BorderSide(color: AppColors.border),
-                padding:
-                    const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
                 shape: RoundedRectangleBorder(
                   borderRadius: AppRadius.buttonRadius,
                 ),
               ),
               child: Text(
                 'Close',
-                style:
-                    AppTextStyles.labelBold.copyWith(color: AppColors.textMedium),
+                style: AppTextStyles.labelBold.copyWith(
+                  color: AppColors.textMedium,
+                ),
               ),
             ),
           ),
