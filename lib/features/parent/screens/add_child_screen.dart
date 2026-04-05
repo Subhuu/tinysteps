@@ -92,8 +92,9 @@ class _AddChildScreenState extends State<AddChildScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: AppColors.danger,
+          duration: const Duration(seconds: 5),
           content: Text(
-            'Failed to add child: ${e.message}',
+            'Failed to add child: ${e.message}\nCode: ${e.code}',
             style: AppTextStyles.bodySmall.copyWith(color: AppColors.white),
           ),
         ),

@@ -29,11 +29,17 @@ class _UsersScreenState extends State<UsersScreen>
   void _refresh() {
     _teachersFuture = _supabase
         .from('teachers')
-        .select('id, full_name, email, staff_id, designation, is_approved, is_active')
+        .select('id, full_name, email, staff_id, designation, is_approved, is_active, classrooms!classrooms_teacher_id_fkey(id, name)')
         .order('full_name');
+
+    // FIX: Use correct FK hint for the children → parents relationship
     _parentsFuture = _supabase
         .from('parents')
-        .select('id, full_name, phone, emergency_contact_name, emergency_contact_phone, is_active, children(id)');
+        .select(
+          'id, full_name, phone, emergency_contact_name, emergency_contact_phone, '
+          'relationship_to_child, is_active, children!children_parent_id_fkey(id)',
+        )
+        .order('full_name');
   }
 
   @override
@@ -85,7 +91,23 @@ class _UsersScreenState extends State<UsersScreen>
         }
         if (snapshot.hasError) {
           return Center(
-            child: Text('Failed to load teachers', style: AppTextStyles.bodyMuted),
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.error_outline, color: AppColors.danger, size: 40),
+                  const SizedBox(height: AppSpacing.sm),
+                  Text('Failed to load teachers', style: AppTextStyles.bodyMuted),
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(
+                    snapshot.error.toString(),
+                    style: AppTextStyles.caption.copyWith(color: AppColors.danger),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
           );
         }
         final teachers = snapshot.data ?? [];
@@ -140,11 +162,15 @@ class _UsersScreenState extends State<UsersScreen>
                 ),
                 title: Text(t['full_name'] ?? 'Unknown', style: AppTextStyles.labelBold),
                 subtitle: Builder(builder: (_) {
+                  final classroomsData = t['classrooms'] as List<dynamic>? ?? [];
+                  final classroomName = classroomsData.isNotEmpty 
+                      ? classroomsData.first['name'] as String 
+                      : 'No Classroom';
+
                   final parts = <String>[
                     if (t['designation'] != null && (t['designation'] as String).isNotEmpty)
                       t['designation'] as String,
-                    if (t['staff_id'] != null && (t['staff_id'] as String).isNotEmpty)
-                      'ID: ${t['staff_id']}',
+                    classroomName,
                   ];
                   return Text(
                     parts.isEmpty ? 'No details provided' : parts.join('  ·  '),
@@ -163,7 +189,7 @@ class _UsersScreenState extends State<UsersScreen>
 
   Future<void> _showTeacherDetail(
       BuildContext context, Map<String, dynamic> teacher) async {
-    // Fetch classrooms for assignment picker
+    // Fetch classrooms for assignment picker — code may be null
     final classrooms = await _supabase
         .from('classrooms')
         .select('id, name, code')
@@ -178,6 +204,10 @@ class _UsersScreenState extends State<UsersScreen>
     final designation = teacher['designation'] as String?;
     final isApproved = teacher['is_approved'] == true;
     final isActive = teacher['is_active'] == true;
+    
+    final classroomsData = teacher['classrooms'] as List<dynamic>? ?? [];
+    final currentClassroomName = classroomsData.isNotEmpty ? classroomsData.first['name'] as String : 'Not Assigned';
+    selectedClassroomId = classroomsData.isNotEmpty ? classroomsData.first['id'] as String : null;
 
     showDialog(
       context: context,
@@ -247,6 +277,12 @@ class _UsersScreenState extends State<UsersScreen>
                         const Divider(height: AppSpacing.lg, color: AppColors.border),
                       ],
                       _DetailRow(
+                        icon: Icons.meeting_room_outlined,
+                        label: 'Classroom',
+                        value: currentClassroomName,
+                      ),
+                      const Divider(height: AppSpacing.lg, color: AppColors.border),
+                      _DetailRow(
                         icon: Icons.email_outlined,
                         label: 'Email',
                         value: teacher['email'] as String? ?? '—',
@@ -256,7 +292,7 @@ class _UsersScreenState extends State<UsersScreen>
                 ),
                 const SizedBox(height: AppSpacing.lg),
 
-                // ── Action buttons ─────────────────────────────────────
+                // ── Approve / Revoke ───────────────────────────────────
                 if (!isApproved)
                   SizedBox(
                     width: double.infinity,
@@ -297,41 +333,45 @@ class _UsersScreenState extends State<UsersScreen>
                         if (ctx.mounted) Navigator.pop(ctx);
                         setState(() => _refresh());
                       },
-                      label: Text('Revoke Approval', style: AppTextStyles.labelBold.copyWith(color: AppColors.warning)),
+                      label: Text(
+                        'Revoke Approval',
+                        style: AppTextStyles.labelBold.copyWith(color: AppColors.warning),
+                      ),
                     ),
                   ),
                 const SizedBox(height: AppSpacing.sm),
 
-                // Activate / Deactivate
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton.icon(
-                    icon: Icon(
-                      isActive ? Icons.person_off_outlined : Icons.person_add_alt_1,
-                      size: 18,
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: isActive ? AppColors.danger : AppColors.success,
-                      side: BorderSide(color: isActive ? AppColors.danger : AppColors.success),
-                      padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-                      shape: RoundedRectangleBorder(borderRadius: AppRadius.buttonRadius),
-                    ),
-                    onPressed: () async {
-                      await _supabase
-                          .from('teachers')
-                          .update({'is_active': !isActive})
-                          .eq('id', teacher['id']);
-                      if (ctx.mounted) Navigator.pop(ctx);
-                      setState(() => _refresh());
-                    },
-                    label: Text(
-                      isActive ? 'Deactivate' : 'Activate',
-                      style: AppTextStyles.labelBold.copyWith(
-                        color: isActive ? AppColors.danger : AppColors.success,
+                // ── Activate / Deactivate ──────────────────────────────
+                if (isApproved)
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      icon: Icon(
+                        isActive ? Icons.person_off_outlined : Icons.person_add_alt_1,
+                        size: 18,
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: isActive ? AppColors.danger : AppColors.success,
+                        side: BorderSide(color: isActive ? AppColors.danger : AppColors.success),
+                        padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+                        shape: RoundedRectangleBorder(borderRadius: AppRadius.buttonRadius),
+                      ),
+                      onPressed: () async {
+                        await _supabase
+                            .from('teachers')
+                            .update({'is_active': !isActive})
+                            .eq('id', teacher['id']);
+                        if (ctx.mounted) Navigator.pop(ctx);
+                        setState(() => _refresh());
+                      },
+                      label: Text(
+                        isActive ? 'Deactivate' : 'Activate',
+                        style: AppTextStyles.labelBold.copyWith(
+                          color: isActive ? AppColors.danger : AppColors.success,
+                        ),
                       ),
                     ),
                   ),
-                ),
                 const SizedBox(height: AppSpacing.lg),
 
                 // ── Assign Classroom ───────────────────────────────────
@@ -344,15 +384,18 @@ class _UsersScreenState extends State<UsersScreen>
                     hint: Text('Select classroom', style: AppTextStyles.bodyMuted),
                     initialValue: selectedClassroomId,
                     items: classrooms.map((c) {
+                      // FIX: code is nullable — fallback to name only
+                      final code = c['code'] as String?;
+                      final label = code != null && code.isNotEmpty
+                          ? '${c['name']} ($code)'
+                          : '${c['name']}';
                       return DropdownMenuItem<String>(
                         value: c['id'] as String,
-                        child: Text(
-                          '${c['name']} (${c['code']})',
-                          style: AppTextStyles.bodyMedium,
-                        ),
+                        child: Text(label, style: AppTextStyles.bodyMedium),
                       );
                     }).toList(),
-                    onChanged: (val) => setDialogState(() => selectedClassroomId = val),
+                    onChanged: (val) =>
+                        setDialogState(() => selectedClassroomId = val),
                   ),
                 if (classrooms.isNotEmpty) ...[
                   const SizedBox(height: AppSpacing.sm),
@@ -367,16 +410,37 @@ class _UsersScreenState extends State<UsersScreen>
                       onPressed: selectedClassroomId == null
                           ? null
                           : () async {
-                              await _supabase
-                                  .from('classrooms')
-                                  .update({'teacher_id': teacher['id']})
-                                  .eq('id', selectedClassroomId!);
-                              await _supabase
-                                  .from('children')
-                                  .update({'teacher_id': teacher['id']})
-                                  .eq('classroom_id', selectedClassroomId!);
-                              if (ctx.mounted) Navigator.pop(ctx);
-                              setState(() => _refresh());
+                              try {
+                                // Update classroom teacher
+                                await _supabase
+                                    .from('classrooms')
+                                    .update({'teacher_id': teacher['id']})
+                                    .eq('id', selectedClassroomId!);
+                                // Update children in that classroom
+                                await _supabase
+                                    .from('children')
+                                    .update({'teacher_id': teacher['id']})
+                                    .eq('classroom_id', selectedClassroomId!);
+                                if (ctx.mounted) {
+                                  Navigator.pop(ctx);
+                                  ScaffoldMessenger.of(ctx).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Classroom assigned successfully'),
+                                      backgroundColor: AppColors.success,
+                                    ),
+                                  );
+                                }
+                                setState(() => _refresh());
+                              } on PostgrestException catch (e) {
+                                if (ctx.mounted) {
+                                  ScaffoldMessenger.of(ctx).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Error: ${e.message}'),
+                                      backgroundColor: AppColors.danger,
+                                    ),
+                                  );
+                                }
+                              }
                             },
                       child: Text('Confirm Assignment', style: AppTextStyles.buttonLabel),
                     ),
@@ -402,7 +466,23 @@ class _UsersScreenState extends State<UsersScreen>
         }
         if (snapshot.hasError) {
           return Center(
-            child: Text('Failed to load parents', style: AppTextStyles.bodyMuted),
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.error_outline, color: AppColors.danger, size: 40),
+                  const SizedBox(height: AppSpacing.sm),
+                  Text('Failed to load parents', style: AppTextStyles.bodyMuted),
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(
+                    snapshot.error.toString(),
+                    style: AppTextStyles.caption.copyWith(color: AppColors.danger),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
           );
         }
         final parents = snapshot.data ?? [];
@@ -421,7 +501,7 @@ class _UsersScreenState extends State<UsersScreen>
           itemBuilder: (context, index) {
             final p = parents[index] as Map<String, dynamic>;
 
-            // Count children from embedded select
+            // FIX: children is now correctly fetched via FK hint
             final childrenData = p['children'] as List<dynamic>? ?? [];
             final childCount = childrenData.length;
 
@@ -471,89 +551,153 @@ class _UsersScreenState extends State<UsersScreen>
     final childCount = childrenData.length;
     final name = parent['full_name'] as String? ?? 'Parent';
     final initial = name.isNotEmpty ? name[0].toUpperCase() : 'P';
+    bool isActive = parent['is_active'] == true;
 
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        backgroundColor: AppColors.bgLight,
-        surfaceTintColor: Colors.transparent,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppRadius.lg),
-        ),
-        contentPadding: const EdgeInsets.fromLTRB(
-          AppSpacing.lg, AppSpacing.md, AppSpacing.lg, AppSpacing.lg,
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // ── Avatar + Name ──────────────────────────────────────────
-            CircleAvatar(
-              radius: 32,
-              backgroundColor: AppColors.secondary.withValues(alpha: 0.15),
-              child: Text(
-                initial,
-                style: AppTextStyles.heading1.copyWith(color: AppColors.secondary),
-              ),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            Text(name, style: AppTextStyles.heading3),
-            const SizedBox(height: 4),
-            _StatusBadge(
-              label: parent['is_active'] == true ? 'Active' : 'Inactive',
-              color: parent['is_active'] == true ? AppColors.success : AppColors.danger,
-            ),
-            const SizedBox(height: AppSpacing.lg),
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          backgroundColor: AppColors.bgLight,
+          surfaceTintColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppRadius.lg),
+          ),
+          contentPadding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg, AppSpacing.md, AppSpacing.lg, AppSpacing.lg,
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // ── Avatar + Name ──────────────────────────────────────────
+                CircleAvatar(
+                  radius: 32,
+                  backgroundColor: AppColors.secondary.withValues(alpha: 0.15),
+                  child: Text(
+                    initial,
+                    style: AppTextStyles.heading1.copyWith(color: AppColors.secondary),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.md),
+                Text(name, style: AppTextStyles.heading3),
+                const SizedBox(height: 4),
+                _StatusBadge(
+                  label: isActive ? 'Active' : 'Inactive',
+                  color: isActive ? AppColors.success : AppColors.danger,
+                ),
+                const SizedBox(height: AppSpacing.lg),
 
-            // ── Info Card ──────────────────────────────────────────────
-            Container(
+                // ── Info Card ──────────────────────────────────────────────
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  decoration: BoxDecoration(
+                    color: AppColors.bgSurface,
+                    borderRadius: BorderRadius.circular(AppRadius.md),
+                    border: Border.all(color: AppColors.border),
+                  ),
+                  child: Column(
+                    children: [
+                      _DetailRow(
+                        icon: Icons.phone_outlined,
+                        label: 'Phone',
+                        value: parent['phone'] ?? '—',
+                      ),
+                      const Divider(height: AppSpacing.lg, color: AppColors.border),
+                      // FIX: Show relationship_to_child from DB
+                      if (parent['relationship_to_child'] != null) ...[
+                        _DetailRow(
+                          icon: Icons.family_restroom,
+                          label: 'Relationship',
+                          value: parent['relationship_to_child'] as String,
+                        ),
+                        const Divider(height: AppSpacing.lg, color: AppColors.border),
+                      ],
+                      _DetailRow(
+                        icon: Icons.person_outline,
+                        label: 'Emergency Contact',
+                        value: parent['emergency_contact_name'] ?? '—',
+                      ),
+                      const Divider(height: AppSpacing.lg, color: AppColors.border),
+                      _DetailRow(
+                        icon: Icons.contact_phone_outlined,
+                        label: 'Emergency Phone',
+                        value: parent['emergency_contact_phone'] ?? '—',
+                      ),
+                      const Divider(height: AppSpacing.lg, color: AppColors.border),
+                      _DetailRow(
+                        icon: Icons.child_care_rounded,
+                        label: 'Children Enrolled',
+                        value: '$childCount',
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.lg),
+
+                // ── FIX: Admin can toggle parent active status ─────────────
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    icon: Icon(
+                      isActive ? Icons.person_off_outlined : Icons.person_add_alt_1,
+                      size: 18,
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: isActive ? AppColors.danger : AppColors.success,
+                      side: BorderSide(
+                          color: isActive ? AppColors.danger : AppColors.success),
+                      padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: AppRadius.buttonRadius),
+                    ),
+                    onPressed: () async {
+                      try {
+                        await _supabase
+                            .from('parents')
+                            .update({'is_active': !isActive})
+                            .eq('id', parent['id']);
+                        setDialogState(() => isActive = !isActive);
+                        setState(() => _refresh());
+                      } on PostgrestException catch (e) {
+                        if (ctx.mounted) {
+                          ScaffoldMessenger.of(ctx).showSnackBar(
+                            SnackBar(
+                              content: Text('Error: ${e.message}'),
+                              backgroundColor: AppColors.danger,
+                            ),
+                          );
+                        }
+                      }
+                    },
+                    label: Text(
+                      isActive ? 'Deactivate Account' : 'Activate Account',
+                      style: AppTextStyles.labelBold.copyWith(
+                        color: isActive ? AppColors.danger : AppColors.success,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            SizedBox(
               width: double.infinity,
-              padding: const EdgeInsets.all(AppSpacing.md),
-              decoration: BoxDecoration(
-                color: AppColors.bgSurface,
-                borderRadius: BorderRadius.circular(AppRadius.md),
-                border: Border.all(color: AppColors.border),
-              ),
-              child: Column(
-                children: [
-                  _DetailRow(icon: Icons.phone_outlined, label: 'Phone', value: parent['phone'] ?? '—'),
-                  const Divider(height: AppSpacing.lg, color: AppColors.border),
-                  _DetailRow(
-                    icon: Icons.person_outline,
-                    label: 'Emergency Contact',
-                    value: parent['emergency_contact_name'] ?? '—',
-                  ),
-                  const Divider(height: AppSpacing.lg, color: AppColors.border),
-                  _DetailRow(
-                    icon: Icons.contact_phone_outlined,
-                    label: 'Emergency Phone',
-                    value: parent['emergency_contact_phone'] ?? '—',
-                  ),
-                  const Divider(height: AppSpacing.lg, color: AppColors.border),
-                  _DetailRow(
-                    icon: Icons.child_care_rounded,
-                    label: 'Children Enrolled',
-                    value: '$childCount',
-                  ),
-                ],
+              child: OutlinedButton(
+                onPressed: () => Navigator.pop(ctx),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.textMedium,
+                  side: const BorderSide(color: AppColors.border),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: AppRadius.buttonRadius),
+                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+                ),
+                child: Text('Close', style: AppTextStyles.labelBold),
               ),
             ),
           ],
         ),
-        actions: [
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton(
-              onPressed: () => Navigator.pop(context),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.textMedium,
-                side: const BorderSide(color: AppColors.border),
-                shape: RoundedRectangleBorder(borderRadius: AppRadius.buttonRadius),
-                padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-              ),
-              child: Text('Close', style: AppTextStyles.labelBold),
-            ),
-          ),
-        ],
       ),
     );
   }

@@ -32,6 +32,10 @@ migrate_working_dir/
 .pub/
 /build/
 /coverage/
+*.md
+!README.md
+.agent/
+*.txt
 
 # Symbolication related
 app.*.symbols

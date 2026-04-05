@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:tinysteps/core/constants/app_theme.dart';
 
 /// Shared across all roles — shows app version, credits, etc.
@@ -39,24 +40,30 @@ class AboutAppScreen extends StatelessWidget {
             Text('DayCare+', style: AppTextStyles.bodyMuted),
             const SizedBox(height: AppSpacing.sm),
 
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.xs),
-              decoration: BoxDecoration(
-                color: AppColors.primaryLight,
-                borderRadius: BorderRadius.circular(AppRadius.full),
-              ),
-              child: Text('Version 1.0.0 (MVP)', style: AppTextStyles.caption.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600)),
-            ),
+          FutureBuilder<PackageInfo>(
+            future: PackageInfo.fromPlatform(),
+            builder: (context, snapshot) {
+              final version = snapshot.data?.version ?? 'Loading...';
+              return Container(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.xs),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryLight,
+                  borderRadius: BorderRadius.circular(AppRadius.full),
+                ),
+                child: Text('Version $version (MVP)', style: AppTextStyles.caption.copyWith(color: AppColors.primary, fontWeight: FontWeight.w600)),
+              );
+            }
+          ),
 
-            const SizedBox(height: AppSpacing.xxl),
+          const SizedBox(height: AppSpacing.xxl),
 
-            _InfoTile(icon: Icons.info_outline, title: 'Built by', value: 'TinySteps Internship Team – 2026'),
-            const Divider(height: 1, color: AppColors.divider),
-            _InfoTile(icon: Icons.code, title: 'Stack', value: 'Flutter + Supabase'),
-            const Divider(height: 1, color: AppColors.divider),
-            _InfoTile(icon: Icons.mail_outline, title: 'Support', value: 'support@tinysteps.in'),
-            const Divider(height: 1, color: AppColors.divider),
-            _InfoTile(icon: Icons.gavel_outlined, title: 'Terms & Privacy', value: 'tinysteps.in/legal'),
+          _InfoTile(icon: Icons.info_outline, title: 'Built by', value: 'TinySteps Internship Team – 2026'),
+          const Divider(height: 1, color: AppColors.divider),
+          _InfoTile(icon: Icons.code, title: 'Stack', value: 'Flutter + Supabase'),
+          const Divider(height: 1, color: AppColors.divider),
+          _InfoTile(icon: Icons.mail_outline, title: 'Support', value: 'support@tinysteps.in'),
+          const Divider(height: 1, color: AppColors.divider),
+          _InfoTile(icon: Icons.gavel_outlined, title: 'Terms & Privacy', value: 'tinysteps.in/legal'),
 
             const SizedBox(height: AppSpacing.xxl),
             Text('© 2026 TinySteps. All rights reserved.', style: AppTextStyles.caption, textAlign: TextAlign.center),

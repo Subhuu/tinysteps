@@ -1,0 +1,170 @@
+import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:tinysteps/core/constants/app_theme.dart';
+
+/// Role-aware notifications preferences screen.
+class NotificationsScreen extends StatefulWidget {
+  const NotificationsScreen({super.key});
+
+  @override
+  State<NotificationsScreen> createState() => _NotificationsScreenState();
+}
+
+class _NotificationsScreenState extends State<NotificationsScreen> {
+  final _supabase = Supabase.instance.client;
+  String _role = '';
+
+  // Local state for toggles (will be wired to backend later)
+  bool _t1 = true;
+  bool _t2 = true;
+  bool _t3 = false;
+  bool _t4 = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRole();
+  }
+
+  void _loadRole() {
+    final meta = _supabase.auth.currentUser?.userMetadata;
+    setState(() {
+      _role = meta?['role']?.toString().toLowerCase() ?? 'parent';
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.bgLight,
+      appBar: AppBar(
+        title: Text('Notifications', style: AppTextStyles.heading2),
+        backgroundColor: AppColors.bgLight,
+        elevation: 0,
+        surfaceTintColor: Colors.transparent,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Manage your notification preferences to stay updated.',
+              style: AppTextStyles.bodyMuted,
+            ),
+            const SizedBox(height: AppSpacing.xl),
+            _buildRoleSpecificToggles(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRoleSpecificToggles() {
+    if (_role == 'admin') {
+      return _buildCard([
+        _toggleTile(
+          'System Alerts',
+          'Critical system and security alerts',
+          _t1,
+          (v) => setState(() => _t1 = v),
+        ),
+        const Divider(height: 1, color: AppColors.border),
+        _toggleTile(
+          'Teacher Approvals',
+          'Notify when a new teacher signs up',
+          _t2,
+          (v) => setState(() => _t2 = v),
+        ),
+        const Divider(height: 1, color: AppColors.border),
+        _toggleTile(
+          'New Enrollments',
+          'Alert for new student registrations',
+          _t3,
+          (v) => setState(() => _t3 = v),
+        ),
+      ]);
+    } else if (_role == 'teacher') {
+      return _buildCard([
+        _toggleTile(
+          'Attendance Alerts',
+          'Notifications for QR scans & exceptions',
+          _t1,
+          (v) => setState(() => _t1 = v),
+        ),
+        const Divider(height: 1, color: AppColors.border),
+        _toggleTile(
+          'Admin Announcements',
+          'Important messages from administration',
+          _t2,
+          (v) => setState(() => _t2 = v),
+        ),
+        const Divider(height: 1, color: AppColors.border),
+        _toggleTile(
+          'Class Updates',
+          'Schedule changes and room assignment',
+          _t3,
+          (v) => setState(() => _t3 = v),
+        ),
+      ]);
+    } else {
+      // Parent
+      return _buildCard([
+        _toggleTile(
+          'Check-in / Check-out',
+          'Real-time alerts when your child arrives or leaves',
+          _t1,
+          (v) => setState(() => _t1 = v),
+        ),
+        const Divider(height: 1, color: AppColors.border),
+        _toggleTile(
+          'Emergency Alerts',
+          'Critical daycare closures or emergencies',
+          _t2,
+          (v) => setState(() => _t2 = v),
+        ),
+        const Divider(height: 1, color: AppColors.border),
+        _toggleTile(
+          'Payment Reminders',
+          'Upcoming fee deadlines and receipts',
+          _t3,
+          (v) => setState(() => _t3 = v),
+        ),
+        const Divider(height: 1, color: AppColors.border),
+        _toggleTile(
+          'Announcements',
+          'General daycare news and events',
+          _t4,
+          (v) => setState(() => _t4 = v),
+        ),
+      ]);
+    }
+  }
+
+  Widget _buildCard(List<Widget> children) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: Border.all(color: AppColors.border),
+        boxShadow: AppShadows.card,
+      ),
+      child: Column(children: children),
+    );
+  }
+
+  Widget _toggleTile(String title, String subtitle, bool value, ValueChanged<bool> onChanged) {
+    return SwitchListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.xs),
+      title: Text(title, style: AppTextStyles.labelBold),
+      subtitle: Padding(
+        padding: const EdgeInsets.only(top: 4.0),
+        child: Text(subtitle, style: AppTextStyles.bodySmall),
+      ),
+      activeThumbColor: AppColors.primary,
+      activeTrackColor: AppColors.primaryLight,
+      value: value,
+      onChanged: onChanged,
+    );
+  }
+}

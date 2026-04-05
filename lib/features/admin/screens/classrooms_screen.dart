@@ -21,33 +21,48 @@ class _ClassroomsScreenState extends State<ClassroomsScreen> {
   }
 
   void _load() {
-    // Fetch classrooms — use !left join hint for nullable teacher_id
+    // FIX: Use correct FK hint — classrooms_teacher_id_fkey → teachers
+    // Supabase returns the joined teacher as a nullable Map (single object)
     _classroomsFuture = _supabase
         .from('classrooms')
-        .select('id, name, code, age_group, max_capacity, teacher_id, teachers!classrooms_teacher_id_fkey(full_name)')
+        .select(
+          'id, name, code, age_group, max_capacity, teacher_id, '
+          'teachers!classrooms_teacher_id_fkey(id, full_name)',
+        )
         .order('name');
   }
 
   // ── Create/Edit dialog ──────────────────────────────────────────────────────
   Future<void> _showUpsertDialog({Map<String, dynamic>? existing}) async {
-    final nameCtrl = TextEditingController(text: existing?['name'] ?? '');
-    final codeCtrl = TextEditingController(text: existing?['code'] ?? '');
-    final ageCtrl = TextEditingController(text: existing?['age_group'] ?? '');
+    final nameCtrl = TextEditingController(text: existing?['name'] as String? ?? '');
+    final codeCtrl = TextEditingController(text: existing?['code'] as String? ?? '');
+    final ageCtrl = TextEditingController(text: existing?['age_group'] as String? ?? '');
     final capCtrl = TextEditingController(
-      text: (existing?['max_capacity'] ?? 20).toString(),
+      text: (existing?['max_capacity'] as int? ?? 20).toString(),
     );
     final isEdit = existing != null;
 
     // Fetch approved active teachers for picker
-    final teachers = await _supabase
-        .from('teachers')
-        .select('id, full_name')
-        .eq('is_approved', true)
-        .eq('is_active', true)
-        .order('full_name');
+    List<dynamic> teachers = [];
+    try {
+      teachers = await _supabase
+          .from('teachers')
+          .select('id, full_name')
+          .eq('is_approved', true)
+          .eq('is_active', true)
+          .order('full_name');
+    } on PostgrestException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Error loading teachers: ${e.message}'),
+          backgroundColor: AppColors.danger,
+        ));
+      }
+    }
 
     if (!mounted) return;
 
+    // FIX: Pre-set selected teacher from the existing classroom's teacher_id
     String? selectedTeacherId = existing?['teacher_id'] as String?;
 
     await showDialog(
@@ -81,24 +96,51 @@ class _ClassroomsScreenState extends State<ClassroomsScreen> {
                 const SizedBox(height: AppSpacing.lg),
 
                 // ── Fields ─────────────────────────────────────────────
-                _field(nameCtrl, 'Classroom Name', Icons.class_),
+                _field(nameCtrl, 'Classroom Name *', Icons.class_),
                 const SizedBox(height: AppSpacing.sm),
                 _field(codeCtrl, 'Unique Code (e.g. SUN-101)', Icons.qr_code),
                 const SizedBox(height: AppSpacing.sm),
                 _field(ageCtrl, 'Age Group (e.g. 2-3 yrs)', Icons.cake_outlined),
                 const SizedBox(height: AppSpacing.sm),
-                _field(capCtrl, 'Max Capacity', Icons.groups,
-                    keyboardType: TextInputType.number),
+                _field(
+                  capCtrl,
+                  'Max Capacity',
+                  Icons.groups,
+                  keyboardType: TextInputType.number,
+                ),
                 const SizedBox(height: AppSpacing.md),
 
                 // ── Teacher picker ─────────────────────────────────────
+                // FIX: Use String? properly — null means "None" (no teacher)
                 DropdownButtonFormField<String>(
                   initialValue: selectedTeacherId,
-                  hint: Text('Assign Teacher', style: AppTextStyles.bodyMuted),
+                  hint: Text('Assign Teacher (Optional)', style: AppTextStyles.bodyMuted),
+                  decoration: InputDecoration(
+                    prefixIcon: Icon(Icons.person_outlined,
+                        color: AppColors.secondary, size: 20),
+                    filled: true,
+                    fillColor: AppColors.bgSurface,
+                    border: OutlineInputBorder(
+                      borderRadius: AppRadius.inputRadius,
+                      borderSide: const BorderSide(color: AppColors.border),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: AppRadius.inputRadius,
+                      borderSide: const BorderSide(color: AppColors.border),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.md,
+                      vertical: AppSpacing.sm,
+                    ),
+                  ),
                   items: [
-                    const DropdownMenuItem<String>(
-                      value: null,
-                      child: Text('None'),
+                    // FIX: Use a sentinel empty string for "None" instead of null
+                    // to avoid DropdownButtonFormField<String> type issues
+                    DropdownMenuItem<String>(
+                      value: '',
+                      child: Text('None — Unassigned',
+                          style: AppTextStyles.bodyMedium
+                              .copyWith(color: AppColors.textMuted)),
                     ),
                     ...teachers.map((row) {
                       return DropdownMenuItem<String>(
@@ -110,8 +152,9 @@ class _ClassroomsScreenState extends State<ClassroomsScreen> {
                       );
                     }),
                   ],
-                  onChanged: (val) =>
-                      setDialogState(() => selectedTeacherId = val),
+                  onChanged: (val) => setDialogState(
+                    () => selectedTeacherId = (val == null || val.isEmpty) ? null : val,
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.lg),
 
@@ -125,7 +168,8 @@ class _ClassroomsScreenState extends State<ClassroomsScreen> {
                           foregroundColor: AppColors.textMuted,
                           side: const BorderSide(color: AppColors.border),
                           padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-                          shape: RoundedRectangleBorder(borderRadius: AppRadius.buttonRadius),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: AppRadius.buttonRadius),
                         ),
                         child: Text('Cancel', style: AppTextStyles.labelBold),
                       ),
@@ -136,17 +180,33 @@ class _ClassroomsScreenState extends State<ClassroomsScreen> {
                         style: FilledButton.styleFrom(
                           backgroundColor: AppColors.primary,
                           padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-                          shape: RoundedRectangleBorder(borderRadius: AppRadius.buttonRadius),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: AppRadius.buttonRadius),
                         ),
                         onPressed: () async {
-                          final data = {
-                            'name': nameCtrl.text.trim(),
-                            'code': codeCtrl.text.trim().toUpperCase(),
+                          final trimmedName = nameCtrl.text.trim();
+                          if (trimmedName.isEmpty) {
+                            ScaffoldMessenger.of(ctx).showSnackBar(
+                              const SnackBar(
+                                content: Text('Classroom name is required'),
+                                backgroundColor: AppColors.warning,
+                              ),
+                            );
+                            return;
+                          }
+
+                          // FIX: code is nullable in DB — send null if blank
+                          final trimmedCode = codeCtrl.text.trim();
+
+                          final data = <String, dynamic>{
+                            'name': trimmedName,
+                            'code': trimmedCode.isEmpty ? null : trimmedCode.toUpperCase(),
                             'age_group': ageCtrl.text.trim().isEmpty
                                 ? null
                                 : ageCtrl.text.trim(),
                             'max_capacity':
                                 int.tryParse(capCtrl.text.trim()) ?? 20,
+                            // FIX: send null when no teacher selected (not empty string)
                             'teacher_id': selectedTeacherId,
                           };
 
@@ -155,29 +215,48 @@ class _ClassroomsScreenState extends State<ClassroomsScreen> {
                               await _supabase
                                   .from('classrooms')
                                   .update(data)
-                                  .eq('id', existing['id']);
+                                  .eq('id', existing['id'] as String);
+
+                              // If a teacher was assigned, update children too
                               if (selectedTeacherId != null) {
                                 await _supabase
                                     .from('children')
                                     .update({'teacher_id': selectedTeacherId})
-                                    .eq('classroom_id', existing['id']);
+                                    .eq('classroom_id', existing['id'] as String);
                               }
                             } else {
                               await _supabase.from('classrooms').insert(data);
                             }
-                            if (ctx.mounted) Navigator.pop(ctx);
+
+                            if (ctx.mounted) {
+                              Navigator.pop(ctx);
+                              ScaffoldMessenger.of(ctx).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    isEdit
+                                        ? 'Classroom updated successfully'
+                                        : 'Classroom created successfully',
+                                  ),
+                                  backgroundColor: AppColors.success,
+                                ),
+                              );
+                            }
                             setState(() => _load());
                           } on PostgrestException catch (e) {
                             if (ctx.mounted) {
-                              ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
-                                content: Text('Error: ${e.message}'),
-                                backgroundColor: AppColors.danger,
-                              ));
+                              ScaffoldMessenger.of(ctx).showSnackBar(
+                                SnackBar(
+                                  content: Text('Error: ${e.message}'),
+                                  backgroundColor: AppColors.danger,
+                                ),
+                              );
                             }
                           }
                         },
-                        child: Text(isEdit ? 'Save' : 'Create',
-                            style: AppTextStyles.buttonLabel),
+                        child: Text(
+                          isEdit ? 'Save Changes' : 'Create',
+                          style: AppTextStyles.buttonLabel,
+                        ),
                       ),
                     ),
                   ],
@@ -190,8 +269,12 @@ class _ClassroomsScreenState extends State<ClassroomsScreen> {
     );
   }
 
-  Widget _field(TextEditingController ctrl, String label, IconData icon,
-      {TextInputType? keyboardType}) {
+  Widget _field(
+    TextEditingController ctrl,
+    String label,
+    IconData icon, {
+    TextInputType? keyboardType,
+  }) {
     return TextFormField(
       controller: ctrl,
       keyboardType: keyboardType,
@@ -226,12 +309,17 @@ class _ClassroomsScreenState extends State<ClassroomsScreen> {
         surfaceTintColor: Colors.transparent,
         title: Text('Delete Classroom?', style: AppTextStyles.heading3),
         content: Text(
-            'Children in this classroom will become unassigned.',
-            style: AppTextStyles.bodyMedium),
+          'Children in this classroom will become unassigned.',
+          style: AppTextStyles.bodyMedium,
+        ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: Text('Cancel', style: AppTextStyles.labelBold.copyWith(color: AppColors.textMuted))),
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(
+              'Cancel',
+              style: AppTextStyles.labelBold.copyWith(color: AppColors.textMuted),
+            ),
+          ),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: AppColors.danger),
             onPressed: () => Navigator.pop(ctx, true),
@@ -242,13 +330,35 @@ class _ClassroomsScreenState extends State<ClassroomsScreen> {
     );
     if (confirmed != true) return;
 
-    // Unassign children first
-    await _supabase
-        .from('children')
-        .update({'classroom_id': null, 'teacher_id': null})
-        .eq('classroom_id', id);
-    await _supabase.from('classrooms').delete().eq('id', id);
-    setState(() => _load());
+    try {
+      // Unassign children first (nullify FK references)
+      await _supabase
+          .from('children')
+          .update({'classroom_id': null, 'teacher_id': null})
+          .eq('classroom_id', id);
+
+      // Then delete the classroom
+      await _supabase.from('classrooms').delete().eq('id', id);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Classroom deleted'),
+            backgroundColor: AppColors.danger,
+          ),
+        );
+      }
+      setState(() => _load());
+    } on PostgrestException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Delete failed: ${e.message}'),
+            backgroundColor: AppColors.danger,
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -274,32 +384,65 @@ class _ClassroomsScreenState extends State<ClassroomsScreen> {
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
-                  child: CircularProgressIndicator(color: AppColors.primary));
+                child: CircularProgressIndicator(color: AppColors.primary),
+              );
             }
             if (snapshot.hasError) {
               return Center(
-                child: Text('Failed to load classrooms',
-                    style: AppTextStyles.bodyMuted),
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.lg),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.error_outline,
+                          color: AppColors.danger, size: 40),
+                      const SizedBox(height: AppSpacing.sm),
+                      Text('Failed to load classrooms',
+                          style: AppTextStyles.bodyMuted),
+                      const SizedBox(height: AppSpacing.xs),
+                      Text(
+                        snapshot.error.toString(),
+                        style: AppTextStyles.caption
+                            .copyWith(color: AppColors.danger),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+                      FilledButton.icon(
+                        onPressed: () => setState(() => _load()),
+                        icon: const Icon(Icons.refresh, size: 16),
+                        label: const Text('Retry'),
+                        style: FilledButton.styleFrom(
+                            backgroundColor: AppColors.primary),
+                      ),
+                    ],
+                  ),
+                ),
               );
             }
+
             final classrooms = snapshot.data ?? [];
             if (classrooms.isEmpty) {
               return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.class_outlined,
-                        size: 64,
-                        color: AppColors.primary.withValues(alpha: 0.4)),
+                    Icon(
+                      Icons.class_outlined,
+                      size: 64,
+                      color: AppColors.primary.withValues(alpha: 0.4),
+                    ),
                     const SizedBox(height: AppSpacing.md),
                     Text('No classrooms yet', style: AppTextStyles.heading3),
                     const SizedBox(height: AppSpacing.sm),
-                    Text('Tap + to create your first classroom',
-                        style: AppTextStyles.bodyMuted),
+                    Text(
+                      'Tap + to create your first classroom',
+                      style: AppTextStyles.bodyMuted,
+                    ),
                   ],
                 ),
               );
             }
+
             return ListView.separated(
               physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.all(AppSpacing.lg),
@@ -307,9 +450,17 @@ class _ClassroomsScreenState extends State<ClassroomsScreen> {
               separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
               itemBuilder: (context, index) {
                 final c = classrooms[index] as Map<String, dynamic>;
+
+                // FIX: teachers join returns a Map (single object) or null
                 final teacherMap = c['teachers'] as Map<String, dynamic>?;
                 final teacherName =
                     teacherMap?['full_name'] as String? ?? 'Unassigned';
+
+                // FIX: code is nullable
+                final code = c['code'] as String?;
+                final codeDisplay =
+                    (code != null && code.isNotEmpty) ? 'Code: $code  ·  ' : '';
+                final ageGroup = c['age_group'] as String? ?? '—';
 
                 return Container(
                   padding: const EdgeInsets.all(AppSpacing.md),
@@ -335,15 +486,33 @@ class _ClassroomsScreenState extends State<ClassroomsScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(c['name'] ?? '—',
-                                style: AppTextStyles.labelBold),
                             Text(
-                              'Code: ${c['code'] ?? '—'}  ·  ${c['age_group'] ?? '—'}',
-                              style: AppTextStyles.bodySmall,
+                              c['name'] as String? ?? '—',
+                              style: AppTextStyles.labelBold,
                             ),
                             Text(
-                              'Teacher: $teacherName  ·  Max: ${c['max_capacity'] ?? 20}',
-                              style: AppTextStyles.caption,
+                              '$codeDisplay$ageGroup',
+                              style: AppTextStyles.bodySmall,
+                            ),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.person_outlined,
+                                  size: 12,
+                                  color: teacherMap != null
+                                      ? AppColors.success
+                                      : AppColors.textMuted,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  '$teacherName  ·  Max: ${c['max_capacity'] ?? 20}',
+                                  style: AppTextStyles.caption.copyWith(
+                                    color: teacherMap != null
+                                        ? AppColors.textDark
+                                        : AppColors.textMuted,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -357,10 +526,14 @@ class _ClassroomsScreenState extends State<ClassroomsScreen> {
                           }
                         },
                         itemBuilder: (_) => [
+                          const PopupMenuItem(value: 'edit', child: Text('Edit')),
                           const PopupMenuItem(
-                              value: 'edit', child: Text('Edit')),
-                          const PopupMenuItem(
-                              value: 'delete', child: Text('Delete')),
+                            value: 'delete',
+                            child: Text(
+                              'Delete',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ),
                         ],
                       ),
                     ],

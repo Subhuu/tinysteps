@@ -11,10 +11,7 @@ import 'package:tinysteps/features/parent/screens/parent_home_screen.dart';
 import 'package:tinysteps/features/parent/screens/my_children_screen.dart';
 import 'package:tinysteps/features/parent/screens/add_child_screen.dart';
 import 'package:tinysteps/features/parent/screens/child_profile_screen.dart';
-import 'package:tinysteps/features/parent/screens/account/personal_details_screen.dart';
-import 'package:tinysteps/features/parent/screens/account/pickup_authorization_screen.dart';
-import 'package:tinysteps/features/parent/screens/account/notifications_screen.dart';
-import 'package:tinysteps/features/parent/screens/account/payments_screen.dart';
+import 'package:tinysteps/core/screens/notifications_screen.dart';
 import 'package:tinysteps/core/screens/support_screen.dart';
 import 'package:tinysteps/core/screens/app_settings_screen.dart';
 import 'package:tinysteps/core/screens/about_app_screen.dart';
@@ -83,13 +80,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           childName: s.uri.queryParameters['name'] ?? '',
         ),
       ),
-      GoRoute(path: '/parent/account/personal',      builder: (c, s) => const PersonalDetailsScreen()),
-      GoRoute(path: '/parent/account/pickup',        builder: (c, s) => const PickupAuthorizationScreen()),
-      GoRoute(path: '/parent/account/notifications', builder: (c, s) => const NotificationsScreen()),
-      GoRoute(path: '/parent/account/payments',      builder: (c, s) => const PaymentsScreen()),
-      GoRoute(path: '/parent/account/support',       builder: (c, s) => const SupportScreen()),
-      GoRoute(path: '/parent/account/settings',      builder: (c, s) => const AppSettingsScreen()),
-      GoRoute(path: '/parent/account/about',         builder: (c, s) => const AboutAppScreen()),
+      // ── Shared Settings Hub Routes ──────────────────────────────────────────
+      GoRoute(path: '/notifications', builder: (c, s) => const NotificationsScreen()),
+      GoRoute(path: '/support',       builder: (c, s) => const SupportScreen()),
+      GoRoute(path: '/app-settings',  builder: (c, s) => const AppSettingsScreen()),
+      GoRoute(path: '/about',         builder: (c, s) => const AboutAppScreen()),
       GoRoute(path: '/parent/attendance',            builder: (c, s) => const AttendanceHistoryScreen()),
 
       // ── Teacher ─────────────────────────────────────────────────────────────

@@ -4,14 +4,15 @@ import 'package:go_router/go_router.dart';
 import 'package:tinysteps/core/constants/app_theme.dart';
 import 'package:tinysteps/core/widgets/logout_dialog.dart';
 
-class AdminSettingsScreen extends StatefulWidget {
-  const AdminSettingsScreen({super.key});
+/// Teacher Settings Screen — profile + preferences + account
+class TeacherSettingsScreen extends StatefulWidget {
+  const TeacherSettingsScreen({super.key});
 
   @override
-  State<AdminSettingsScreen> createState() => _AdminSettingsScreenState();
+  State<TeacherSettingsScreen> createState() => _TeacherSettingsScreenState();
 }
 
-class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
+class _TeacherSettingsScreenState extends State<TeacherSettingsScreen> {
   final _supabase = Supabase.instance.client;
   bool _isLoading = true;
 
@@ -19,8 +20,10 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
   String _fullName = '';
   String _email = '';
   String _phone = '';
+  String _staffId = '';
   String _designation = '';
-  String _centerName = '';
+  String _joiningDate = '';
+  bool _isApproved = false;
 
   @override
   void initState() {
@@ -33,8 +36,8 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
       final uid = _supabase.auth.currentUser?.id;
       if (uid == null) return;
       final data = await _supabase
-          .from('admins')
-          .select('full_name, email, phone, designation, center_name')
+          .from('teachers')
+          .select('full_name, email, phone, staff_id, designation, joining_date, is_approved')
           .eq('id', uid)
           .maybeSingle();
       if (!mounted) return;
@@ -43,8 +46,10 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
           _fullName = data['full_name'] as String? ?? '';
           _email = data['email'] as String? ?? _supabase.auth.currentUser?.email ?? '';
           _phone = data['phone'] as String? ?? '';
-          _designation = data['designation'] as String? ?? 'Administrator';
-          _centerName = data['center_name'] as String? ?? '';
+          _staffId = data['staff_id'] as String? ?? '';
+          _designation = data['designation'] as String? ?? 'Teacher';
+          _joiningDate = data['joining_date'] as String? ?? '';
+          _isApproved = data['is_approved'] == true;
           _isLoading = false;
         });
       }
@@ -61,15 +66,14 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
   Future<void> _showEditProfileDialog() async {
     final nameCtrl = TextEditingController(text: _fullName);
     final phoneCtrl = TextEditingController(text: _phone);
-    final desigCtrl = TextEditingController(text: _designation);
-    final centerCtrl = TextEditingController(text: _centerName);
 
     await showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.bgLight,
         surfaceTintColor: Colors.transparent,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.xl)),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppRadius.xl)),
         title: Text('Edit Profile', style: AppTextStyles.heading3),
         content: SingleChildScrollView(
           child: Column(
@@ -79,10 +83,6 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
               const SizedBox(height: AppSpacing.sm),
               _inputField(phoneCtrl, 'Phone', Icons.phone_outlined,
                   keyboardType: TextInputType.phone),
-              const SizedBox(height: AppSpacing.sm),
-              _inputField(desigCtrl, 'Designation', Icons.badge_outlined),
-              const SizedBox(height: AppSpacing.sm),
-              _inputField(centerCtrl, 'Center Name', Icons.business_outlined),
             ],
           ),
         ),
@@ -94,17 +94,15 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
           ),
           FilledButton(
             style: FilledButton.styleFrom(
-              backgroundColor: AppColors.primary,
+              backgroundColor: AppColors.secondary,
               shape: RoundedRectangleBorder(borderRadius: AppRadius.buttonRadius),
             ),
             onPressed: () async {
               final uid = _supabase.auth.currentUser?.id;
               if (uid == null) return;
-              await _supabase.from('admins').update({
+              await _supabase.from('teachers').update({
                 'full_name': nameCtrl.text.trim(),
                 'phone': phoneCtrl.text.trim(),
-                'designation': desigCtrl.text.trim(),
-                'center_name': centerCtrl.text.trim(),
               }).eq('id', uid);
               if (ctx.mounted) Navigator.pop(ctx);
               await _loadProfile();
@@ -125,7 +123,7 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
       decoration: InputDecoration(
         labelText: label,
         labelStyle: AppTextStyles.labelMedium,
-        prefixIcon: Icon(icon, color: AppColors.primary, size: 20),
+        prefixIcon: Icon(icon, color: AppColors.secondary, size: 20),
         filled: true,
         fillColor: AppColors.bgSurface,
         border: OutlineInputBorder(
@@ -138,7 +136,7 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: AppRadius.inputRadius,
-          borderSide: const BorderSide(color: AppColors.primary, width: 2),
+          borderSide: const BorderSide(color: AppColors.secondary, width: 2),
         ),
         contentPadding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.md, vertical: AppSpacing.sm),
@@ -149,20 +147,20 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final initial =
-        _fullName.isNotEmpty ? _fullName[0].toUpperCase() : 'A';
+        _fullName.isNotEmpty ? _fullName[0].toUpperCase() : 'T';
 
     return Scaffold(
       backgroundColor: AppColors.bgLight,
       body: _isLoading
           ? const Center(
-              child: CircularProgressIndicator(color: AppColors.primary))
+              child: CircularProgressIndicator(color: AppColors.secondary))
           : CustomScrollView(
               slivers: [
-                // ── Gradient Profile Header ─────────────────────────────
+                // ── Lavender Gradient Profile Header ───────────────────
                 SliverToBoxAdapter(
                   child: Container(
                     decoration: const BoxDecoration(
-                      gradient: AppGradients.sunrise,
+                      gradient: AppGradients.lavenderAccent,
                       borderRadius: BorderRadius.vertical(
                           bottom: Radius.circular(AppRadius.xl)),
                     ),
@@ -184,8 +182,8 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                                   icon: Container(
                                     padding: const EdgeInsets.all(AppSpacing.xs),
                                     decoration: BoxDecoration(
-                                      color:
-                                          AppColors.white.withValues(alpha: 0.25),
+                                      color: AppColors.white
+                                          .withValues(alpha: 0.25),
                                       borderRadius:
                                           BorderRadius.circular(AppRadius.sm),
                                     ),
@@ -198,23 +196,50 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                             const SizedBox(height: AppSpacing.md),
                             Row(
                               children: [
-                                Container(
-                                  width: 72,
-                                  height: 72,
-                                  decoration: BoxDecoration(
-                                    color:
-                                        AppColors.white.withValues(alpha: 0.25),
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                        color: AppColors.white, width: 2),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      initial,
-                                      style: AppTextStyles.heading1
-                                          .copyWith(color: AppColors.white),
+                                Stack(
+                                  children: [
+                                    Container(
+                                      width: 72,
+                                      height: 72,
+                                      decoration: BoxDecoration(
+                                        color: AppColors.white
+                                            .withValues(alpha: 0.25),
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                            color: AppColors.white, width: 2),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          initial,
+                                          style: AppTextStyles.heading1
+                                              .copyWith(color: AppColors.white),
+                                        ),
+                                      ),
                                     ),
-                                  ),
+                                    // Approval badge
+                                    Positioned(
+                                      bottom: 0,
+                                      right: 0,
+                                      child: Container(
+                                        padding: const EdgeInsets.all(3),
+                                        decoration: BoxDecoration(
+                                          color: _isApproved
+                                              ? AppColors.success
+                                              : AppColors.warning,
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                              color: AppColors.white, width: 2),
+                                        ),
+                                        child: Icon(
+                                          _isApproved
+                                              ? Icons.check
+                                              : Icons.hourglass_top_rounded,
+                                          color: AppColors.white,
+                                          size: 10,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 const SizedBox(width: AppSpacing.md),
                                 Expanded(
@@ -224,56 +249,33 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                                       Text(
                                         _fullName.isNotEmpty
                                             ? _fullName
-                                            : 'Admin',
+                                            : 'Teacher',
                                         style: AppTextStyles.heading3
                                             .copyWith(color: AppColors.white),
                                       ),
                                       const SizedBox(height: 2),
                                       Text(
                                         _email,
-                                        style: AppTextStyles.bodySmall
-                                            .copyWith(
-                                                color: AppColors.white
-                                                    .withValues(alpha: 0.85)),
+                                        style: AppTextStyles.bodySmall.copyWith(
+                                            color: AppColors.white
+                                                .withValues(alpha: 0.85)),
                                       ),
                                       const SizedBox(height: AppSpacing.xs),
                                       _roleBadge(
-                                          _designation.isNotEmpty
-                                              ? _designation
-                                              : 'Administrator',
-                                          AppColors.white),
+                                        _isApproved
+                                            ? (_designation.isNotEmpty
+                                                ? _designation
+                                                : 'Teacher')
+                                            : 'Pending Approval',
+                                        _isApproved
+                                            ? AppColors.white
+                                            : AppColors.warning,
+                                      ),
                                     ],
                                   ),
                                 ),
                               ],
                             ),
-                            if (_centerName.isNotEmpty) ...[
-                              const SizedBox(height: AppSpacing.md),
-                              Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: AppSpacing.md,
-                                    vertical: AppSpacing.sm),
-                                decoration: BoxDecoration(
-                                  color:
-                                      AppColors.white.withValues(alpha: 0.15),
-                                  borderRadius:
-                                      BorderRadius.circular(AppRadius.md),
-                                ),
-                                child: Row(
-                                  children: [
-                                    const Icon(Icons.business_rounded,
-                                        color: AppColors.white, size: 16),
-                                    const SizedBox(width: AppSpacing.sm),
-                                    Text(
-                                      _centerName,
-                                      style: AppTextStyles.labelBold
-                                          .copyWith(color: AppColors.white),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
                           ],
                         ),
                       ),
@@ -286,21 +288,36 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                   padding: const EdgeInsets.all(AppSpacing.lg),
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([
-                      // Profile info quick-view card
-                      if (_phone.isNotEmpty)
-                        _infoCard(children: [
+                      // Profile details card
+                      _infoCard(children: [
+                        if (_phone.isNotEmpty) ...[
                           _infoRow(Icons.phone_outlined, 'Phone', _phone),
-                        ]),
-                      if (_phone.isNotEmpty)
-                        const SizedBox(height: AppSpacing.lg),
+                          const Divider(
+                              height: AppSpacing.lg, color: AppColors.border),
+                        ],
+                        if (_staffId.isNotEmpty) ...[
+                          _infoRow(Icons.numbers, 'Staff ID', _staffId),
+                          const Divider(
+                              height: AppSpacing.lg, color: AppColors.border),
+                        ],
+                        if (_joiningDate.isNotEmpty)
+                          _infoRow(Icons.calendar_today_outlined, 'Joined',
+                              _joiningDate),
+                        if (_phone.isEmpty &&
+                            _staffId.isEmpty &&
+                            _joiningDate.isEmpty)
+                          _infoRow(Icons.info_outline, 'Profile',
+                              'Tap edit to update your profile'),
+                      ]),
+                      const SizedBox(height: AppSpacing.lg),
 
                       // ── App Preferences ─────────────────────────────
-                      _sectionLabel('App Preferences'),
+                      _sectionLabel('Preferences'),
                       _settingsTile(
                         icon: Icons.notifications_none_rounded,
                         iconColor: AppColors.accent,
                         title: 'Push Notifications',
-                        subtitle: 'Alerts for attendance & messages',
+                        subtitle: 'Attendance alerts & messages',
                         onTap: () => context.push('/notifications'),
                       ),
                       _settingsTile(
@@ -311,36 +328,12 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                         onTap: () => context.push('/app-settings'),
                       ),
 
-                      // ── Daycare Management ───────────────────────────
-                      _sectionLabel('Daycare Management'),
-                      _settingsTile(
-                        icon: Icons.business_rounded,
-                        iconColor: AppColors.secondary,
-                        title: 'Daycare Profile',
-                        subtitle: 'Contact info, hours, and logo',
-                        onTap: () {},
-                      ),
-                      _settingsTile(
-                        icon: Icons.security_rounded,
-                        iconColor: AppColors.info,
-                        title: 'Roles & Permissions',
-                        subtitle: 'Control staff access',
-                        onTap: () {},
-                      ),
-                      _settingsTile(
-                        icon: Icons.card_membership_rounded,
-                        iconColor: AppColors.success,
-                        title: 'Subscription',
-                        subtitle: 'Manage your TinySteps plan',
-                        onTap: () {},
-                      ),
-
-                      // ── Support & Legal ──────────────────────────────
+                      // ── Support ──────────────────────────────────────
                       _sectionLabel('Support & Legal'),
                       _settingsTile(
                         icon: Icons.help_outline_rounded,
-                        iconColor: AppColors.primary,
-                        title: 'Help Center & FAQ',
+                        iconColor: AppColors.secondary,
+                        title: 'Help Center',
                         onTap: () => context.push('/support'),
                       ),
                       _settingsTile(
@@ -384,7 +377,8 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
 
   Widget _roleBadge(String label, Color color) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 3),
+      padding:
+          const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 3),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(AppRadius.full),
@@ -420,10 +414,10 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
         Container(
           padding: const EdgeInsets.all(AppSpacing.sm),
           decoration: BoxDecoration(
-            color: AppColors.primaryLight,
+            color: AppColors.secondaryLight,
             borderRadius: BorderRadius.circular(AppRadius.sm),
           ),
-          child: Icon(icon, color: AppColors.primary, size: 16),
+          child: Icon(icon, color: AppColors.secondary, size: 16),
         ),
         const SizedBox(width: AppSpacing.md),
         Column(
@@ -439,7 +433,8 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
 
   Widget _sectionLabel(String label) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.sm, top: AppSpacing.xs),
+      padding:
+          const EdgeInsets.only(bottom: AppSpacing.sm, top: AppSpacing.xs),
       child: Text(
         label.toUpperCase(),
         style: AppTextStyles.caption.copyWith(
@@ -481,7 +476,8 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
         title: Text(title, style: AppTextStyles.bodyLarge),
         subtitle: subtitle != null
             ? Text(subtitle,
-                style: AppTextStyles.bodySmall.copyWith(color: AppColors.textMuted))
+                style: AppTextStyles.bodySmall
+                    .copyWith(color: AppColors.textMuted))
             : null,
         trailing: trailing ??
             const Icon(Icons.chevron_right_rounded,
@@ -514,8 +510,8 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
           ),
           child: Icon(icon, color: AppColors.danger, size: 20),
         ),
-        title:
-            Text(title, style: AppTextStyles.bodyLarge.copyWith(color: AppColors.danger)),
+        title: Text(title,
+            style: AppTextStyles.bodyLarge.copyWith(color: AppColors.danger)),
         trailing: const Icon(Icons.chevron_right_rounded,
             color: AppColors.danger, size: 20),
         onTap: onTap,
