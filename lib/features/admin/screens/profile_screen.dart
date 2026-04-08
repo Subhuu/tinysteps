@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tinysteps/features/admin/screens/users_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tinysteps/core/constants/app_theme.dart';
 
@@ -72,6 +73,19 @@ class ProfileScreen extends StatelessWidget {
               onTap: () {},
             ),
 
+            _buildOptionTile(
+              icon: Icons.admin_panel_settings,
+              title: 'Roles & Permissions',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UsersScreen(), 
+           ),
+          );
+        },
+ ),
+  
             _buildOptionTile(
               icon: Icons.lock,
               title: 'Change Password',
