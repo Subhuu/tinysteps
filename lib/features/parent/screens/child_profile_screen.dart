@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tinysteps/core/constants/app_theme.dart';
 
 class ChildProfileScreen extends StatefulWidget {
@@ -189,49 +188,10 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                     ),
                   ),
                   const SizedBox(height: AppSpacing.xl),
-      body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(color: AppColors.primary),
-            )
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Avatar
-                  Center(
-                    child: CircleAvatar(
-                      radius: 40,
-                      backgroundColor: AppColors.primary.withValues(alpha: 0.15),
-                      child: Text(
-                        widget.childName.isNotEmpty
-                            ? widget.childName[0].toUpperCase()
-                            : 'C',
-                        style: TextStyle(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 32,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.xl),
 
                   Text('Child Details', style: AppTextStyles.heading3),
                   const SizedBox(height: AppSpacing.md),
-                  Text('Child Details', style: AppTextStyles.heading3),
-                  const SizedBox(height: AppSpacing.md),
 
-                  // Full Name
-                  TextFormField(
-                    controller: _nameController,
-                    style: AppTextStyles.bodyLarge,
-                    decoration: _inputDecoration(
-                      label: 'Full Name',
-                      icon: Icons.person_outline,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.md),
                   // Full Name
                   TextFormField(
                     controller: _nameController,
@@ -289,28 +249,7 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                     ),
                   ),
                   const SizedBox(height: AppSpacing.md),
-                  // Allergies
-                  TextFormField(
-                    controller: _allergiesController,
-                    style: AppTextStyles.bodyLarge,
-                    decoration: _inputDecoration(
-                      label: 'Allergies',
-                      icon: Icons.warning_amber_outlined,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.md),
 
-                  // Medical Notes
-                  TextFormField(
-                    controller: _medicalNotesController,
-                    maxLines: 3,
-                    style: AppTextStyles.bodyLarge,
-                    decoration: _inputDecoration(
-                      label: 'Medical Notes',
-                      icon: Icons.medical_information_outlined,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.md),
                   // Medical Notes
                   TextFormField(
                     controller: _medicalNotesController,
@@ -348,61 +287,9 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                     'Classroom assignment is managed by admin.',
                     style: AppTextStyles.caption,
                   ),
-                  // Read-only classroom info
-                  Container(
-                    padding: const EdgeInsets.all(AppSpacing.md),
-                    decoration: BoxDecoration(
-                      color: AppColors.bgMuted,
-                      borderRadius: BorderRadius.circular(AppRadius.md),
-                      border: Border.all(color: AppColors.border),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.school_outlined, color: AppColors.textMuted, size: 20),
-                        const SizedBox(width: AppSpacing.sm),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Classroom: $_classroomName', style: AppTextStyles.labelBold),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  Text(
-                    'Classroom assignment is managed by admin.',
-                    style: AppTextStyles.caption,
-                  ),
 
                   const SizedBox(height: AppSpacing.xxl),
-                  const SizedBox(height: AppSpacing.xxl),
 
-                  // Save Button
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: _isSaving ? null : _saveChanges,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.6),
-                        shape: RoundedRectangleBorder(borderRadius: AppRadius.buttonRadius),
-                        padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
-                      ),
-                      child: _isSaving
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                color: AppColors.white,
-                                strokeWidth: 2,
-                              ),
-                            )
-                          : Text('Save Changes', style: AppTextStyles.buttonLabel),
-                    ),
-                  ),
-                ],
-              ),
-            ),
                   // Save Button
                   SizedBox(
                     width: double.infinity,
