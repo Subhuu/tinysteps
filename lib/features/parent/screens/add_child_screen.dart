@@ -15,7 +15,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
   final _allergiesController = TextEditingController();
   final _medicalNotesController = TextEditingController();
 
-  String _selectedGender = 'Male';
+  String? _selectedGender;
   DateTime? _selectedDob;
   bool _isLoading = false;
 
@@ -47,6 +47,12 @@ class _AddChildScreenState extends State<AddChildScreen> {
       );
       return;
     }
+    if (_selectedGender == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select your child\'s gender.')),
+      );
+      return;
+    }
 
     final uid = _supabase.auth.currentUser?.id;
     if (uid == null) return;
@@ -64,7 +70,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
           .insert({
             'full_name': _nameController.text.trim(),
             'date_of_birth': _selectedDob!.toIso8601String().substring(0, 10),
-            'gender': _selectedGender,
+            'gender': _selectedGender!.toLowerCase(),
             'allergies': _allergiesController.text.trim().isEmpty
                 ? null
                 : _allergiesController.text.trim(),
@@ -185,15 +191,19 @@ class _AddChildScreenState extends State<AddChildScreen> {
               // Gender
               DropdownButtonFormField<String>(
                 key: ValueKey(_selectedGender),
-                initialValue: _selectedGender,
+                value: _selectedGender,
                 decoration: _inputDecoration(
                   label: 'Gender',
                   icon: Icons.people_outline,
                 ),
+                hint: Text(
+                  "Please select your child's gender",
+                  style: AppTextStyles.bodyMuted,
+                ),
                 items: ['Male', 'Female', 'Other']
                     .map((g) => DropdownMenuItem(value: g, child: Text(g)))
                     .toList(),
-                onChanged: (val) => setState(() => _selectedGender = val!),
+                onChanged: (val) => setState(() => _selectedGender = val),
               ),
               const SizedBox(height: AppSpacing.md),
 

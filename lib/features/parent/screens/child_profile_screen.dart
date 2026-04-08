@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tinysteps/core/constants/app_theme.dart';
 
 class ChildProfileScreen extends StatefulWidget {
@@ -22,12 +23,13 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
   final _allergiesController = TextEditingController();
   final _medicalNotesController = TextEditingController();
 
-  String _selectedGender = 'Male';
-  DateTime _selectedDob = DateTime(2021, 1, 1);
+  // These start as null/empty — populated entirely from Supabase
+  String? _selectedGender;
+  DateTime? _selectedDob;
 
   bool _isLoading = true;
   bool _isSaving = false;
-  String _classroomName = 'Unassigned';
+  String _classroomName = '';
 
   @override
   void initState() {
@@ -39,16 +41,16 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
   static const _genderOptions = ['Male', 'Female', 'Other'];
 
   /// Normalises a gender string from the DB (e.g. 'male', 'FEMALE') to title
-  /// case so it matches the dropdown items. Returns 'Male' as fallback.
-  String _normaliseGender(String? raw) {
-    if (raw == null || raw.isEmpty) return 'Male';
+  /// case so it matches the dropdown items. Returns null as fallback.
+  String? _normaliseGender(String? raw) {
+    if (raw == null || raw.isEmpty) return null;
     final titleCase = '${raw[0].toUpperCase()}${raw.substring(1).toLowerCase()}';
-    return _genderOptions.contains(titleCase) ? titleCase : 'Male';
+    return _genderOptions.contains(titleCase) ? titleCase : null;
   }
 
   Future<void> _loadChildData() async {
     try {
-      // Fetch child details — only join classrooms (safe, always works)
+      // Fetch child details from Supabase — join classrooms for classroom name
       final data = await _supabase
           .from('children')
           .select(
@@ -80,7 +82,7 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
       });
     } catch (e) {
       if (!mounted) return;
-      setState(() => _isLoading = false);
+      // On failure, go back — don't show a form with empty data
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: AppColors.danger,
@@ -90,6 +92,7 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
           ),
         ),
       );
+      Navigator.pop(context);
     }
   }
 
@@ -104,7 +107,7 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
   Future<void> _pickDate(BuildContext context) async {
     final picked = await showDatePicker(
       context: context,
-      initialDate: _selectedDob,
+      initialDate: _selectedDob ?? DateTime(2021),
       firstDate: DateTime(2015),
       lastDate: DateTime.now(),
     );
@@ -116,8 +119,8 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
     try {
       await _supabase.from('children').update({
         'full_name': _nameController.text.trim(),
-        'date_of_birth': _selectedDob.toIso8601String().substring(0, 10),
-        'gender': _selectedGender.toLowerCase(),
+        'date_of_birth': _selectedDob?.toIso8601String().substring(0, 10),
+        'gender': _selectedGender?.toLowerCase(),
         'allergies': _allergiesController.text.trim().isEmpty
             ? null
             : _allergiesController.text.trim(),
@@ -186,10 +189,49 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                     ),
                   ),
                   const SizedBox(height: AppSpacing.xl),
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(color: AppColors.primary),
+            )
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Avatar
+                  Center(
+                    child: CircleAvatar(
+                      radius: 40,
+                      backgroundColor: AppColors.primary.withValues(alpha: 0.15),
+                      child: Text(
+                        widget.childName.isNotEmpty
+                            ? widget.childName[0].toUpperCase()
+                            : 'C',
+                        style: TextStyle(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 32,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.xl),
 
                   Text('Child Details', style: AppTextStyles.heading3),
                   const SizedBox(height: AppSpacing.md),
+                  Text('Child Details', style: AppTextStyles.heading3),
+                  const SizedBox(height: AppSpacing.md),
 
+                  // Full Name
+                  TextFormField(
+                    controller: _nameController,
+                    style: AppTextStyles.bodyLarge,
+                    decoration: _inputDecoration(
+                      label: 'Full Name',
+                      icon: Icons.person_outline,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
                   // Full Name
                   TextFormField(
                     controller: _nameController,
@@ -212,8 +254,9 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                           icon: Icons.cake_outlined,
                         ),
                         controller: TextEditingController(
-                          text:
-                              '${_selectedDob.day}/${_selectedDob.month}/${_selectedDob.year}',
+                          text: _selectedDob != null
+                              ? '${_selectedDob!.day}/${_selectedDob!.month}/${_selectedDob!.year}'
+                              : '',
                         ),
                       ),
                     ),
@@ -225,10 +268,14 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                     key: ValueKey(_selectedGender),
                     value: _selectedGender,
                     decoration: _inputDecoration(label: 'Gender', icon: Icons.people_outline),
+                    hint: Text(
+                      "Please select your child's gender",
+                      style: AppTextStyles.bodyMuted,
+                    ),
                     items: _genderOptions
                         .map((g) => DropdownMenuItem(value: g, child: Text(g)))
                         .toList(),
-                    onChanged: (val) => setState(() => _selectedGender = val!),
+                    onChanged: (val) => setState(() => _selectedGender = val),
                   ),
                   const SizedBox(height: AppSpacing.md),
 
@@ -242,7 +289,28 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                     ),
                   ),
                   const SizedBox(height: AppSpacing.md),
+                  // Allergies
+                  TextFormField(
+                    controller: _allergiesController,
+                    style: AppTextStyles.bodyLarge,
+                    decoration: _inputDecoration(
+                      label: 'Allergies',
+                      icon: Icons.warning_amber_outlined,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
 
+                  // Medical Notes
+                  TextFormField(
+                    controller: _medicalNotesController,
+                    maxLines: 3,
+                    style: AppTextStyles.bodyLarge,
+                    decoration: _inputDecoration(
+                      label: 'Medical Notes',
+                      icon: Icons.medical_information_outlined,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
                   // Medical Notes
                   TextFormField(
                     controller: _medicalNotesController,
@@ -280,9 +348,61 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                     'Classroom assignment is managed by admin.',
                     style: AppTextStyles.caption,
                   ),
+                  // Read-only classroom info
+                  Container(
+                    padding: const EdgeInsets.all(AppSpacing.md),
+                    decoration: BoxDecoration(
+                      color: AppColors.bgMuted,
+                      borderRadius: BorderRadius.circular(AppRadius.md),
+                      border: Border.all(color: AppColors.border),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.school_outlined, color: AppColors.textMuted, size: 20),
+                        const SizedBox(width: AppSpacing.sm),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Classroom: $_classroomName', style: AppTextStyles.labelBold),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  Text(
+                    'Classroom assignment is managed by admin.',
+                    style: AppTextStyles.caption,
+                  ),
 
                   const SizedBox(height: AppSpacing.xxl),
+                  const SizedBox(height: AppSpacing.xxl),
 
+                  // Save Button
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _isSaving ? null : _saveChanges,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.6),
+                        shape: RoundedRectangleBorder(borderRadius: AppRadius.buttonRadius),
+                        padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                      ),
+                      child: _isSaving
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                color: AppColors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : Text('Save Changes', style: AppTextStyles.buttonLabel),
+                    ),
+                  ),
+                ],
+              ),
+            ),
                   // Save Button
                   SizedBox(
                     width: double.infinity,
