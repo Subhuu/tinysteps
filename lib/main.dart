@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'core/constants/app_theme.dart';
 import 'core/router/app_router.dart';
+import 'provider/theme_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,13 +34,14 @@ class TinyStepsApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(appRouterProvider);
+    final isDark = ref.watch(themeProvider);
 
     return MaterialApp.router(
       title: 'TinySteps',
       debugShowCheckedModeBanner: false,
       theme: sunriseLightTheme(),
       darkTheme: sunriseDarkTheme(),
-      themeMode: ThemeMode.system,
+      themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
       routerConfig: router,
     );
   }

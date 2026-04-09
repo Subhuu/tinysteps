@@ -13,57 +13,59 @@ class AppColors {
   AppColors._();
 
   // ── Core Palette ─────────────────────────────────────────────────────────
-  static const primary        = Color(0xFFFF6B6B); // Soft Coral
-  static const primaryLight   = Color(0xFFFFE5E5); // Coral tint
-  static const primaryDark    = Color(0xFFE84F4F); // Deeper coral for pressed states
+  static const primary = Color(0xFFFF6B6B); // Soft Coral
+  static const primaryLight = Color(0xFFFFE5E5); // Coral tint
+  static const primaryDark = Color(
+    0xFFE84F4F,
+  ); // Deeper coral for pressed states
 
-  static const secondary      = Color(0xFFC77DFF); // Gentle Lavender
+  static const secondary = Color(0xFFC77DFF); // Gentle Lavender
   static const secondaryLight = Color(0xFFF3E5FF); // Lavender tint
-  static const secondaryDark  = Color(0xFFA855E8); // Deeper lavender
+  static const secondaryDark = Color(0xFFA855E8); // Deeper lavender
 
-  static const accent         = Color(0xFFFFB347); // Peach / Morning orange
-  static const accentLight    = Color(0xFFFFEDD0); // Peach tint
+  static const accent = Color(0xFFFFB347); // Peach / Morning orange
+  static const accentLight = Color(0xFFFFEDD0); // Peach tint
 
   // ── Semantic Colours ─────────────────────────────────────────────────────
-  static const success        = Color(0xFF4CAF50);
-  static const successLight   = Color(0xFFE8F5E9);
-  static const warning        = Color(0xFFFFC107);
-  static const warningLight   = Color(0xFFFFF8E1);
-  static const danger         = Color(0xFFE53935);
-  static const dangerLight    = Color(0xFFFFEBEE);
-  static const info           = Color(0xFF2196F3);
-  static const infoLight      = Color(0xFFE3F2FD);
+  static const success = Color(0xFF4CAF50);
+  static const successLight = Color(0xFFE8F5E9);
+  static const warning = Color(0xFFFFC107);
+  static const warningLight = Color(0xFFFFF8E1);
+  static const danger = Color(0xFFE53935);
+  static const dangerLight = Color(0xFFFFEBEE);
+  static const info = Color(0xFF2196F3);
+  static const infoLight = Color(0xFFE3F2FD);
 
   // ── Backgrounds ──────────────────────────────────────────────────────────
-  static const bgLight        = Color(0xFFFFF9F5); // Warm White — Sunrise bg
-  static const bgSurface      = Color(0xFFFFFFFF); // Card surface
-  static const bgMuted        = Color(0xFFFFF0E8); // Subtle peach tint for sections
+  static const bgLight = Color(0xFFFFF9F5); // Warm White — Sunrise bg
+  static const bgSurface = Color(0xFFFFFFFF); // Card surface
+  static const bgMuted = Color(0xFFFFF0E8); // Subtle peach tint for sections
 
   // ── Dark Mode Backgrounds ─────────────────────────────────────────────────
-  static const bgDark         = Color(0xFF0D1117); // Deep dark base
-  static const bgDarkSurface  = Color(0xFF1C1C2E); // Card surface dark
-  static const bgDarkMuted    = Color(0xFF252535); // Muted section dark
+  static const bgDark = Color(0xFF0D1117); // Deep dark base
+  static const bgDarkSurface = Color(0xFF161B22); // Card surface dark
+  static const bgDarkMuted = Color(0xFF21262D); // Muted section dark
 
   // ── Text ─────────────────────────────────────────────────────────────────
-  static const textDark       = Color(0xFF2D1B1B); // Warm near-black
-  static const textMedium     = Color(0xFF5C4444); // Mid brown-grey
-  static const textMuted      = Color(0xFF9E8484); // Muted warm grey
-  static const textOnPrimary  = Color(0xFFFFFFFF); // White on coral buttons
-  static const textDarkMode   = Color(0xFFE8E0F0); // Off-white, easier on eyes
+  static const textDark = Color(0xFF2D1B1B); // Warm near-black
+  static const textMedium = Color(0xFF5C4444); // Mid brown-grey
+  static const textMuted = Color(0xFF9E8484); // Muted warm grey
+  static const textOnPrimary = Color(0xFFFFFFFF); // White on coral buttons
+  static const textDarkMode = Color(0xFFE8E0F0); // Off-white, easier on eyes
 
   // ── Borders & Dividers ───────────────────────────────────────────────────
-  static const border         = Color(0xFFFFE0D5); // Warm peachy border
-  static const divider        = Color(0xFFF5E6E0); // Soft divider
+  static const border = Color(0xFFFFE0D5); // Warm peachy border
+  static const divider = Color(0xFFF5E6E0); // Soft divider
 
   // ── Gradient Stops ───────────────────────────────────────────────────────
-  static const gradientStart  = Color(0xFFFF6B6B); // Coral
-  static const gradientMid    = Color(0xFFFFB347); // Peach
-  static const gradientEnd    = Color(0xFFC77DFF); // Lavender
+  static const gradientStart = Color(0xFFFF6B6B); // Coral
+  static const gradientMid = Color(0xFFFFB347); // Peach
+  static const gradientEnd = Color(0xFFC77DFF); // Lavender
 
   // ── Static ───────────────────────────────────────────────────────────────
-  static const white          = Color(0xFFFFFFFF);
-  static const black          = Color(0xFF000000);
-  static const transparent    = Color(0x00000000);
+  static const white = Color(0xFFFFFFFF);
+  static const black = Color(0xFF000000);
+  static const transparent = Color(0x00000000);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -75,7 +77,11 @@ class AppGradients {
   static const sunrise = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [AppColors.gradientStart, AppColors.gradientMid, AppColors.gradientEnd],
+    colors: [
+      AppColors.gradientStart,
+      AppColors.gradientMid,
+      AppColors.gradientEnd,
+    ],
     stops: [0.0, 0.5, 1.0],
   );
 
@@ -137,7 +143,7 @@ class AppTextStyles {
   static TextStyle get bodyMedium => GoogleFonts.lexend(
     fontSize: 14,
     fontWeight: FontWeight.w400,
-    color: AppColors.textDark,
+    color: const Color.fromARGB(255, 255, 107, 107),
     height: 1.5,
   );
 
@@ -184,10 +190,14 @@ class AppTextStyles {
   );
 
   // Dark Mode variants
-  static TextStyle get heading1Dark => heading1.copyWith(color: AppColors.textDarkMode);
-  static TextStyle get heading2Dark => heading2.copyWith(color: AppColors.textDarkMode);
-  static TextStyle get bodyLargeDark => bodyLarge.copyWith(color: AppColors.textDarkMode);
-  static TextStyle get bodyMediumDark => bodyMedium.copyWith(color: AppColors.textDarkMode);
+  static TextStyle get heading1Dark =>
+      heading1.copyWith(color: AppColors.textDarkMode);
+  static TextStyle get heading2Dark =>
+      heading2.copyWith(color: AppColors.textDarkMode);
+  static TextStyle get bodyLargeDark =>
+      bodyLarge.copyWith(color: AppColors.textDarkMode);
+  static TextStyle get bodyMediumDark =>
+      bodyMedium.copyWith(color: AppColors.textDarkMode);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -197,11 +207,11 @@ class AppSpacing {
   AppSpacing._();
 
   static const double xxs = 2;
-  static const double xs  = 4;
-  static const double sm  = 8;
-  static const double md  = 16;
-  static const double lg  = 24;
-  static const double xl  = 32;
+  static const double xs = 4;
+  static const double sm = 8;
+  static const double md = 16;
+  static const double lg = 24;
+  static const double xl = 32;
   static const double xxl = 48;
   static const double xxxl = 64;
 }
@@ -212,19 +222,20 @@ class AppSpacing {
 class AppRadius {
   AppRadius._();
 
-  static const double xs   = 8;
-  static const double sm   = 12;
-  static const double md   = 16;   // Minimum per design spec
-  static const double lg   = 20;
-  static const double xl   = 24;   // Maximum per design spec
-  static const double full = 999;  // Pill shape
+  static const double xs = 8;
+  static const double sm = 12;
+  static const double md = 16; // Minimum per design spec
+  static const double lg = 20;
+  static const double xl = 24; // Maximum per design spec
+  static const double full = 999; // Pill shape
 
-  static BorderRadius get cardRadius     => BorderRadius.circular(xl);
-  static BorderRadius get buttonRadius   => BorderRadius.circular(full);
-  static BorderRadius get inputRadius    => BorderRadius.circular(md);
-  static BorderRadius get chipRadius     => BorderRadius.circular(full);
-  static BorderRadius get sheetRadius    => const BorderRadius.vertical(top: Radius.circular(xl));
-  static BorderRadius get dialogRadius   => BorderRadius.circular(xl);
+  static BorderRadius get cardRadius => BorderRadius.circular(xl);
+  static BorderRadius get buttonRadius => BorderRadius.circular(full);
+  static BorderRadius get inputRadius => BorderRadius.circular(md);
+  static BorderRadius get chipRadius => BorderRadius.circular(full);
+  static BorderRadius get sheetRadius =>
+      const BorderRadius.vertical(top: Radius.circular(xl));
+  static BorderRadius get dialogRadius => BorderRadius.circular(xl);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -280,31 +291,31 @@ ThemeData sunriseLightTheme() {
 
   return base.copyWith(
     colorScheme: const ColorScheme.light(
-      primary:          AppColors.primary,
-      onPrimary:        AppColors.textOnPrimary,
+      primary: AppColors.primary,
+      onPrimary: AppColors.textOnPrimary,
       primaryContainer: AppColors.primaryLight,
-      secondary:        AppColors.secondary,
-      onSecondary:      AppColors.textOnPrimary,
+      secondary: AppColors.secondary,
+      onSecondary: AppColors.textOnPrimary,
       secondaryContainer: AppColors.secondaryLight,
-      tertiary:         AppColors.accent,
-      onTertiary:       AppColors.textOnPrimary,
-      surface:          AppColors.bgSurface,
-      onSurface:        AppColors.textDark,
-      error:            AppColors.danger,
-      onError:          AppColors.white,
-      outline:          AppColors.border,
-      outlineVariant:   AppColors.divider,
+      tertiary: AppColors.accent,
+      onTertiary: AppColors.textOnPrimary,
+      surface: AppColors.bgSurface,
+      onSurface: AppColors.textDark,
+      error: AppColors.danger,
+      onError: AppColors.white,
+      outline: AppColors.border,
+      outlineVariant: AppColors.divider,
     ),
     scaffoldBackgroundColor: AppColors.bgLight,
     textTheme: GoogleFonts.lexendTextTheme(base.textTheme).copyWith(
-      displayLarge:  AppTextStyles.heading1,
+      displayLarge: AppTextStyles.heading1,
       displayMedium: AppTextStyles.heading2,
       headlineMedium: AppTextStyles.heading3,
-      bodyLarge:     AppTextStyles.bodyLarge,
-      bodyMedium:    AppTextStyles.bodyMedium,
-      bodySmall:     AppTextStyles.bodySmall,
-      labelLarge:    AppTextStyles.buttonLabel,
-      labelMedium:   AppTextStyles.labelMedium,
+      bodyLarge: AppTextStyles.bodyLarge,
+      bodyMedium: AppTextStyles.bodyMedium,
+      bodySmall: AppTextStyles.bodySmall,
+      labelLarge: AppTextStyles.buttonLabel,
+      labelMedium: AppTextStyles.labelMedium,
     ),
     appBarTheme: AppBarTheme(
       backgroundColor: AppColors.bgLight,
@@ -317,9 +328,7 @@ ThemeData sunriseLightTheme() {
     cardTheme: CardThemeData(
       color: AppColors.bgSurface,
       elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: AppRadius.cardRadius,
-      ),
+      shape: RoundedRectangleBorder(borderRadius: AppRadius.cardRadius),
       margin: EdgeInsets.zero,
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
@@ -331,9 +340,7 @@ ThemeData sunriseLightTheme() {
           horizontal: AppSpacing.xl,
           vertical: AppSpacing.md,
         ),
-        shape: RoundedRectangleBorder(
-          borderRadius: AppRadius.buttonRadius,
-        ),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.buttonRadius),
         textStyle: AppTextStyles.buttonLabel,
       ),
     ),
@@ -345,9 +352,7 @@ ThemeData sunriseLightTheme() {
           horizontal: AppSpacing.xl,
           vertical: AppSpacing.md,
         ),
-        shape: RoundedRectangleBorder(
-          borderRadius: AppRadius.buttonRadius,
-        ),
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.buttonRadius),
         textStyle: AppTextStyles.buttonLabel.copyWith(color: AppColors.primary),
       ),
     ),
@@ -407,8 +412,12 @@ ThemeData sunriseLightTheme() {
     ),
     snackBarTheme: SnackBarThemeData(
       backgroundColor: AppColors.textDark,
-      contentTextStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.white),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
+      contentTextStyle: AppTextStyles.bodyMedium.copyWith(
+        color: AppColors.white,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.md),
+      ),
       behavior: SnackBarBehavior.floating,
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
@@ -416,10 +425,7 @@ ThemeData sunriseLightTheme() {
       foregroundColor: AppColors.white,
       elevation: 4,
     ),
-    iconTheme: const IconThemeData(
-      color: AppColors.textMedium,
-      size: 24,
-    ),
+    iconTheme: const IconThemeData(color: AppColors.textMedium, size: 24),
     progressIndicatorTheme: const ProgressIndicatorThemeData(
       color: AppColors.primary,
     ),
@@ -429,7 +435,8 @@ ThemeData sunriseLightTheme() {
         return AppColors.textMuted;
       }),
       trackColor: WidgetStateProperty.resolveWith((states) {
-        if (states.contains(WidgetState.selected)) return AppColors.primaryLight;
+        if (states.contains(WidgetState.selected))
+          return AppColors.primaryLight;
         return AppColors.border;
       }),
     ),
@@ -469,42 +476,44 @@ ThemeData sunriseDarkTheme() {
   final base = ThemeData.dark(useMaterial3: true);
 
   // Reduced saturation primaries for dark mode
-  const primaryDark   = Color(0xFFE85D5D); // Coral at ~80% brightness
+  const primaryDark = Color(0xFFE85D5D); // Coral at ~80% brightness
   const secondaryDark = Color(0xFFAA66E8); // Lavender at ~80% brightness
-  const accentDark    = Color(0xFFE89E3A); // Peach at ~80% brightness
+  const accentDark = Color(0xFFE89E3A); // Peach at ~80% brightness
 
   return base.copyWith(
     colorScheme: const ColorScheme.dark(
-      primary:            primaryDark,
-      onPrimary:          AppColors.white,
-      primaryContainer:   Color(0xFF4A1A1A),
-      secondary:          secondaryDark,
-      onSecondary:        AppColors.white,
+      primary: primaryDark,
+      onPrimary: AppColors.white,
+      primaryContainer: Color(0xFF4A1A1A),
+      secondary: secondaryDark,
+      onSecondary: AppColors.white,
       secondaryContainer: Color(0xFF2D1A4A),
-      tertiary:           accentDark,
-      surface:            AppColors.bgDarkSurface,
-      onSurface:          AppColors.textDarkMode,
-      error:              AppColors.danger,
-      onError:            AppColors.white,
-      outline:            Color(0xFF3A2A2A),
-      outlineVariant:     Color(0xFF2A2020),
+      tertiary: accentDark,
+      surface: AppColors.bgDarkSurface,
+      onSurface: AppColors.textDarkMode,
+      error: AppColors.danger,
+      onError: AppColors.white,
+      outline: Color.fromARGB(255, 96, 94, 94),
+      outlineVariant: Color(0xFF2A2020),
     ),
     scaffoldBackgroundColor: AppColors.bgDark,
     textTheme: GoogleFonts.lexendTextTheme(base.textTheme).copyWith(
-      displayLarge:   AppTextStyles.heading1Dark,
-      displayMedium:  AppTextStyles.heading2Dark,
-      bodyLarge:      AppTextStyles.bodyLargeDark,
-      bodyMedium:     AppTextStyles.bodyMediumDark,
+      displayLarge: AppTextStyles.heading1Dark,
+      displayMedium: AppTextStyles.heading2Dark,
+      bodyLarge: AppTextStyles.bodyLargeDark,
+      bodyMedium: AppTextStyles.bodyMediumDark,
     ),
     appBarTheme: AppBarTheme(
       backgroundColor: AppColors.bgDark,
       foregroundColor: AppColors.textDarkMode,
       elevation: 0,
       centerTitle: false,
-      titleTextStyle: AppTextStyles.heading3.copyWith(color: AppColors.textDarkMode),
+      titleTextStyle: AppTextStyles.heading3.copyWith(
+        color: AppColors.textDarkMode,
+      ),
     ),
     cardTheme: CardThemeData(
-      color: AppColors.bgDarkSurface,
+      color: const Color.fromARGB(255, 34, 22, 25),
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: AppRadius.cardRadius),
       margin: EdgeInsets.zero,
@@ -528,7 +537,9 @@ ThemeData sunriseDarkTheme() {
         borderRadius: AppRadius.inputRadius,
         borderSide: const BorderSide(color: primaryDark, width: 2),
       ),
-      hintStyle: AppTextStyles.bodyMuted.copyWith(color: const Color(0xFF6A5A5A)),
+      hintStyle: AppTextStyles.bodyMuted.copyWith(
+        color: const Color(0xFF6A5A5A),
+      ),
     ),
     dividerTheme: const DividerThemeData(
       color: Color(0xFF2A2020),
@@ -544,18 +555,19 @@ ThemeData sunriseDarkTheme() {
       backgroundColor: primaryDark,
       foregroundColor: AppColors.white,
     ),
-    iconTheme: const IconThemeData(
-      color: AppColors.textDarkMode,
-      size: 24,
-    ),
+    iconTheme: const IconThemeData(color: AppColors.textDarkMode, size: 24),
     dialogTheme: DialogThemeData(
       backgroundColor: AppColors.bgDarkSurface,
       surfaceTintColor: Colors.transparent,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.xl),
       ),
-      titleTextStyle: AppTextStyles.heading3.copyWith(color: AppColors.textDarkMode),
-      contentTextStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.textDarkMode),
+      titleTextStyle: AppTextStyles.heading3.copyWith(
+        color: AppColors.textDarkMode,
+      ),
+      contentTextStyle: AppTextStyles.bodyMedium.copyWith(
+        color: AppColors.textDarkMode,
+      ),
     ),
     popupMenuTheme: PopupMenuThemeData(
       color: AppColors.bgDarkMuted,
@@ -563,7 +575,9 @@ ThemeData sunriseDarkTheme() {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.md),
       ),
-      textStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.textDarkMode),
+      textStyle: AppTextStyles.bodyMedium.copyWith(
+        color: AppColors.textDarkMode,
+      ),
     ),
     pageTransitionsTheme: const PageTransitionsTheme(
       builders: {
