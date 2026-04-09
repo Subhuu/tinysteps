@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tinysteps/core/constants/app_theme.dart';
-import 'package:tinysteps/features/parent/widgets/child_card.dart';
 
 class MyChildrenScreen extends StatefulWidget {
   const MyChildrenScreen({super.key});
@@ -27,25 +26,13 @@ class _MyChildrenScreenState extends State<MyChildrenScreen> {
       _childrenFuture = Future.value([]);
       return;
     }
+    // Fetch children for current parent — same source as parent_home_screen
+    // Also join classrooms table to get classroom name
     _childrenFuture = _supabase
         .from('children')
-        .select('id, full_name, date_of_birth, classrooms(name)')
+        .select('id, full_name, date_of_birth, status, classrooms(name)')
         .eq('parent_id', uid)
-        .order('created_at');
-  }
-
-  // Format date natively
-  String _formatDate(String isoString) {
-    try {
-      final date = DateTime.parse(isoString);
-      final months = [
-        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-      ];
-      return '${date.day.toString().padLeft(2, '0')} ${months[date.month - 1]} ${date.year}';
-    } catch (_) {
-      return isoString;
-    }
+        .order('full_name');
   }
 
   @override
@@ -57,63 +44,80 @@ class _MyChildrenScreenState extends State<MyChildrenScreen> {
         backgroundColor: AppColors.bgLight,
         elevation: 0,
       ),
-      body: FutureBuilder<List<dynamic>>(
-        future: _childrenFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(color: AppColors.primary),
-            );
-          }
-
-          if (snapshot.hasError) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(AppSpacing.lg),
-                child: Text(
-                  'Error loading children:\n${snapshot.error}',
-                  style: AppTextStyles.bodyMuted.copyWith(color: AppColors.danger),
-                  textAlign: TextAlign.center,
+      body: RefreshIndicator(
+        color: AppColors.primary,
+        onRefresh: () async => setState(() => _loadChildren()),
+        child: FutureBuilder<List<dynamic>>(
+          future: _childrenFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(AppSpacing.xl),
+                  child: CircularProgressIndicator(color: AppColors.primary),
                 ),
-              ),
-            );
-          }
+              );
+            }
 
-          final children = snapshot.data ?? [];
+            if (snapshot.hasError) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.lg),
+                  child: Text(
+                    'Failed to load children.\nPlease pull down to retry.',
+                    style: AppTextStyles.bodyMuted,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              );
+            }
 
-          if (children.isEmpty) {
-            return _buildEmptyState();
-          }
+            final children = snapshot.data ?? [];
 
-          return RefreshIndicator(
-            color: AppColors.primary,
-            onRefresh: () async => setState(() => _loadChildren()),
-            child: ListView.separated(
+            if (children.isEmpty) {
+              return _buildEmptyState();
+            }
+
+            return ListView.separated(
               physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.all(AppSpacing.lg),
               itemCount: children.length,
-              separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
+              separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.md),
               itemBuilder: (context, index) {
                 final child = children[index] as Map<String, dynamic>;
-                
-                final classroomData = child['classrooms'] as Map<String, dynamic>?;
-                final classroomName = classroomData != null ? classroomData['name'] as String : 'Not Assigned';
-                
-                return ChildCard(
-                  childId: child['id'] as String,
-                  name: child['full_name'] as String? ?? 'Unknown',
-                  dob: _formatDate(child['date_of_birth'] as String? ?? ''),
+                final childId = child['id'] as String;
+                final name = child['full_name'] as String? ?? 'Child';
+                final dob = child['date_of_birth'] as String? ?? '';
+                final classroom = child['classrooms'] as Map<String, dynamic>?;
+                final classroomName = classroom?['name'] as String? ?? 'Unassigned';
+
+                // Format DOB from ISO (yyyy-MM-dd) to readable form
+                String formattedDob = dob;
+                if (dob.isNotEmpty) {
+                  try {
+                    final date = DateTime.parse(dob);
+                    formattedDob = '${date.day} ${_monthName(date.month)} ${date.year}';
+                  } catch (_) {
+                    // keep raw value
+                  }
+                }
+
+                return _ChildCard(
+                  childId: childId,
+                  name: name,
+                  dob: formattedDob,
                   classroom: classroomName,
                 );
               },
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          final added = await context.push('/parent/children/add');
-          if (added == true && mounted) {
+          final result = await context.push('/parent/children/add');
+          // Refresh list if a child was added
+          if (result == true && mounted) {
             setState(() => _loadChildren());
           }
         },
@@ -134,6 +138,66 @@ class _MyChildrenScreenState extends State<MyChildrenScreen> {
           const SizedBox(height: AppSpacing.sm),
           Text('Tap the + button to add your child', style: AppTextStyles.bodyMuted),
         ],
+      ),
+    );
+  }
+
+  String _monthName(int month) => const [
+        '', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      ][month];
+}
+
+class _ChildCard extends StatelessWidget {
+  final String childId;
+  final String name;
+  final String dob;
+  final String classroom;
+
+  const _ChildCard({
+    required this.childId,
+    required this.name,
+    required this.dob,
+    required this.classroom,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () => context.push('/parent/children/$childId?name=${Uri.encodeComponent(name)}'),
+      borderRadius: BorderRadius.circular(AppRadius.xl),
+      child: Container(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        decoration: BoxDecoration(
+          color: AppColors.bgSurface,
+          borderRadius: BorderRadius.circular(AppRadius.xl),
+          boxShadow: AppShadows.card,
+        ),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 26,
+              backgroundColor: AppColors.primary.withValues(alpha: 0.15),
+              child: Text(
+                name[0].toUpperCase(),
+                style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 20),
+              ),
+            ),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(name, style: AppTextStyles.labelBold),
+                  const SizedBox(height: 2),
+                  Text('DOB: $dob', style: AppTextStyles.bodyMuted),
+                  Text(classroom, style: AppTextStyles.bodySmall),
+                ],
+              ),
+            ),
+            const Icon(Icons.arrow_forward_ios, size: 16, color: AppColors.textMuted),
+          ],
+        ),
       ),
     );
   }

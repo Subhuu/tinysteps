@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -236,6 +238,84 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
         _timeLabel = '';
       });
 
+  Future<void> _uploadFromGallery() async {
+    // Check permission first as requested
+    PermissionStatus status = await Permission.photos.request();
+    
+    // Fallback for Android below 13 if photos is permanently denied but storage is needed
+    if (status.isPermanentlyDenied) {
+      status = await Permission.storage.request();
+    }
+
+    if (status.isGranted || status.isLimited) {
+      final picker = ImagePicker();
+      final image = await picker.pickImage(source: ImageSource.gallery);
+      
+      if (image != null) {
+        if (!mounted) return;
+        setState(() {
+          _state = _ScanState.loading;
+        });
+
+        final capture = await _controller.analyzeImage(image.path);
+        
+        if (capture != null && capture.barcodes.isNotEmpty) {
+          setState(() {
+            _state = _ScanState.scanning; // Reset so _onDetect processes it
+          });
+          _onDetect(capture);
+        } else {
+          setState(() {
+            _state = _ScanState.invalid;
+            _message = 'No valid QR code found in the image.';
+          });
+        }
+      }
+    } else {
+      if (mounted) {
+        _showPermissionDeniedDialog('Photo Gallery');
+      }
+    }
+  }
+
+  Future<void> _requestCameraPermission() async {
+    final status = await Permission.camera.request();
+    if (status.isGranted) {
+      // Re-initialize controller to regain camera access
+      await _controller.stop();
+      await Future.delayed(const Duration(milliseconds: 100));
+      await _controller.start();
+      if (mounted) setState(() {});
+    } else {
+      if (mounted) {
+        _showPermissionDeniedDialog('Camera');
+      }
+    }
+  }
+
+  void _showPermissionDeniedDialog(String permissionName) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('$permissionName Permission Required', style: AppTextStyles.heading2),
+        content: Text('Please grant $permissionName access in your app settings to use this feature.', style: AppTextStyles.bodyMedium),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Cancel', style: TextStyle(color: AppColors.textMuted)),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              openAppSettings();
+            },
+            child: const Text('Open Settings', style: TextStyle(color: AppColors.primary)),
+          ),
+        ],
+      )
+    );
+  }
+
   // ── Build ────────────────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
@@ -281,6 +361,38 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
             child: MobileScanner(
               controller: _controller,
               onDetect: _onDetect,
+              errorBuilder: (context, error, child) {
+                return GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: _requestCameraPermission,
+                  child: Container(
+                    color: Colors.black,
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(AppSpacing.md),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.error, color: Colors.white, size: 40),
+                            const SizedBox(height: AppSpacing.md),
+                            const Text(
+                              'Camera permission denied.',
+                              style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: AppSpacing.sm),
+                            const Text(
+                              'Tap here to grant permission',
+                              style: TextStyle(color: Colors.white70, fontSize: 14),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
           ),
         ),
@@ -291,6 +403,23 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
           'Align the QR code inside the frame',
           style: AppTextStyles.caption,
           textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: AppSpacing.xl),
+        
+        // Upload from gallery button
+        FilledButton.icon(
+          onPressed: _uploadFromGallery,
+          icon: const Icon(Icons.image_outlined, color: AppColors.textDark),
+          label: const Text('Upload from gallery', style: TextStyle(color: AppColors.textDark)),
+          style: FilledButton.styleFrom(
+            backgroundColor: AppColors.bgLight,
+            elevation: 0,
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl, vertical: AppSpacing.md),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppRadius.full),
+              side: const BorderSide(color: AppColors.border),
+            ),
+          ),
         ),
       ],
     );
