@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:tinysteps/core/constants/app_theme.dart';
+import 'package:tinysteps/core/widgets/app_calendar.dart';
 import 'package:tinysteps/core/widgets/bottom_nav_bar.dart';
 import 'package:tinysteps/core/widgets/logout_dialog.dart';
 import 'package:tinysteps/features/parent/screens/my_children_screen.dart';
@@ -10,6 +11,7 @@ import 'package:tinysteps/features/parent/screens/attendance_history_screen.dart
 import 'package:tinysteps/features/parent/widgets/child_avatar.dart';
 import 'package:tinysteps/features/parent/widgets/empty_state.dart';
 import 'package:tinysteps/features/parent/widgets/qr_display_sheet.dart';
+import 'package:tinysteps/core/widgets/app_calendar.dart';
 
 /// Parent Home Screen — shell with bottom navigation
 class ParentHomeScreen extends StatefulWidget {
@@ -40,17 +42,17 @@ class _ParentHomeScreenState extends State<ParentHomeScreen> {
         }
       },
       child: Scaffold(
-        body: IndexedStack(
-          index: _currentIndex,
-          children: _screens,
-        ),
+        body: IndexedStack(index: _currentIndex, children: _screens),
         bottomNavigationBar: BottomNavBar(
           currentIndex: _currentIndex,
           onTap: (index) => setState(() => _currentIndex = index),
           items: const [
             BottomNavBarItem(icon: Icons.home_rounded, label: 'Home'),
             BottomNavBarItem(icon: Icons.face_rounded, label: 'Children'),
-            BottomNavBarItem(icon: Icons.assignment_rounded, label: 'Attendance'),
+            BottomNavBarItem(
+              icon: Icons.assignment_rounded,
+              label: 'Attendance',
+            ),
             BottomNavBarItem(icon: Icons.settings_rounded, label: 'Settings'),
           ],
         ),
@@ -102,10 +104,10 @@ class _ParentDashboardState extends State<_ParentDashboard> {
 
   // Maps child status string → avatar color
   Color _statusColor(String? status) => switch (status) {
-        'checked_in' => AppColors.success,
-        'checked_out' => AppColors.textMuted,
-        _ => AppColors.primary, // active / default
-      };
+    'checked_in' => AppColors.success,
+    'checked_out' => AppColors.textMuted,
+    _ => AppColors.primary, // active / default
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -159,7 +161,9 @@ class _ParentDashboardState extends State<_ParentDashboard> {
                     return const Center(
                       child: Padding(
                         padding: EdgeInsets.all(AppSpacing.xl),
-                        child: CircularProgressIndicator(color: AppColors.primary),
+                        child: CircularProgressIndicator(
+                          color: AppColors.primary,
+                        ),
                       ),
                     );
                   }
@@ -175,7 +179,8 @@ class _ParentDashboardState extends State<_ParentDashboard> {
                         borderRadius: BorderRadius.circular(AppRadius.md),
                       ),
                       child: const EmptyState(
-                        label: 'No children added yet.\nTap "Children" below to add your first child.',
+                        label:
+                            'No children added yet.\nTap "Children" below to add your first child.',
                         icon: Icons.child_care_outlined,
                       ),
                     );
@@ -187,7 +192,8 @@ class _ParentDashboardState extends State<_ParentDashboard> {
                     children: children.map((c) {
                       final child = c as Map<String, dynamic>;
                       final childId = child['id'] as String;
-                      final childName = child['full_name'] as String? ?? 'Child';
+                      final childName =
+                          child['full_name'] as String? ?? 'Child';
                       final status = child['status'] as String?;
 
                       return GestureDetector(
@@ -214,6 +220,14 @@ class _ParentDashboardState extends State<_ParentDashboard> {
                 style: AppTextStyles.caption,
               ),
 
+              const SizedBox(height: AppSpacing.xl),
+
+              Text('Calendar', style: AppTextStyles.heading2),
+
+              const SizedBox(height: AppSpacing.md),
+
+              const AppCalendar(),
+
               const SizedBox(height: AppSpacing.xxl),
             ],
           ),
@@ -223,10 +237,8 @@ class _ParentDashboardState extends State<_ParentDashboard> {
   }
 
   String _statusLabel(String? status) => switch (status) {
-        'checked_in' => 'In Class',
-        'checked_out' => 'Picked Up',
-        _ => 'Enrolled',
-      };
+    'checked_in' => 'In Class',
+    'checked_out' => 'Picked Up',
+    _ => 'Enrolled',
+  };
 }
-
-
