@@ -340,7 +340,7 @@ class _TeacherSettingsScreenState extends State<TeacherSettingsScreen> {
                         icon: Icons.description_outlined,
                         iconColor: AppColors.textMuted,
                         title: 'Privacy Policy',
-                        onTap: () {},
+                        onTap: () => context.push('/privacy-policy'),
                       ),
                       _settingsTile(
                         icon: Icons.info_outline_rounded,
