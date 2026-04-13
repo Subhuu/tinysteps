@@ -82,7 +82,7 @@ class _MyChildrenScreenState extends State<MyChildrenScreen> {
               physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.all(AppSpacing.lg),
               itemCount: children.length,
-              separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.md),
+              separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
               itemBuilder: (context, index) {
                 final child = children[index] as Map<String, dynamic>;
                 final childId = child['id'] as String;

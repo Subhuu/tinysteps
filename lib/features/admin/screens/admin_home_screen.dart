@@ -60,7 +60,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
 // Dashboard tab with Greeting Card + Live Stats
 // ─────────────────────────────────────────────────────────────────────────────
 class _AdminDashboardContent extends StatefulWidget {
-  const _AdminDashboardContent({super.key});
+  const _AdminDashboardContent();
 
   @override
   State<_AdminDashboardContent> createState() => _AdminDashboardContentState();

@@ -223,7 +223,7 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                   // Gender
                   DropdownButtonFormField<String>(
                     key: ValueKey(_selectedGender),
-                    value: _selectedGender,
+                    initialValue: _selectedGender,
                     decoration: _inputDecoration(label: 'Gender', icon: Icons.people_outline),
                     items: _genderOptions
                         .map((g) => DropdownMenuItem(value: g, child: Text(g)))

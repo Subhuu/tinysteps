@@ -145,7 +145,7 @@ class _ClassroomsScreenState extends State<ClassroomsScreen> {
             return ListView.separated(
               padding: const EdgeInsets.all(AppSpacing.lg),
               itemCount: classrooms.length,
-              separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.sm),
+              separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
               itemBuilder: (context, index) {
                 final c = classrooms[index] as Map<String, dynamic>;
                 return _ClassroomListItem(
