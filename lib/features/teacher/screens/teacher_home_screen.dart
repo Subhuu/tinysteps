@@ -233,7 +233,7 @@ class _TeacherDashboardTab extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Good day, $name 📋', style: AppTextStyles.heading1),
+            Text('Good day, $name', style: AppTextStyles.heading1),
             Text('Ready to take attendance?', style: AppTextStyles.bodyMuted),
             const SizedBox(height: AppSpacing.xl),
 
@@ -252,6 +252,8 @@ class _TeacherDashboardTab extends StatelessWidget {
                   ),
                 ),
               ),
+
+
             ),
 
             const SizedBox(height: AppSpacing.lg),
@@ -261,7 +263,16 @@ class _TeacherDashboardTab extends StatelessWidget {
 
             const SizedBox(height: AppSpacing.lg),
 
-            Text('Today\'s Attendance', style: AppTextStyles.heading2),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Today\'s Attendance', style: AppTextStyles.heading2),
+                Text(
+                  DateFormat('dd MMM').format(DateTime.now()),
+                  style: AppTextStyles.caption,
+                ),
+              ],
+            ),
             const SizedBox(height: AppSpacing.md),
 
             _TodayAttendanceSummary(),
