@@ -40,9 +40,15 @@ class _MyClassroomScreenState extends State<MyClassroomScreen> {
       appBar: AppBar(
         title: Text(
           'Classroom Settings',
+<<<<<<< HEAD
           style: context.textStyles.labelBold.copyWith(fontSize: 18),
         ),
         backgroundColor: context.colors.bgLight,
+=======
+          style: AppTextStyles.labelBold.copyWith(fontSize: 18),
+        ),
+        backgroundColor: AppColors.bgLight,
+>>>>>>> 51f57e1 (UI Polish Teacher side)
         elevation: 0,
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
@@ -51,8 +57,13 @@ class _MyClassroomScreenState extends State<MyClassroomScreen> {
 
           /// LOADING
           if (snapshot.connectionState == ConnectionState.waiting) {
+<<<<<<< HEAD
             return Center(
               child: CircularProgressIndicator(color: context.colors.primary),
+=======
+            return const Center(
+              child: CircularProgressIndicator(color: AppColors.primary),
+>>>>>>> 51f57e1 (UI Polish Teacher side)
             );
           }
 
@@ -64,7 +75,11 @@ class _MyClassroomScreenState extends State<MyClassroomScreen> {
                 child: Text(
                   'Something went wrong.\nPlease try again.',
                   textAlign: TextAlign.center,
+<<<<<<< HEAD
                   style: context.textStyles.bodyMuted,
+=======
+                  style: AppTextStyles.bodyMuted,
+>>>>>>> 51f57e1 (UI Polish Teacher side)
                 ),
               ),
             );
@@ -83,18 +98,30 @@ class _MyClassroomScreenState extends State<MyClassroomScreen> {
                     Icon(
                       Icons.meeting_room_outlined,
                       size: 72,
+<<<<<<< HEAD
                       color: context.colors.primary.withValues(alpha: 0.3),
+=======
+                      color: AppColors.primary.withValues(alpha: 0.3),
+>>>>>>> 51f57e1 (UI Polish Teacher side)
                     ),
                     const SizedBox(height: AppSpacing.md),
                     Text(
                       'No Classrooms Yet',
+<<<<<<< HEAD
                       style: context.textStyles.labelBold.copyWith(fontSize: 18),
+=======
+                      style: AppTextStyles.labelBold.copyWith(fontSize: 18),
+>>>>>>> 51f57e1 (UI Polish Teacher side)
                     ),
                     const SizedBox(height: 6),
                     Text(
                       'You will see your classrooms here\nonce assigned by admin.',
                       textAlign: TextAlign.center,
+<<<<<<< HEAD
                       style: context.textStyles.bodyMuted,
+=======
+                      style: AppTextStyles.bodyMuted,
+>>>>>>> 51f57e1 (UI Polish Teacher side)
                     ),
                   ],
                 ),
@@ -112,7 +139,11 @@ class _MyClassroomScreenState extends State<MyClassroomScreen> {
                 padding: const EdgeInsets.all(AppSpacing.lg),
                 child: Text(
                   'Your Classrooms',
+<<<<<<< HEAD
                   style: context.textStyles.labelBold.copyWith(fontSize: 18),
+=======
+                  style: AppTextStyles.labelBold.copyWith(fontSize: 18),
+>>>>>>> 51f57e1 (UI Polish Teacher side)
                 ),
               ),
 
@@ -122,7 +153,11 @@ class _MyClassroomScreenState extends State<MyClassroomScreen> {
                     horizontal: AppSpacing.lg,
                   ),
                   itemCount: classrooms.length,
+<<<<<<< HEAD
                   separatorBuilder: (context, index) =>
+=======
+                  separatorBuilder: (_, __) =>
+>>>>>>> 51f57e1 (UI Polish Teacher side)
                   const SizedBox(height: AppSpacing.lg),
                   itemBuilder: (context, index) {
                     final c = classrooms[index];
@@ -147,7 +182,11 @@ class _MyClassroomScreenState extends State<MyClassroomScreen> {
       decoration: BoxDecoration(
         color: context.colors.bgSurface,
         borderRadius: BorderRadius.circular(AppRadius.lg),
+<<<<<<< HEAD
         border: Border.all(color: context.colors.border),
+=======
+        border: Border.all(color: AppColors.border),
+>>>>>>> 51f57e1 (UI Polish Teacher side)
         boxShadow: AppShadows.card,
       ),
       child: Column(
@@ -157,21 +196,35 @@ class _MyClassroomScreenState extends State<MyClassroomScreen> {
           /// Header
           Container(
             padding: const EdgeInsets.all(AppSpacing.md),
+<<<<<<< HEAD
             decoration: BoxDecoration(
               color: context.colors.primaryLight,
+=======
+            decoration: const BoxDecoration(
+              color: AppColors.primaryLight,
+>>>>>>> 51f57e1 (UI Polish Teacher side)
               borderRadius: BorderRadius.vertical(
                 top: Radius.circular(AppRadius.lg),
               ),
             ),
             child: Row(
               children: [
+<<<<<<< HEAD
                 Icon(Icons.school_rounded,
                     color: context.colors.primary),
+=======
+                const Icon(Icons.school_rounded,
+                    color: AppColors.primary),
+>>>>>>> 51f57e1 (UI Polish Teacher side)
                 const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Text(
                     name,
+<<<<<<< HEAD
                     style: context.textStyles.labelBold,
+=======
+                    style: AppTextStyles.labelBold,
+>>>>>>> 51f57e1 (UI Polish Teacher side)
                   ),
                 ),
               ],

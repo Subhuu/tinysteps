@@ -235,8 +235,13 @@ class _TeacherDashboardTab extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+<<<<<<< HEAD
             Text('Good day, $name', style: context.textStyles.heading1),
             Text('Ready to take attendance?', style: context.textStyles.bodyMuted),
+=======
+            Text('Good day, $name', style: AppTextStyles.heading1),
+            Text('Ready to take attendance?', style: AppTextStyles.bodyMuted),
+>>>>>>> 51f57e1 (UI Polish Teacher side)
             const SizedBox(height: AppSpacing.xl),
 
             // Scan QR — primary CTA
@@ -268,10 +273,17 @@ class _TeacherDashboardTab extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+<<<<<<< HEAD
                 Text('Today\'s Attendance', style: context.textStyles.heading2),
                 Text(
                   DateFormat('dd MMM').format(DateTime.now()),
                   style: context.textStyles.caption,
+=======
+                Text('Today\'s Attendance', style: AppTextStyles.heading2),
+                Text(
+                  DateFormat('dd MMM').format(DateTime.now()),
+                  style: AppTextStyles.caption,
+>>>>>>> 51f57e1 (UI Polish Teacher side)
                 ),
               ],
             ),
