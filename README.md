@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🍼 TinySteps — DayCare+ App
+# 🍼 TinySteps — DayCare App
 
 **Smart Early Childhood Care Management System**  
 
