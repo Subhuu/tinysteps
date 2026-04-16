@@ -360,7 +360,7 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                         icon: Icons.info_outline_rounded,
                         iconColor: AppColors.textMuted,
                         title: 'About TinySteps',
-                        subtitle: 'v1.0.0 · Sunrise Edition',
+                        subtitle: 'Version info & credits',
                         onTap: () => context.push('/about'),
                       ),
 

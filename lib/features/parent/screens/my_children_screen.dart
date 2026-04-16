@@ -30,7 +30,7 @@ class _MyChildrenScreenState extends State<MyChildrenScreen> {
     // Also join classrooms table to get classroom name
     _childrenFuture = _supabase
         .from('children')
-        .select('id, full_name, date_of_birth, status, classrooms(name)')
+        .select('id, full_name, date_of_birth, gender, allergies, status, classrooms(name)')
         .eq('parent_id', uid)
         .order('full_name');
   }
@@ -88,6 +88,7 @@ class _MyChildrenScreenState extends State<MyChildrenScreen> {
                 final childId = child['id'] as String;
                 final name = child['full_name'] as String? ?? 'Child';
                 final dob = child['date_of_birth'] as String? ?? '';
+                final allergies = child['allergies'] as String? ?? '';
                 final classroom = child['classrooms'] as Map<String, dynamic>?;
                 final classroomName = classroom?['name'] as String? ?? 'Unassigned';
 
@@ -107,6 +108,7 @@ class _MyChildrenScreenState extends State<MyChildrenScreen> {
                   name: name,
                   dob: formattedDob,
                   classroom: classroomName,
+                  hasAllergies: allergies.isNotEmpty,
                 );
               },
             );
@@ -153,12 +155,14 @@ class _ChildCard extends StatelessWidget {
   final String name;
   final String dob;
   final String classroom;
+  final bool hasAllergies;
 
   const _ChildCard({
     required this.childId,
     required this.name,
     required this.dob,
     required this.classroom,
+    this.hasAllergies = false,
   });
 
   @override
@@ -188,7 +192,34 @@ class _ChildCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(name, style: AppTextStyles.labelBold),
+                  Row(
+                    children: [
+                      Flexible(child: Text(name, style: AppTextStyles.labelBold)),
+                      if (hasAllergies) ...[
+                        const SizedBox(width: AppSpacing.xs),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 5, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: AppColors.warning.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(AppRadius.full),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.warning_amber_rounded,
+                                  size: 10, color: AppColors.warning),
+                              const SizedBox(width: 3),
+                              Text('Allergy',
+                                  style: AppTextStyles.caption.copyWith(
+                                      color: AppColors.warning,
+                                      fontSize: 9)),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
                   const SizedBox(height: 2),
                   Text('DOB: $dob', style: AppTextStyles.bodyMuted),
                   Text(classroom, style: AppTextStyles.bodySmall),

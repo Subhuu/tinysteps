@@ -28,6 +28,12 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
   bool _isLoading = true;
   bool _isSaving = false;
   String _classroomName = 'Unassigned';
+  String _bloodGroup = '';
+  String _address = '';
+
+  static const _bloodGroupOptions = [
+    '', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-',
+  ];
 
   @override
   void initState() {
@@ -53,7 +59,7 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
           .from('children')
           .select(
               'full_name, date_of_birth, gender, allergies, medical_notes, '
-              'classrooms(name)')
+              'blood_group, address, classrooms(name)')
           .eq('id', widget.childId)
           .single();
 
@@ -72,6 +78,10 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
         _selectedGender = _normaliseGender(data['gender'] as String?);
         _allergiesController.text = data['allergies'] as String? ?? '';
         _medicalNotesController.text = data['medical_notes'] as String? ?? '';
+
+        final rawBg = data['blood_group'] as String? ?? '';
+        _bloodGroup = _bloodGroupOptions.contains(rawBg) ? rawBg : '';
+        _address = data['address'] as String? ?? '';
 
         final classroom = data['classrooms'] as Map<String, dynamic>?;
         _classroomName = classroom?['name'] as String? ?? 'Unassigned';
@@ -124,6 +134,8 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
         'medical_notes': _medicalNotesController.text.trim().isEmpty
             ? null
             : _medicalNotesController.text.trim(),
+        'blood_group': _bloodGroup.isEmpty ? null : _bloodGroup,
+        'address': _address.trim().isEmpty ? null : _address.trim(),
       }).eq('id', widget.childId);
 
       if (!mounted) return;
@@ -252,6 +264,36 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                       label: 'Medical Notes',
                       icon: Icons.medical_information_outlined,
                     ),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+
+                  // Blood Group
+                  DropdownButtonFormField<String>(
+                    value: _bloodGroup,
+                    decoration: _inputDecoration(
+                      label: 'Blood Group',
+                      icon: Icons.bloodtype_outlined,
+                    ),
+                    items: _bloodGroupOptions
+                        .map((bg) => DropdownMenuItem(
+                              value: bg,
+                              child: Text(bg.isEmpty ? 'Unknown / Not set' : bg),
+                            ))
+                        .toList(),
+                    onChanged: (val) => setState(() => _bloodGroup = val ?? ''),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+
+                  // Address
+                  TextFormField(
+                    initialValue: _address,
+                    style: AppTextStyles.bodyLarge,
+                    maxLines: 2,
+                    decoration: _inputDecoration(
+                      label: 'Home Address',
+                      icon: Icons.home_outlined,
+                    ),
+                    onChanged: (val) => _address = val,
                   ),
                   const SizedBox(height: AppSpacing.md),
 

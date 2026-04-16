@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:tinysteps/core/constants/app_theme.dart';
 
 /// Shared across all roles — dark mode, language, display preferences.
@@ -157,12 +158,18 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
             const SizedBox(height: AppSpacing.xxl),
 
             // Version info
-            Center(
-              child: Text(
-                'TinySteps v1.0.0 · Sunrise Edition',
-                style:
-                    AppTextStyles.caption.copyWith(color: AppColors.textMuted),
-              ),
+            FutureBuilder<PackageInfo>(
+              future: PackageInfo.fromPlatform(),
+              builder: (context, snapshot) {
+                final version = snapshot.data?.version ?? '...';
+                return Center(
+                  child: Text(
+                    'TinySteps v$version',
+                    style: AppTextStyles.caption
+                        .copyWith(color: AppColors.textMuted),
+                  ),
+                );
+              },
             ),
             const SizedBox(height: AppSpacing.sm),
           ],

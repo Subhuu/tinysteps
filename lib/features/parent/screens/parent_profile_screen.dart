@@ -14,12 +14,14 @@ class ParentProfileScreen extends StatefulWidget {
 
 class _ParentProfileScreenState extends State<ParentProfileScreen> {
   final _supabase = Supabase.instance.client;
+  bool _notificationsEnabled = true;
   bool _isLoading = true;
 
   // Profile data from DB
   String _fullName = '';
   String _email = '';
   String _phone = '';
+  String _address = '';
   String _emergencyContactName = '';
   String _emergencyContactPhone = '';
   String _relationship = '';
@@ -40,7 +42,7 @@ class _ParentProfileScreenState extends State<ParentProfileScreen> {
       final data = await _supabase
           .from('parents')
           .select(
-            'full_name, email, phone, emergency_contact_name, '
+            'full_name, email, phone, address, emergency_contact_name, '
             'emergency_contact_phone, relationship_to_child, '
             'children!children_parent_id_fkey(id)',
           )
@@ -52,9 +54,12 @@ class _ParentProfileScreenState extends State<ParentProfileScreen> {
         final childrenList = data['children'] as List<dynamic>? ?? [];
         setState(() {
           _fullName = data['full_name'] as String? ?? '';
-          _email = data['email'] as String? ??
-              _supabase.auth.currentUser?.email ?? '';
+          _email =
+              data['email'] as String? ??
+              _supabase.auth.currentUser?.email ??
+              '';
           _phone = data['phone'] as String? ?? '';
+          _address = data['address'] as String? ?? '';
           _emergencyContactName =
               data['emergency_contact_name'] as String? ?? '';
           _emergencyContactPhone =
@@ -77,6 +82,7 @@ class _ParentProfileScreenState extends State<ParentProfileScreen> {
   Future<void> _showEditProfileDialog() async {
     final nameCtrl = TextEditingController(text: _fullName);
     final phoneCtrl = TextEditingController(text: _phone);
+    final addressCtrl = TextEditingController(text: _address);
     final emgNameCtrl = TextEditingController(text: _emergencyContactName);
     final emgPhoneCtrl = TextEditingController(text: _emergencyContactPhone);
     final relCtrl = TextEditingController(text: _relationship);
@@ -87,7 +93,8 @@ class _ParentProfileScreenState extends State<ParentProfileScreen> {
         backgroundColor: AppColors.bgLight,
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.xl)),
+          borderRadius: BorderRadius.circular(AppRadius.xl),
+        ),
         title: Text('Edit Profile', style: AppTextStyles.heading3),
         content: SingleChildScrollView(
           child: Column(
@@ -95,48 +102,75 @@ class _ParentProfileScreenState extends State<ParentProfileScreen> {
             children: [
               _inputField(nameCtrl, 'Full Name', Icons.person_outline),
               const SizedBox(height: AppSpacing.sm),
-              _inputField(phoneCtrl, 'Phone', Icons.phone_outlined,
-                  keyboardType: TextInputType.phone),
+              _inputField(
+                phoneCtrl,
+                'Phone',
+                Icons.phone_outlined,
+                keyboardType: TextInputType.phone,
+              ),
               const SizedBox(height: AppSpacing.sm),
               _inputField(
-                  relCtrl, 'Relationship to Child', Icons.family_restroom),
+                relCtrl,
+                'Relationship to Child',
+                Icons.family_restroom,
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              _inputField(addressCtrl, 'Home Address', Icons.home_outlined),
               const SizedBox(height: AppSpacing.md),
               Align(
                 alignment: Alignment.centerLeft,
-                child: Text('Emergency Contact',
-                    style: AppTextStyles.labelBold
-                        .copyWith(color: AppColors.textMuted)),
+                child: Text(
+                  'Emergency Contact',
+                  style: AppTextStyles.labelBold.copyWith(
+                    color: AppColors.textMuted,
+                  ),
+                ),
               ),
               const SizedBox(height: AppSpacing.sm),
               _inputField(emgNameCtrl, 'Contact Name', Icons.person_outline),
               const SizedBox(height: AppSpacing.sm),
-              _inputField(emgPhoneCtrl, 'Contact Phone',
-                  Icons.contact_phone_outlined,
-                  keyboardType: TextInputType.phone),
+              _inputField(
+                emgPhoneCtrl,
+                'Contact Phone',
+                Icons.contact_phone_outlined,
+                keyboardType: TextInputType.phone,
+              ),
             ],
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancel',
-                style: AppTextStyles.labelBold.copyWith(color: AppColors.textMuted)),
+            child: Text(
+              'Cancel',
+              style: AppTextStyles.labelBold.copyWith(
+                color: AppColors.textMuted,
+              ),
+            ),
           ),
           FilledButton(
             style: FilledButton.styleFrom(
               backgroundColor: AppColors.primary,
-              shape: RoundedRectangleBorder(borderRadius: AppRadius.buttonRadius),
+              shape: RoundedRectangleBorder(
+                borderRadius: AppRadius.buttonRadius,
+              ),
             ),
             onPressed: () async {
               final uid = _supabase.auth.currentUser?.id;
               if (uid == null) return;
-              await _supabase.from('parents').update({
-                'full_name': nameCtrl.text.trim(),
-                'phone': phoneCtrl.text.trim(),
-                'relationship_to_child': relCtrl.text.trim(),
-                'emergency_contact_name': emgNameCtrl.text.trim(),
-                'emergency_contact_phone': emgPhoneCtrl.text.trim(),
-              }).eq('id', uid);
+              await _supabase
+                  .from('parents')
+                  .update({
+                    'full_name': nameCtrl.text.trim(),
+                    'phone': phoneCtrl.text.trim(),
+                    'address': addressCtrl.text.trim().isEmpty
+                        ? null
+                        : addressCtrl.text.trim(),
+                    'relationship_to_child': relCtrl.text.trim(),
+                    'emergency_contact_name': emgNameCtrl.text.trim(),
+                    'emergency_contact_phone': emgPhoneCtrl.text.trim(),
+                  })
+                  .eq('id', uid);
               if (ctx.mounted) Navigator.pop(ctx);
               await _loadProfile();
             },
@@ -147,8 +181,12 @@ class _ParentProfileScreenState extends State<ParentProfileScreen> {
     );
   }
 
-  Widget _inputField(TextEditingController ctrl, String label, IconData icon,
-      {TextInputType? keyboardType}) {
+  Widget _inputField(
+    TextEditingController ctrl,
+    String label,
+    IconData icon, {
+    TextInputType? keyboardType,
+  }) {
     return TextFormField(
       controller: ctrl,
       keyboardType: keyboardType,
@@ -172,21 +210,23 @@ class _ParentProfileScreenState extends State<ParentProfileScreen> {
           borderSide: const BorderSide(color: AppColors.primary, width: 2),
         ),
         contentPadding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.sm,
+        ),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final initial =
-        _fullName.isNotEmpty ? _fullName[0].toUpperCase() : 'P';
+    final initial = _fullName.isNotEmpty ? _fullName[0].toUpperCase() : 'P';
 
     return Scaffold(
       backgroundColor: AppColors.bgLight,
       body: _isLoading
           ? const Center(
-              child: CircularProgressIndicator(color: AppColors.primary))
+              child: CircularProgressIndicator(color: AppColors.primary),
+            )
           : CustomScrollView(
               slivers: [
                 // ── Coral → Peach Gradient Profile Header ──────────────
@@ -195,33 +235,48 @@ class _ParentProfileScreenState extends State<ParentProfileScreen> {
                     decoration: const BoxDecoration(
                       gradient: AppGradients.coralButton,
                       borderRadius: BorderRadius.vertical(
-                          bottom: Radius.circular(AppRadius.xl)),
+                        bottom: Radius.circular(AppRadius.xl),
+                      ),
                     ),
                     child: SafeArea(
                       bottom: false,
                       child: Padding(
                         padding: const EdgeInsets.fromLTRB(
-                            AppSpacing.lg, AppSpacing.md, AppSpacing.lg, AppSpacing.xl),
+                          AppSpacing.lg,
+                          AppSpacing.md,
+                          AppSpacing.lg,
+                          AppSpacing.xl,
+                        ),
                         child: Column(
                           children: [
                             Row(
                               children: [
-                                Text('My Account',
-                                    style: AppTextStyles.heading2
-                                        .copyWith(color: AppColors.white)),
+                                Text(
+                                  'My Account',
+                                  style: AppTextStyles.heading2.copyWith(
+                                    color: AppColors.white,
+                                  ),
+                                ),
                                 const Spacer(),
                                 IconButton(
                                   onPressed: _showEditProfileDialog,
                                   icon: Container(
-                                    padding: const EdgeInsets.all(AppSpacing.xs),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.white
-                                          .withValues(alpha: 0.25),
-                                      borderRadius:
-                                          BorderRadius.circular(AppRadius.sm),
+                                    padding: const EdgeInsets.all(
+                                      AppSpacing.xs,
                                     ),
-                                    child: const Icon(Icons.edit_outlined,
-                                        color: AppColors.white, size: 20),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.white.withValues(
+                                        alpha: 0.25,
+                                      ),
+                                      borderRadius: BorderRadius.circular(
+                                        AppRadius.sm,
+                                      ),
+                                    ),
+                                    child: const Icon(
+                                      Icons.edit_outlined,
+                                      color: AppColors.white,
+                                      size: 20,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -233,38 +288,46 @@ class _ParentProfileScreenState extends State<ParentProfileScreen> {
                                   width: 72,
                                   height: 72,
                                   decoration: BoxDecoration(
-                                    color: AppColors.white
-                                        .withValues(alpha: 0.25),
+                                    color: AppColors.white.withValues(
+                                      alpha: 0.25,
+                                    ),
                                     shape: BoxShape.circle,
                                     border: Border.all(
-                                        color: AppColors.white, width: 2),
+                                      color: AppColors.white,
+                                      width: 2,
+                                    ),
                                   ),
                                   child: Center(
                                     child: Text(
                                       initial,
-                                      style: AppTextStyles.heading1
-                                          .copyWith(color: AppColors.white),
+                                      style: AppTextStyles.heading1.copyWith(
+                                        color: AppColors.white,
+                                      ),
                                     ),
                                   ),
                                 ),
                                 const SizedBox(width: AppSpacing.md),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         _fullName.isNotEmpty
                                             ? _fullName
                                             : 'Parent',
-                                        style: AppTextStyles.heading3
-                                            .copyWith(color: AppColors.white),
+                                        style: AppTextStyles.heading3.copyWith(
+                                          color: AppColors.white,
+                                        ),
                                       ),
                                       const SizedBox(height: 2),
                                       Text(
                                         _email,
                                         style: AppTextStyles.bodySmall.copyWith(
-                                            color: AppColors.white
-                                                .withValues(alpha: 0.85)),
+                                          color: AppColors.white.withValues(
+                                            alpha: 0.85,
+                                          ),
+                                        ),
                                       ),
                                       if (_relationship.isNotEmpty) ...[
                                         const SizedBox(height: AppSpacing.xs),
@@ -280,23 +343,29 @@ class _ParentProfileScreenState extends State<ParentProfileScreen> {
                             Container(
                               width: double.infinity,
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: AppSpacing.md,
-                                  vertical: AppSpacing.sm),
+                                horizontal: AppSpacing.md,
+                                vertical: AppSpacing.sm,
+                              ),
                               decoration: BoxDecoration(
                                 color: AppColors.white.withValues(alpha: 0.15),
-                                borderRadius:
-                                    BorderRadius.circular(AppRadius.md),
+                                borderRadius: BorderRadius.circular(
+                                  AppRadius.md,
+                                ),
                               ),
                               child: Row(
                                 children: [
-                                  const Icon(Icons.child_care_rounded,
-                                      color: AppColors.white, size: 18),
+                                  const Icon(
+                                    Icons.child_care_rounded,
+                                    color: AppColors.white,
+                                    size: 18,
+                                  ),
                                   const SizedBox(width: AppSpacing.sm),
                                   Text(
                                     '$_childrenCount enrolled '
                                     '${_childrenCount == 1 ? 'child' : 'children'}',
-                                    style: AppTextStyles.labelBold
-                                        .copyWith(color: AppColors.white),
+                                    style: AppTextStyles.labelBold.copyWith(
+                                      color: AppColors.white,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -314,24 +383,46 @@ class _ParentProfileScreenState extends State<ParentProfileScreen> {
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([
                       // Contact info card
-                      _infoCard(children: [
-                        if (_phone.isNotEmpty) ...[
-                          _infoRow(Icons.phone_outlined, 'Phone', _phone),
-                          const Divider(
-                              height: AppSpacing.lg, color: AppColors.border),
+                      _infoCard(
+                        children: [
+                          if (_phone.isNotEmpty) ...[
+                            _infoRow(Icons.phone_outlined, 'Phone', _phone),
+                            const Divider(
+                              height: AppSpacing.lg,
+                              color: AppColors.border,
+                            ),
+                          ],
+                          if (_address.isNotEmpty) ...[
+                            _infoRow(Icons.home_outlined, 'Address', _address),
+                            const Divider(
+                              height: AppSpacing.lg,
+                              color: AppColors.border,
+                            ),
+                          ],
+                          if (_emergencyContactName.isNotEmpty) ...[
+                            _infoRow(
+                              Icons.person_outline,
+                              'Emergency Contact',
+                              _emergencyContactName,
+                            ),
+                            const Divider(
+                              height: AppSpacing.lg,
+                              color: AppColors.border,
+                            ),
+                            _infoRow(
+                              Icons.contact_phone_outlined,
+                              'Emergency Phone',
+                              _emergencyContactPhone,
+                            ),
+                          ],
+                          if (_phone.isEmpty && _emergencyContactName.isEmpty)
+                            _infoRow(
+                              Icons.info_outline,
+                              'Profile',
+                              'Tap edit to update your details',
+                            ),
                         ],
-                        if (_emergencyContactName.isNotEmpty) ...[
-                          _infoRow(Icons.person_outline, 'Emergency Contact',
-                              _emergencyContactName),
-                          const Divider(
-                              height: AppSpacing.lg, color: AppColors.border),
-                          _infoRow(Icons.contact_phone_outlined,
-                              'Emergency Phone', _emergencyContactPhone),
-                        ],
-                        if (_phone.isEmpty && _emergencyContactName.isEmpty)
-                          _infoRow(Icons.info_outline, 'Profile',
-                              'Tap edit to update your details'),
-                      ]),
+                      ),
                       const SizedBox(height: AppSpacing.lg),
 
                       // ── Preferences ──────────────────────────────────
@@ -408,12 +499,13 @@ class _ParentProfileScreenState extends State<ParentProfileScreen> {
   Widget _roleBadge(String label) {
     return Container(
       padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.sm, vertical: 3),
+        horizontal: AppSpacing.sm,
+        vertical: 3,
+      ),
       decoration: BoxDecoration(
         color: AppColors.white.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(AppRadius.full),
-        border:
-            Border.all(color: AppColors.white.withValues(alpha: 0.4)),
+        border: Border.all(color: AppColors.white.withValues(alpha: 0.4)),
       ),
       child: Text(
         label,
@@ -466,8 +558,7 @@ class _ParentProfileScreenState extends State<ParentProfileScreen> {
 
   Widget _sectionLabel(String label) {
     return Padding(
-      padding: const EdgeInsets.only(
-          bottom: AppSpacing.sm, top: AppSpacing.xs),
+      padding: const EdgeInsets.only(bottom: AppSpacing.sm, top: AppSpacing.xs),
       child: Text(
         label.toUpperCase(),
         style: AppTextStyles.caption.copyWith(
@@ -497,7 +588,8 @@ class _ParentProfileScreenState extends State<ParentProfileScreen> {
       ),
       child: ListTile(
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.lg)),
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+        ),
         leading: Container(
           padding: const EdgeInsets.all(AppSpacing.sm),
           decoration: BoxDecoration(
@@ -508,13 +600,20 @@ class _ParentProfileScreenState extends State<ParentProfileScreen> {
         ),
         title: Text(title, style: AppTextStyles.bodyLarge),
         subtitle: subtitle != null
-            ? Text(subtitle,
-                style: AppTextStyles.bodySmall
-                    .copyWith(color: AppColors.textMuted))
+            ? Text(
+                subtitle,
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: AppColors.textMuted,
+                ),
+              )
             : null,
-        trailing: trailing ??
-            const Icon(Icons.chevron_right_rounded,
-                color: AppColors.textMuted, size: 20),
+        trailing:
+            trailing ??
+            const Icon(
+              Icons.chevron_right_rounded,
+              color: AppColors.textMuted,
+              size: 20,
+            ),
         onTap: onTap,
       ),
     );
@@ -534,7 +633,8 @@ class _ParentProfileScreenState extends State<ParentProfileScreen> {
       ),
       child: ListTile(
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.lg)),
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+        ),
         leading: Container(
           padding: const EdgeInsets.all(AppSpacing.sm),
           decoration: BoxDecoration(
@@ -543,10 +643,15 @@ class _ParentProfileScreenState extends State<ParentProfileScreen> {
           ),
           child: Icon(icon, color: AppColors.danger, size: 20),
         ),
-        title: Text(title,
-            style: AppTextStyles.bodyLarge.copyWith(color: AppColors.danger)),
-        trailing: const Icon(Icons.chevron_right_rounded,
-            color: AppColors.danger, size: 20),
+        title: Text(
+          title,
+          style: AppTextStyles.bodyLarge.copyWith(color: AppColors.danger),
+        ),
+        trailing: const Icon(
+          Icons.chevron_right_rounded,
+          color: AppColors.danger,
+          size: 20,
+        ),
         onTap: onTap,
       ),
     );
