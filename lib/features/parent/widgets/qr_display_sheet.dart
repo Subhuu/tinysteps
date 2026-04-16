@@ -31,11 +31,7 @@ int _currentWindow([DateTime? at]) {
 /// Returns Unix seconds when the current window expires (start of next window).
 int _windowExpiry([DateTime? at]) => (_currentWindow(at) + 1) * 300;
 
-/// Seconds remaining in the current 5-minute window.
-int _secondsRemaining([DateTime? at]) {
-  final now = (at ?? DateTime.now()).millisecondsSinceEpoch ~/ 1000;
-  return _windowExpiry(at) - now;
-}
+
 
 /// HMAC-SHA256 token for this childId + window.
 /// Both parent (generator) and teacher (validator) compute the same value.
