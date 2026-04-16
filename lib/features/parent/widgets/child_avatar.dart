@@ -34,9 +34,16 @@ class ChildAvatar extends StatelessWidget {
           ),
         ),
         const SizedBox(height: AppSpacing.sm),
-        Text(name, style: AppTextStyles.labelBold),
+        Text(
+          name, 
+          style: AppTextStyles.labelBold,
+          textAlign: TextAlign.center,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
         Text(
           status,
+          textAlign: TextAlign.center,
           style: AppTextStyles.bodySmall.copyWith(
             fontSize: 10,
             color: (status == 'Checked In' || status == 'In Class')

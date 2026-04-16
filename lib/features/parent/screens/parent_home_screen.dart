@@ -195,17 +195,20 @@ class _ParentDashboardState extends State<_ParentDashboard> {
                           child['full_name'] as String? ?? 'Child';
                       final status = child['status'] as String?;
 
-                      return GestureDetector(
-                        onTap: () => showQRDisplaySheet(
-                          context,
-                          childId: childId,
-                          childName: childName,
-                        ),
-                        child: ChildAvatar(
-                          name: childName,
-                          status: _statusLabel(status),
-                          color: _statusColor(status),
-                          size: 60,
+                      return SizedBox(
+                        width: 85,
+                        child: GestureDetector(
+                          onTap: () => showQRDisplaySheet(
+                            context,
+                            childId: childId,
+                            childName: childName,
+                          ),
+                          child: ChildAvatar(
+                            name: childName,
+                            status: _statusLabel(status),
+                            color: _statusColor(status),
+                            size: 60,
+                          ),
                         ),
                       );
                     }).toList(),
