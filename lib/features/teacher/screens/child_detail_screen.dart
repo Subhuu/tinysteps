@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'package:tinysteps/core/constants/app_theme.dart';
 
@@ -140,8 +141,11 @@ class _ChildDetailScreenState extends State<ChildDetailScreen> {
           ),
           // Call button
           ElevatedButton.icon(
-            onPressed: () {
-              // TODO: wire up url_launcher later
+            onPressed: () async {
+              final Uri url = Uri(scheme: 'tel', path: '+919876543210');
+              if (await canLaunchUrl(url)) {
+                await launchUrl(url);
+              }
             },
             icon: const Icon(Icons.phone_rounded, size: 16),
             label: const Text('Call'),

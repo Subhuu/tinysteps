@@ -121,7 +121,7 @@ class _MyClassroomScreenState extends State<MyClassroomScreen> {
                     horizontal: AppSpacing.lg,
                   ),
                   itemCount: classrooms.length,
-                  separatorBuilder: (_, __) =>
+                  separatorBuilder: (context, index) =>
                   const SizedBox(height: AppSpacing.lg),
                   itemBuilder: (context, index) {
                     final c = classrooms[index];

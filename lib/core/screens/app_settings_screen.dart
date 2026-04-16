@@ -72,7 +72,9 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                 activeTrackColor: AppColors.primaryLight,
                 value: _darkMode,
                 onChanged: (_) {
-                  // TODO: Implement theme switching via Riverpod ThemeProvider
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Dark mode coming soon!')),
+                  );
                 },
               ),
               const Divider(height: 1, color: AppColors.border),

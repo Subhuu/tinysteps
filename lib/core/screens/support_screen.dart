@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tinysteps/core/constants/app_theme.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 /// Shared across all roles — Help Center, call daycare, email, FAQ.
 /// Navigate here via context.push('/support') from any settings screen.
 class SupportScreen extends StatelessWidget {
@@ -34,8 +35,11 @@ class SupportScreen extends StatelessWidget {
               title: 'Call Daycare',
               subtitle: '+91 98765 43210',
               color: AppColors.success,
-              onTap: () {
-                // TODO: launch phone URL using url_launcher
+              onTap: () async {
+                final Uri url = Uri(scheme: 'tel', path: '+919876543210');
+                if (await canLaunchUrl(url)) {
+                  await launchUrl(url);
+                }
               },
             ),
             const SizedBox(height: AppSpacing.md),
@@ -45,8 +49,11 @@ class SupportScreen extends StatelessWidget {
               title: 'Email Support',
               subtitle: 'support@tinysteps.in',
               color: AppColors.primary,
-              onTap: () {
-                // TODO: launch mailto URL using url_launcher
+              onTap: () async {
+                final Uri url = Uri(scheme: 'mailto', path: 'support@tinysteps.in');
+                if (await canLaunchUrl(url)) {
+                  await launchUrl(url);
+                }
               },
             ),
             const SizedBox(height: AppSpacing.md),
@@ -56,8 +63,11 @@ class SupportScreen extends StatelessWidget {
               title: 'WhatsApp',
               subtitle: 'Message us on WhatsApp',
               color: AppColors.success,
-              onTap: () {
-                // TODO: launch whatsapp link
+              onTap: () async {
+                final Uri url = Uri.parse('https://wa.me/919876543210');
+                if (await canLaunchUrl(url)) {
+                  await launchUrl(url, mode: LaunchMode.externalApplication);
+                }
               },
             ),
             const SizedBox(height: AppSpacing.md),

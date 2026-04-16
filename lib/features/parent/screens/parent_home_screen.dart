@@ -11,7 +11,6 @@ import 'package:tinysteps/features/parent/screens/attendance_history_screen.dart
 import 'package:tinysteps/features/parent/widgets/child_avatar.dart';
 import 'package:tinysteps/features/parent/widgets/empty_state.dart';
 import 'package:tinysteps/features/parent/widgets/qr_display_sheet.dart';
-import 'package:tinysteps/core/widgets/app_calendar.dart';
 
 /// Parent Home Screen — shell with bottom navigation
 class ParentHomeScreen extends StatefulWidget {
