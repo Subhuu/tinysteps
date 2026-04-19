@@ -66,26 +66,37 @@ class _QRDisplaySheet extends StatefulWidget {
 
 class _QRDisplaySheetState extends State<_QRDisplaySheet> {
   late Timer _timer;
-  int _secondsLeft = 300; // 5 minutes
+  int _secondsLeft = 0;
   late String _qrPayload;
+  late int _currentWin;
 
   @override
   void initState() {
     super.initState();
-
+    _currentWin = _currentWindow();
     _generateQR();
+    _updateTimer();
 
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (!mounted) return;
+      _updateTimer();
+    });
+  }
 
-      setState(() {
-        _secondsLeft--;
+  void _updateTimer() {
+    final now = DateTime.now();
+    final win = _currentWindow(now);
 
-        if (_secondsLeft <= 0) {
-          _generateQR(); // new QR
-          _secondsLeft = 300; // reset timer
-        }
-      });
+    if (win != _currentWin) {
+      _currentWin = win;
+      _generateQR();
+    }
+
+    final nowEpoch = now.millisecondsSinceEpoch ~/ 1000;
+    final expiry = _windowExpiry(now);
+
+    setState(() {
+      _secondsLeft = expiry - nowEpoch;
     });
   }
 
