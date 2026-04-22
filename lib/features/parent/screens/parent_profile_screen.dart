@@ -3,6 +3,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tinysteps/core/constants/app_theme.dart';
 import 'package:tinysteps/core/widgets/logout_dialog.dart';
+import 'package:tinysteps/features/auth/screens/change_password_screen.dart';
+
 
 /// Parent Settings Screen — profile + children summary + account
 class ParentProfileScreen extends StatefulWidget {
@@ -477,8 +479,14 @@ class _ParentProfileScreenState extends State<ParentProfileScreen> {
                         icon: Icons.lock_outline_rounded,
                         iconColor: AppColors.warning,
                         title: 'Change Password',
-                        onTap: () {},
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ChangePasswordScreen(),
+                          ),
+                        ),
                       ),
+
                       _dangerTile(
                         icon: Icons.logout_rounded,
                         title: 'Sign Out',

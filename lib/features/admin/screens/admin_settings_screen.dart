@@ -3,7 +3,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tinysteps/core/constants/app_theme.dart';
 import 'package:tinysteps/core/widgets/logout_dialog.dart';
+import 'package:tinysteps/features/auth/screens/change_password_screen.dart';
 import 'package:tinysteps/features/admin/screens/users_screen.dart';
+
 
 class AdminSettingsScreen extends StatefulWidget {
   const AdminSettingsScreen({super.key});
@@ -427,8 +429,14 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                         icon: Icons.lock_outline_rounded,
                         iconColor: AppColors.warning,
                         title: 'Change Password',
-                        onTap: () {},
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ChangePasswordScreen(),
+                          ),
+                        ),
                       ),
+
                       _dangerTile(
                         icon: Icons.logout_rounded,
                         title: 'Sign Out',
