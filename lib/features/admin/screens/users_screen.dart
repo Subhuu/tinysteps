@@ -381,6 +381,23 @@ class _UsersScreenState extends State<UsersScreen>
                   Text('No classrooms available', style: AppTextStyles.bodyMuted)
                 else
                   DropdownButtonFormField<String>(
+                    dropdownColor: AppColors.bgSurface,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: AppColors.bgSurface,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.md,
+                        vertical: AppSpacing.sm,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: AppRadius.inputRadius,
+                        borderSide: const BorderSide(color: AppColors.border),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: AppRadius.inputRadius,
+                        borderSide: const BorderSide(color: AppColors.border),
+                      ),
+                    ),
                     hint: Text('Select classroom', style: AppTextStyles.bodyMuted),
                     initialValue: selectedClassroomId,
                     items: classrooms.map((c) {
