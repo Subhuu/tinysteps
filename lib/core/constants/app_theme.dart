@@ -362,26 +362,36 @@ ThemeData sunriseLightTheme() {
       fillColor: AppColors.bgSurface,
       contentPadding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.md,
-        vertical: AppSpacing.md,
+        vertical: AppSpacing.lg, // Increased vertical padding
       ),
       border: OutlineInputBorder(
         borderRadius: AppRadius.inputRadius,
         borderSide: const BorderSide(color: AppColors.border),
+        gapPadding: 8,
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: AppRadius.inputRadius,
         borderSide: const BorderSide(color: AppColors.border),
+        gapPadding: 8,
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: AppRadius.inputRadius,
-        borderSide: const BorderSide(color: AppColors.primary, width: 2),
+        borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+        gapPadding: 8,
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: AppRadius.inputRadius,
-        borderSide: const BorderSide(color: AppColors.danger, width: 1.5),
+        borderSide: const BorderSide(color: AppColors.danger, width: 1),
+        gapPadding: 8,
       ),
       hintStyle: AppTextStyles.bodyMuted,
-      labelStyle: AppTextStyles.labelMedium,
+      labelStyle: AppTextStyles.labelMedium.copyWith(color: AppColors.textMuted),
+      floatingLabelStyle: AppTextStyles.labelMedium.copyWith(
+        color: AppColors.primary,
+        fontWeight: FontWeight.w700,
+        height: 1.0, // Explicit height to prevent clipping
+      ),
+      floatingLabelBehavior: FloatingLabelBehavior.auto,
     ),
     chipTheme: ChipThemeData(
       backgroundColor: AppColors.primaryLight,
@@ -514,21 +524,36 @@ ThemeData sunriseDarkTheme() {
       fillColor: AppColors.bgDarkMuted,
       contentPadding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.md,
-        vertical: AppSpacing.md,
+        vertical: AppSpacing.lg, // Increased vertical padding
       ),
       border: OutlineInputBorder(
         borderRadius: AppRadius.inputRadius,
         borderSide: const BorderSide(color: Color(0xFF3A2A2A)),
+        gapPadding: 8,
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: AppRadius.inputRadius,
         borderSide: const BorderSide(color: Color(0xFF3A2A2A)),
+        gapPadding: 8,
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: AppRadius.inputRadius,
-        borderSide: const BorderSide(color: primaryDark, width: 2),
+        borderSide: const BorderSide(color: primaryDark, width: 1.5),
+        gapPadding: 8,
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: AppRadius.inputRadius,
+        borderSide: const BorderSide(color: AppColors.danger, width: 1),
+        gapPadding: 8,
       ),
       hintStyle: AppTextStyles.bodyMuted.copyWith(color: const Color(0xFF6A5A5A)),
+      labelStyle: AppTextStyles.labelMedium.copyWith(color: const Color(0xFF9E8484)),
+      floatingLabelStyle: AppTextStyles.labelMedium.copyWith(
+        color: primaryDark,
+        fontWeight: FontWeight.w700,
+        height: 1.0, // Explicit height to prevent clipping
+      ),
+      floatingLabelBehavior: FloatingLabelBehavior.auto,
     ),
     dividerTheme: const DividerThemeData(
       color: Color(0xFF2A2020),

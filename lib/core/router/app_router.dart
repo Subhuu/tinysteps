@@ -15,6 +15,7 @@ import 'package:tinysteps/core/screens/notifications_screen.dart';
 import 'package:tinysteps/core/screens/support_screen.dart';
 import 'package:tinysteps/core/screens/app_settings_screen.dart';
 import 'package:tinysteps/core/screens/about_app_screen.dart';
+import 'package:tinysteps/core/screens/change_password_screen.dart';
 import 'package:tinysteps/features/parent/screens/attendance_history_screen.dart';
 import 'package:tinysteps/features/teacher/screens/teacher_home_screen.dart';
 import 'package:tinysteps/features/teacher/screens/attendance_screen.dart';
@@ -103,6 +104,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (c, s) => const AppSettingsScreen(),
       ),
       GoRoute(path: '/about', builder: (c, s) => const AboutAppScreen()),
+      GoRoute(
+        path: '/change-password',
+        builder: (c, s) => const ChangePasswordScreen(),
+      ),
 
       // ✅ ADDED THIS 👇
       GoRoute(

@@ -14,7 +14,6 @@ class ParentProfileScreen extends StatefulWidget {
 
 class _ParentProfileScreenState extends State<ParentProfileScreen> {
   final _supabase = Supabase.instance.client;
-  bool _notificationsEnabled = true;
   bool _isLoading = true;
 
   // Profile data from DB
@@ -477,7 +476,7 @@ class _ParentProfileScreenState extends State<ParentProfileScreen> {
                         icon: Icons.lock_outline_rounded,
                         iconColor: AppColors.warning,
                         title: 'Change Password',
-                        onTap: () {},
+                        onTap: () => context.push('/change-password'),
                       ),
                       _dangerTile(
                         icon: Icons.logout_rounded,

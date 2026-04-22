@@ -356,7 +356,7 @@ class _TeacherSettingsScreenState extends State<TeacherSettingsScreen> {
                         icon: Icons.lock_outline_rounded,
                         iconColor: AppColors.warning,
                         title: 'Change Password',
-                        onTap: () {},
+                        onTap: () => context.push('/change-password'),
                       ),
                       _dangerTile(
                         icon: Icons.logout_rounded,

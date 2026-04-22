@@ -269,7 +269,7 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
 
                   // Blood Group
                   DropdownButtonFormField<String>(
-                    value: _bloodGroup,
+                    initialValue: _bloodGroup,
                     decoration: _inputDecoration(
                       label: 'Blood Group',
                       icon: Icons.bloodtype_outlined,
