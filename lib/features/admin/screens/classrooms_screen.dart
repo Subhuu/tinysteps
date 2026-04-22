@@ -102,6 +102,8 @@ class _ClassroomsScreenState extends State<ClassroomsScreen> {
       backgroundColor: AppColors.bgLight,
       appBar: AppBar(
         title: Text('Classrooms', style: AppTextStyles.heading2),
+        backgroundColor: AppColors.bgLight,
+        elevation: 0,
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
@@ -369,6 +371,7 @@ class _UpsertClassroomDialogState extends State<_UpsertClassroomDialog> {
             TextField(controller: _capCtrl, decoration: const InputDecoration(labelText: 'Max Capacity'), keyboardType: TextInputType.number),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
+              dropdownColor: AppColors.bgSurface,
               initialValue: _selectedTeacherId,
               hint: const Text('Assign Teacher'),
               items: [
@@ -427,6 +430,7 @@ class _ReferralCodesSheetState extends State<_ReferralCodesSheet> {
             mainAxisSize: MainAxisSize.min,
             children: [
               DropdownButtonFormField<String>(
+                dropdownColor: AppColors.bgSurface,
                 initialValue: selectedRole,
                 items: ['parent', 'teacher', 'admin'].map((r) => DropdownMenuItem(value: r, child: Text(r))).toList(),
                 onChanged: (v) => setS(() => selectedRole = v!),
