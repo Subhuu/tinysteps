@@ -55,26 +55,25 @@ class _AddChildScreenState extends State<AddChildScreen> {
 
     try {
       // Generate a UUID for qr_code upfront
-      final qrCode = DateTime.now().microsecondsSinceEpoch.toRadixString(36) +
+      final qrCode =
+          DateTime.now().microsecondsSinceEpoch.toRadixString(36) +
           _nameController.text.trim().hashCode.toRadixString(36);
 
       // Insert child row with qr_code in one atomic operation
-      await _supabase
-          .from('children')
-          .insert({
-            'full_name': _nameController.text.trim(),
-            'date_of_birth': _selectedDob!.toIso8601String().substring(0, 10),
-            'gender': _selectedGender,
-            'allergies': _allergiesController.text.trim().isEmpty
-                ? null
-                : _allergiesController.text.trim(),
-            'medical_notes': _medicalNotesController.text.trim().isEmpty
-                ? null
-                : _medicalNotesController.text.trim(),
-            'parent_id': uid,
-            'status': 'active',
-            'qr_code': qrCode,
-          });
+      await _supabase.from('children').insert({
+        'full_name': _nameController.text.trim(),
+        'date_of_birth': _selectedDob!.toIso8601String().substring(0, 10),
+        'gender': _selectedGender,
+        'allergies': _allergiesController.text.trim().isEmpty
+            ? null
+            : _allergiesController.text.trim(),
+        'medical_notes': _medicalNotesController.text.trim().isEmpty
+            ? null
+            : _medicalNotesController.text.trim(),
+        'parent_id': uid,
+        'status': 'active',
+        'qr_code': qrCode,
+      });
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -86,7 +85,10 @@ class _AddChildScreenState extends State<AddChildScreen> {
           ),
         ),
       );
-      Navigator.pop(context, true); // true = child was added, parent should refresh
+      Navigator.pop(
+        context,
+        true,
+      ); // true = child was added, parent should refresh
     } on PostgrestException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -153,8 +155,9 @@ class _AddChildScreenState extends State<AddChildScreen> {
                 controller: _nameController,
                 style: AppTextStyles.bodyLarge,
                 textCapitalization: TextCapitalization.words,
-                validator: (val) =>
-                    (val == null || val.trim().isEmpty) ? 'Full name is required' : null,
+                validator: (val) => (val == null || val.trim().isEmpty)
+                    ? 'Full name is required'
+                    : null,
                 decoration: _inputDecoration(
                   label: 'Full Name',
                   icon: Icons.person_outline,
@@ -189,6 +192,10 @@ class _AddChildScreenState extends State<AddChildScreen> {
                 decoration: _inputDecoration(
                   label: 'Gender',
                   icon: Icons.people_outline,
+                ),
+                dropdownColor: AppColors.bgSurface,
+                style: AppTextStyles.bodyLarge.copyWith(
+                  color: AppColors.textDark,
                 ),
                 items: ['Male', 'Female', 'Other']
                     .map((g) => DropdownMenuItem(value: g, child: Text(g)))
@@ -234,11 +241,15 @@ class _AddChildScreenState extends State<AddChildScreen> {
                   onPressed: _isLoading ? null : _submit,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
-                    disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.6),
+                    disabledBackgroundColor: AppColors.primary.withValues(
+                      alpha: 0.6,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: AppRadius.buttonRadius,
                     ),
-                    padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: AppSpacing.md,
+                    ),
                   ),
                   child: _isLoading
                       ? const SizedBox(
@@ -259,7 +270,10 @@ class _AddChildScreenState extends State<AddChildScreen> {
     );
   }
 
-  InputDecoration _inputDecoration({required String label, required IconData icon}) {
+  InputDecoration _inputDecoration({
+    required String label,
+    required IconData icon,
+  }) {
     return InputDecoration(
       labelText: label,
       labelStyle: AppTextStyles.labelMedium,
