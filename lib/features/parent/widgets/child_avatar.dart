@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tinysteps/core/constants/app_theme.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 /// A circular avatar for displaying a child's initials and status
 class ChildAvatar extends StatelessWidget {
@@ -36,7 +37,7 @@ class ChildAvatar extends StatelessWidget {
         const SizedBox(height: AppSpacing.sm),
         Text(
           name, 
-          style: AppTextStyles.labelBold,
+          style: context.textStyles.labelBold,
           textAlign: TextAlign.center,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
@@ -44,13 +45,13 @@ class ChildAvatar extends StatelessWidget {
         Text(
           status,
           textAlign: TextAlign.center,
-          style: AppTextStyles.bodySmall.copyWith(
+          style: context.textStyles.bodySmall.copyWith(
             fontSize: 10,
             color: (status == 'Checked In' || status == 'In Class')
-                ? AppColors.success
+                ? context.colors.success
                 : status == 'Checked Out'
-                    ? AppColors.danger
-                    : AppColors.textMuted,
+                    ? context.colors.danger
+                    : context.colors.textMuted,
           ),
         ),
       ],

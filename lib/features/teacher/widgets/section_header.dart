@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tinysteps/core/constants/app_theme.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 class SectionHeader extends StatelessWidget {
   final String title;
@@ -20,15 +21,15 @@ class SectionHeader extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(title, style: AppTextStyles.heading3),
+          Text(title, style: context.textStyles.heading3),
 
           if (actionText != null)
             GestureDetector(
               onTap: onTap,
               child: Text(
                 actionText!,
-                style: AppTextStyles.labelBold.copyWith(
-                  color: AppColors.primary,
+                style: context.textStyles.labelBold.copyWith(
+                  color: context.colors.primary,
                 ),
               ),
             ),

@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 import 'package:tinysteps/core/constants/app_theme.dart';
 import 'package:tinysteps/features/auth/widgets/auth_widgets.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -114,7 +116,7 @@ class _LoginScreenState extends State<LoginScreen>
           icon: Icons.block_rounded,
           message:
               'Your account has been blocked. Please contact the center admin.',
-          color: AppColors.danger,
+          color: context.colors.danger,
         );
       } else {
         // Wrong password, unregistered email, invalid_credentials, etc.
@@ -127,7 +129,7 @@ class _LoginScreenState extends State<LoginScreen>
       _showBanner(
         icon: Icons.wifi_off_rounded,
         message: 'Connection error. Check your internet and try again.',
-        color: AppColors.danger,
+        color: context.colors.danger,
       );
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -143,19 +145,19 @@ class _LoginScreenState extends State<LoginScreen>
         final cs = Theme.of(ctx).colorScheme;
         final isDark = Theme.of(ctx).brightness == Brightness.dark;
         return AlertDialog(
-          backgroundColor: isDark ? AppColors.bgDarkSurface : AppColors.bgSurface,
+          backgroundColor: isDark ? context.colors.bgDarkSurface : context.colors.bgSurface,
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(AppRadius.xl)),
-          icon: const Icon(Icons.help_outline_rounded,
-              color: AppColors.primary, size: 36),
+          icon: Icon(Icons.help_outline_rounded,
+              color: context.colors.primary, size: 36),
           title: Text(
             'Couldn\'t sign you in',
-            style: AppTextStyles.heading3.copyWith(color: cs.onSurface),
+            style: context.textStyles.heading3.copyWith(color: cs.onSurface),
             textAlign: TextAlign.center,
           ),
           content: Text(
             'The email or password is incorrect, or no account exists with this email.\n\nNew here?',
-            style: AppTextStyles.bodyMedium
+            style: context.textStyles.bodyMedium
                 .copyWith(color: cs.onSurface.withValues(alpha: 0.55)),
             textAlign: TextAlign.center,
           ),
@@ -170,7 +172,7 @@ class _LoginScreenState extends State<LoginScreen>
             const SizedBox(width: 8),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
+                backgroundColor: context.colors.primary,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(AppRadius.full)),
@@ -222,7 +224,7 @@ class _LoginScreenState extends State<LoginScreen>
         _showBanner(
           icon: Icons.check_circle_outline,
           message: 'Verification email resent! Check your inbox.',
-          color: AppColors.success,
+          color: context.colors.success,
         );
       }
     } catch (_) {
@@ -230,7 +232,7 @@ class _LoginScreenState extends State<LoginScreen>
         _showBanner(
           icon: Icons.error_outline,
           message: 'Could not resend. Try again in a moment.',
-          color: AppColors.danger,
+          color: context.colors.danger,
         );
       }
     }
@@ -254,7 +256,7 @@ class _LoginScreenState extends State<LoginScreen>
               height: 220,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppColors.primary
+                color: context.colors.primary
                     .withValues(alpha: isDark ? 0.10 : 0.16),
               ),
             ),
@@ -267,7 +269,7 @@ class _LoginScreenState extends State<LoginScreen>
               height: 150,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppColors.secondary
+                color: context.colors.secondary
                     .withValues(alpha: isDark ? 0.08 : 0.12),
               ),
             ),
@@ -289,10 +291,10 @@ class _LoginScreenState extends State<LoginScreen>
                       Column(
                         children: [
                           ShaderMask(
-                            shaderCallback: (b) => const LinearGradient(
+                            shaderCallback: (b) => LinearGradient(
                               colors: [
-                                AppColors.primary,
-                                AppColors.secondary
+                                context.colors.primary,
+                                context.colors.secondary
                               ],
                               begin: Alignment.centerLeft,
                               end: Alignment.centerRight,
@@ -357,8 +359,8 @@ class _LoginScreenState extends State<LoginScreen>
                           padding: const EdgeInsets.all(AppSpacing.lg),
                           decoration: BoxDecoration(
                             color: isDark
-                                ? AppColors.bgDarkSurface
-                                : AppColors.bgSurface,
+                                ? context.colors.bgDarkSurface
+                                : context.colors.bgSurface,
                             borderRadius:
                                 BorderRadius.circular(AppRadius.xl),
                             border: Border.all(
@@ -368,7 +370,7 @@ class _LoginScreenState extends State<LoginScreen>
                                 ? null
                                 : [
                                     BoxShadow(
-                                      color: AppColors.primary
+                                      color: context.colors.primary
                                           .withValues(alpha: 0.07),
                                       blurRadius: 24,
                                       offset: const Offset(0, 8),
@@ -421,7 +423,7 @@ class _LoginScreenState extends State<LoginScreen>
                                   children: [
                                     Text('Password',
                                         style:
-                                            AppTextStyles.labelBold
+                                            context.textStyles.labelBold
                                                 .copyWith(
                                                     color:
                                                         cs.onSurface)),
@@ -436,7 +438,7 @@ class _LoginScreenState extends State<LoginScreen>
                                               .labelMedium
                                               .copyWith(
                                                   color:
-                                                      AppColors.primary,
+                                                      context.colors.primary,
                                                   fontWeight:
                                                       FontWeight.w700)),
                                     ),
@@ -498,7 +500,7 @@ class _LoginScreenState extends State<LoginScreen>
                                         : () => context.go('/register'),
                                     child: RichText(
                                       text: TextSpan(
-                                        style: AppTextStyles.bodySmall
+                                        style: context.textStyles.bodySmall
                                             .copyWith(
                                                 color: cs.onSurface
                                                     .withValues(
@@ -556,13 +558,13 @@ class _LoginScreenState extends State<LoginScreen>
   }) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: AppTextStyles.bodyMuted
+      hintStyle: context.textStyles.bodyMuted
           .copyWith(color: cs.onSurface.withValues(alpha: 0.35)),
       prefixIcon:
           Icon(icon, color: cs.onSurface.withValues(alpha: 0.4), size: 20),
       suffixIcon: suffix,
       filled: true,
-      fillColor: isDark ? AppColors.bgDarkMuted : AppColors.bgLight,
+      fillColor: isDark ? context.colors.bgDarkMuted : context.colors.bgLight,
       contentPadding:
           const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: 15),
       border: OutlineInputBorder(
@@ -576,15 +578,15 @@ class _LoginScreenState extends State<LoginScreen>
       focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.md),
           borderSide:
-              const BorderSide(color: AppColors.primary, width: 2)),
+              BorderSide(color: context.colors.primary, width: 2)),
       errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.md),
           borderSide:
-              const BorderSide(color: AppColors.danger, width: 1.5)),
+              BorderSide(color: context.colors.danger, width: 1.5)),
       focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.md),
           borderSide:
-              const BorderSide(color: AppColors.danger, width: 2)),
+              BorderSide(color: context.colors.danger, width: 2)),
     );
   }
 }
@@ -608,37 +610,37 @@ class _VerifyBanner extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: AppColors.accentLight,
+        color: context.colors.accentLight,
         borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: AppColors.accent.withValues(alpha: 0.5)),
+        border: Border.all(color: context.colors.accent.withValues(alpha: 0.5)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.mark_email_unread_outlined,
-              color: AppColors.accent, size: 20),
+          Icon(Icons.mark_email_unread_outlined,
+              color: context.colors.accent, size: 20),
           const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('Please verify your email',
-                    style: AppTextStyles.labelBold
-                        .copyWith(color: AppColors.accent)),
+                    style: context.textStyles.labelBold
+                        .copyWith(color: context.colors.accent)),
                 const SizedBox(height: 2),
                 Text(
                   'We sent a verification link to $email. Check your inbox (and spam!)',
-                  style: AppTextStyles.bodySmall
-                      .copyWith(color: AppColors.accent.withValues(alpha: 0.8)),
+                  style: context.textStyles.bodySmall
+                      .copyWith(color: context.colors.accent.withValues(alpha: 0.8)),
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 GestureDetector(
                   onTap: onResend,
                   child: Text('Resend email',
-                      style: AppTextStyles.labelMedium.copyWith(
-                          color: AppColors.accent,
+                      style: context.textStyles.labelMedium.copyWith(
+                          color: context.colors.accent,
                           decoration: TextDecoration.underline,
-                          decorationColor: AppColors.accent)),
+                          decorationColor: context.colors.accent)),
                 ),
               ],
             ),
@@ -647,7 +649,7 @@ class _VerifyBanner extends StatelessWidget {
             onTap: onDismiss,
             child: Icon(Icons.close,
                 size: 18,
-                color: AppColors.accent.withValues(alpha: 0.7)),
+                color: context.colors.accent.withValues(alpha: 0.7)),
           ),
         ],
       ),
@@ -667,25 +669,25 @@ class _LoadingSpinner extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.xl),
       decoration: BoxDecoration(
-        color: isDark ? AppColors.bgDarkSurface : AppColors.bgSurface,
+        color: isDark ? context.colors.bgDarkSurface : context.colors.bgSurface,
         borderRadius: BorderRadius.circular(AppRadius.xl),
         boxShadow: AppShadows.floating,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(
+          SizedBox(
             width: 40,
             height: 40,
             child: CircularProgressIndicator(
-              color: AppColors.primary,
+              color: context.colors.primary,
               strokeWidth: 3,
             ),
           ),
           const SizedBox(height: AppSpacing.md),
           Text('Please wait…',
-              style: AppTextStyles.bodyMedium
-                  .copyWith(color: AppColors.textMuted)),
+              style: context.textStyles.bodyMedium
+                  .copyWith(color: context.colors.textMuted)),
         ],
       ),
     );

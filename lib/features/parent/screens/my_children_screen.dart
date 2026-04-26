@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tinysteps/core/constants/app_theme.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 class MyChildrenScreen extends StatefulWidget {
   const MyChildrenScreen({super.key});
@@ -38,23 +39,23 @@ class _MyChildrenScreenState extends State<MyChildrenScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgLight,
+      backgroundColor: context.colors.bgLight,
       appBar: AppBar(
-        title: Text('My Children', style: AppTextStyles.heading2),
-        backgroundColor: AppColors.bgLight,
+        title: Text('My Children', style: context.textStyles.heading2),
+        backgroundColor: context.colors.bgLight,
         elevation: 0,
       ),
       body: RefreshIndicator(
-        color: AppColors.primary,
+        color: context.colors.primary,
         onRefresh: () async => setState(() => _loadChildren()),
         child: FutureBuilder<List<dynamic>>(
           future: _childrenFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
+              return Center(
                 child: Padding(
                   padding: EdgeInsets.all(AppSpacing.xl),
-                  child: CircularProgressIndicator(color: AppColors.primary),
+                  child: CircularProgressIndicator(color: context.colors.primary),
                 ),
               );
             }
@@ -65,7 +66,7 @@ class _MyChildrenScreenState extends State<MyChildrenScreen> {
                   padding: const EdgeInsets.all(AppSpacing.lg),
                   child: Text(
                     'Failed to load children.\nPlease pull down to retry.',
-                    style: AppTextStyles.bodyMuted,
+                    style: context.textStyles.bodyMuted,
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -123,8 +124,8 @@ class _MyChildrenScreenState extends State<MyChildrenScreen> {
             setState(() => _loadChildren());
           }
         },
-        backgroundColor: AppColors.primary,
-        child: const Icon(Icons.add, color: AppColors.white),
+        backgroundColor: context.colors.primary,
+        child: Icon(Icons.add, color: context.colors.white),
       ),
     );
   }
@@ -134,11 +135,11 @@ class _MyChildrenScreenState extends State<MyChildrenScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.child_care_rounded, size: 64, color: AppColors.primary.withValues(alpha: 0.3)),
+          Icon(Icons.child_care_rounded, size: 64, color: context.colors.primary.withValues(alpha: 0.3)),
           const SizedBox(height: AppSpacing.md),
-          Text('No children added yet', style: AppTextStyles.heading3),
+          Text('No children added yet', style: context.textStyles.heading3),
           const SizedBox(height: AppSpacing.sm),
-          Text('Tap the + button to add your child', style: AppTextStyles.bodyMuted),
+          Text('Tap the + button to add your child', style: context.textStyles.bodyMuted),
         ],
       ),
     );
@@ -173,7 +174,7 @@ class _ChildCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
-          color: AppColors.bgSurface,
+          color: context.colors.bgSurface,
           borderRadius: BorderRadius.circular(AppRadius.xl),
           boxShadow: AppShadows.card,
         ),
@@ -181,10 +182,10 @@ class _ChildCard extends StatelessWidget {
           children: [
             CircleAvatar(
               radius: 26,
-              backgroundColor: AppColors.primary.withValues(alpha: 0.15),
+              backgroundColor: context.colors.primary.withValues(alpha: 0.15),
               child: Text(
                 name[0].toUpperCase(),
-                style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 20),
+                style: TextStyle(color: context.colors.primary, fontWeight: FontWeight.bold, fontSize: 20),
               ),
             ),
             const SizedBox(width: AppSpacing.md),
@@ -194,25 +195,25 @@ class _ChildCard extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Flexible(child: Text(name, style: AppTextStyles.labelBold)),
+                      Flexible(child: Text(name, style: context.textStyles.labelBold)),
                       if (hasAllergies) ...[
                         const SizedBox(width: AppSpacing.xs),
                         Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 5, vertical: 2),
                           decoration: BoxDecoration(
-                            color: AppColors.warning.withValues(alpha: 0.15),
+                            color: context.colors.warning.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(AppRadius.full),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(Icons.warning_amber_rounded,
-                                  size: 10, color: AppColors.warning),
+                                  size: 10, color: context.colors.warning),
                               const SizedBox(width: 3),
                               Text('Allergy',
-                                  style: AppTextStyles.caption.copyWith(
-                                      color: AppColors.warning,
+                                  style: context.textStyles.caption.copyWith(
+                                      color: context.colors.warning,
                                       fontSize: 9)),
                             ],
                           ),
@@ -221,12 +222,12 @@ class _ChildCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 2),
-                  Text('DOB: $dob', style: AppTextStyles.bodyMuted),
-                  Text(classroom, style: AppTextStyles.bodySmall),
+                  Text('DOB: $dob', style: context.textStyles.bodyMuted),
+                  Text(classroom, style: context.textStyles.bodySmall),
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_ios, size: 16, color: AppColors.textMuted),
+            Icon(Icons.arrow_forward_ios, size: 16, color: context.colors.textMuted),
           ],
         ),
       ),

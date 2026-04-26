@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 import 'package:tinysteps/core/constants/app_theme.dart';
 import 'package:tinysteps/core/widgets/bottom_nav_bar.dart';
@@ -8,6 +9,7 @@ import 'package:tinysteps/features/admin/screens/users_screen.dart';
 import 'package:tinysteps/features/admin/screens/classrooms_screen.dart';
 import 'package:tinysteps/features/admin/screens/children_overview_screen.dart';
 import 'package:tinysteps/features/admin/screens/admin_settings_screen.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 /// Admin Home Screen — shell with bottom navigation
 class AdminHomeScreen extends StatefulWidget {
@@ -113,22 +115,22 @@ class _AdminDashboardContentState extends State<_AdminDashboardContent> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.bgLight,
+        backgroundColor: context.colors.bgLight,
         surfaceTintColor: Colors.transparent,
-        title: Text('Sign out?', style: AppTextStyles.heading3),
+        title: Text('Sign out?', style: context.textStyles.heading3),
         content: Text('You will be returned to the login screen.',
-            style: AppTextStyles.bodyMedium),
+            style: context.textStyles.bodyMedium),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
             child: Text('Cancel',
-                style: AppTextStyles.labelBold
-                    .copyWith(color: AppColors.textMuted)),
+                style: context.textStyles.labelBold
+                    .copyWith(color: context.colors.textMuted)),
           ),
           FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: AppColors.danger),
+            style: FilledButton.styleFrom(backgroundColor: context.colors.danger),
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text('Sign out', style: AppTextStyles.buttonLabel),
+            child: Text('Sign out', style: context.textStyles.buttonLabel),
           ),
         ],
       ),
@@ -150,10 +152,10 @@ class _AdminDashboardContentState extends State<_AdminDashboardContent> {
     final name = user?.userMetadata?['full_name'] as String? ?? 'Admin';
 
     return Scaffold(
-      backgroundColor: AppColors.bgLight,
+      backgroundColor: context.colors.bgLight,
       appBar: AppBar(
-        title: Text('Admin Panel', style: AppTextStyles.heading2),
-        backgroundColor: AppColors.bgLight,
+        title: Text('Admin Panel', style: context.textStyles.heading2),
+        backgroundColor: context.colors.bgLight,
         elevation: 0,
         actions: [
           IconButton(
@@ -164,7 +166,7 @@ class _AdminDashboardContentState extends State<_AdminDashboardContent> {
         ],
       ),
       body: RefreshIndicator(
-        color: AppColors.primary,
+        color: context.colors.primary,
         onRefresh: () async => setState(() => _loadStats()),
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -191,15 +193,15 @@ class _AdminDashboardContentState extends State<_AdminDashboardContent> {
                   children: [
                     Text(
                       _getGreeting(),
-                      style: AppTextStyles.bodyLarge.copyWith(
-                        color: AppColors.white,
+                      style: context.textStyles.bodyLarge.copyWith(
+                        color: context.colors.white,
                       ),
                     ),
                     const SizedBox(height: AppSpacing.xs),
                     Text(
                       name,
-                      style: AppTextStyles.heading1.copyWith(
-                        color: AppColors.white,
+                      style: context.textStyles.heading1.copyWith(
+                        color: context.colors.white,
                         fontSize: 32,
                       ),
                     ),
@@ -210,7 +212,7 @@ class _AdminDashboardContentState extends State<_AdminDashboardContent> {
               const SizedBox(height: AppSpacing.xl),
 
               Text('Here\'s your daycare at a glance',
-                  style: AppTextStyles.bodyMuted),
+                  style: context.textStyles.bodyMuted),
 
               const SizedBox(height: AppSpacing.xl),
 
@@ -219,11 +221,11 @@ class _AdminDashboardContentState extends State<_AdminDashboardContent> {
                 future: _statsFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
+                    return Center(
                       child: Padding(
                         padding: EdgeInsets.all(AppSpacing.xl),
                         child: CircularProgressIndicator(
-                            color: AppColors.primary),
+                            color: context.colors.primary),
                       ),
                     );
                   }
@@ -246,7 +248,7 @@ class _AdminDashboardContentState extends State<_AdminDashboardContent> {
                             label: 'Teachers',
                             value: '${stats['teachers']}',
                             icon: Icons.school,
-                            color: AppColors.primary,
+                            color: context.colors.primary,
                             onTap: () => Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(builder: (_) => const UsersScreen())),
                           ),
@@ -255,7 +257,7 @@ class _AdminDashboardContentState extends State<_AdminDashboardContent> {
                             label: 'Pending Approval',
                             value: '${stats['pendingTeachers']}',
                             icon: Icons.pending_actions,
-                            color: AppColors.warning,
+                            color: context.colors.warning,
                             onTap: () => Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(builder: (_) => const UsersScreen())),
                           ),
@@ -268,7 +270,7 @@ class _AdminDashboardContentState extends State<_AdminDashboardContent> {
                             label: 'Parents',
                             value: '${stats['parents']}',
                             icon: Icons.family_restroom,
-                            color: AppColors.secondary,
+                            color: context.colors.secondary,
                             onTap: () => Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(builder: (_) => const UsersScreen())),
                           ),
@@ -277,7 +279,7 @@ class _AdminDashboardContentState extends State<_AdminDashboardContent> {
                             label: 'Children',
                             value: '${stats['children']}',
                             icon: Icons.child_care,
-                            color: AppColors.accent,
+                            color: context.colors.accent,
                             onTap: () => Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(builder: (_) => const ChildrenOverviewScreen())),
                           ),
@@ -290,7 +292,7 @@ class _AdminDashboardContentState extends State<_AdminDashboardContent> {
                             label: 'Classrooms',
                             value: '${stats['classrooms']}',
                             icon: Icons.class_,
-                            color: AppColors.success,
+                            color: context.colors.success,
                             onTap: () => Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(builder: (_) => const ClassroomsScreen())),
                           ),
@@ -299,7 +301,7 @@ class _AdminDashboardContentState extends State<_AdminDashboardContent> {
                             label: 'Unassigned',
                             value: '${stats['unassigned']}',
                             icon: Icons.warning_amber,
-                            color: AppColors.danger,
+                            color: context.colors.danger,
                             onTap: () => Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(builder: (_) => const UsersScreen())),
                           ),
@@ -341,7 +343,7 @@ class _StatCard extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(AppSpacing.md),
           decoration: BoxDecoration(
-            color: AppColors.white,
+            color: context.colors.bgSurface,
             borderRadius: BorderRadius.circular(AppRadius.lg),
             boxShadow: [
               BoxShadow(
@@ -357,8 +359,8 @@ class _StatCard extends StatelessWidget {
               Icon(icon, color: color),
               const SizedBox(height: AppSpacing.sm),
               Text(value,
-                  style: AppTextStyles.heading1.copyWith(color: color)),
-              Text(label, style: AppTextStyles.bodyMuted),
+                  style: context.textStyles.heading1.copyWith(color: color)),
+              Text(label, style: context.textStyles.bodyMuted),
             ],
           ),
         ),

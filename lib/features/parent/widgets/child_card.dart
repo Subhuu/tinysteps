@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tinysteps/core/constants/app_theme.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 class ChildCard extends StatelessWidget {
   final String childId;
@@ -24,7 +25,7 @@ class ChildCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
-          color: AppColors.bgSurface,
+          color: context.colors.bgSurface,
           borderRadius: BorderRadius.circular(AppRadius.xl),
           boxShadow: AppShadows.card,
         ),
@@ -32,10 +33,10 @@ class ChildCard extends StatelessWidget {
           children: [
             CircleAvatar(
               radius: 26,
-              backgroundColor: AppColors.primary.withValues(alpha: 0.15),
+              backgroundColor: context.colors.primary.withValues(alpha: 0.15),
               child: Text(
                 name.isNotEmpty ? name[0].toUpperCase() : 'C',
-                style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 20),
+                style: TextStyle(color: context.colors.primary, fontWeight: FontWeight.bold, fontSize: 20),
               ),
             ),
             const SizedBox(width: AppSpacing.md),
@@ -43,14 +44,14 @@ class ChildCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(name, style: AppTextStyles.labelBold),
+                  Text(name, style: context.textStyles.labelBold),
                   const SizedBox(height: 2),
-                  Text('DOB: $dob', style: AppTextStyles.bodyMuted),
-                  Text(classroom, style: AppTextStyles.bodySmall),
+                  Text('DOB: $dob', style: context.textStyles.bodyMuted),
+                  Text(classroom, style: context.textStyles.bodySmall),
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_ios, size: 16, color: AppColors.textMuted),
+            Icon(Icons.arrow_forward_ios, size: 16, color: context.colors.textMuted),
           ],
         ),
       ),

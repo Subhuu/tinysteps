@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tinysteps/core/constants/app_theme.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 /// Role-aware notifications preferences screen.
 class NotificationsScreen extends StatefulWidget {
@@ -36,10 +37,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgLight,
+      backgroundColor: context.colors.bgLight,
       appBar: AppBar(
-        title: Text('Notifications', style: AppTextStyles.heading2),
-        backgroundColor: AppColors.bgLight,
+        title: Text('Notifications', style: context.textStyles.heading2),
+        backgroundColor: context.colors.bgLight,
         elevation: 0,
         surfaceTintColor: Colors.transparent,
       ),
@@ -50,7 +51,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           children: [
             Text(
               'Manage your notification preferences to stay updated.',
-              style: AppTextStyles.bodyMuted,
+              style: context.textStyles.bodyMuted,
             ),
             const SizedBox(height: AppSpacing.xl),
             _buildRoleSpecificToggles(),
@@ -69,14 +70,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           _t1,
           (v) => setState(() => _t1 = v),
         ),
-        const Divider(height: 1, color: AppColors.border),
+        Divider(height: 1, color: context.colors.border),
         _toggleTile(
           'Teacher Approvals',
           'Notify when a new teacher signs up',
           _t2,
           (v) => setState(() => _t2 = v),
         ),
-        const Divider(height: 1, color: AppColors.border),
+        Divider(height: 1, color: context.colors.border),
         _toggleTile(
           'New Enrollments',
           'Alert for new student registrations',
@@ -92,14 +93,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           _t1,
           (v) => setState(() => _t1 = v),
         ),
-        const Divider(height: 1, color: AppColors.border),
+        Divider(height: 1, color: context.colors.border),
         _toggleTile(
           'Admin Announcements',
           'Important messages from administration',
           _t2,
           (v) => setState(() => _t2 = v),
         ),
-        const Divider(height: 1, color: AppColors.border),
+        Divider(height: 1, color: context.colors.border),
         _toggleTile(
           'Class Updates',
           'Schedule changes and room assignment',
@@ -116,21 +117,21 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           _t1,
           (v) => setState(() => _t1 = v),
         ),
-        const Divider(height: 1, color: AppColors.border),
+        Divider(height: 1, color: context.colors.border),
         _toggleTile(
           'Emergency Alerts',
           'Critical daycare closures or emergencies',
           _t2,
           (v) => setState(() => _t2 = v),
         ),
-        const Divider(height: 1, color: AppColors.border),
+        Divider(height: 1, color: context.colors.border),
         _toggleTile(
           'Payment Reminders',
           'Upcoming fee deadlines and receipts',
           _t3,
           (v) => setState(() => _t3 = v),
         ),
-        const Divider(height: 1, color: AppColors.border),
+        Divider(height: 1, color: context.colors.border),
         _toggleTile(
           'Announcements',
           'General daycare news and events',
@@ -144,9 +145,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   Widget _buildCard(List<Widget> children) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: context.colors.bgSurface,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.colors.border),
         boxShadow: AppShadows.card,
       ),
       child: Column(children: children),
@@ -156,13 +157,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   Widget _toggleTile(String title, String subtitle, bool value, ValueChanged<bool> onChanged) {
     return SwitchListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.xs),
-      title: Text(title, style: AppTextStyles.labelBold),
+      title: Text(title, style: context.textStyles.labelBold),
       subtitle: Padding(
         padding: const EdgeInsets.only(top: 4.0),
-        child: Text(subtitle, style: AppTextStyles.bodySmall),
+        child: Text(subtitle, style: context.textStyles.bodySmall),
       ),
-      activeThumbColor: AppColors.primary,
-      activeTrackColor: AppColors.primaryLight,
+      activeThumbColor: context.colors.primary,
+      activeTrackColor: context.colors.primaryLight,
       value: value,
       onChanged: onChanged,
     );

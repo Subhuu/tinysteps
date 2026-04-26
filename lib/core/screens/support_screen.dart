@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tinysteps/core/constants/app_theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 /// Shared across all roles — Help Center, call daycare, email, FAQ.
 /// Navigate here via context.push('/support') from any settings screen.
 class SupportScreen extends StatelessWidget {
@@ -10,10 +11,10 @@ class SupportScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgLight,
+      backgroundColor: context.colors.bgLight,
       appBar: AppBar(
-        title: Text('Help & Support', style: AppTextStyles.heading2),
-        backgroundColor: AppColors.bgLight,
+        title: Text('Help & Support', style: context.textStyles.heading2),
+        backgroundColor: context.colors.bgLight,
         elevation: 0,
         surfaceTintColor: Colors.transparent,
       ),
@@ -22,11 +23,11 @@ class SupportScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('How can we help?', style: AppTextStyles.heading3),
+            Text('How can we help?', style: context.textStyles.heading3),
             const SizedBox(height: AppSpacing.xs),
             Text(
               'Reach out to the daycare team through any of the options below.',
-              style: AppTextStyles.bodyMuted,
+              style: context.textStyles.bodyMuted,
             ),
             const SizedBox(height: AppSpacing.xl),
 
@@ -34,7 +35,7 @@ class SupportScreen extends StatelessWidget {
               icon: Icons.phone_outlined,
               title: 'Call Daycare',
               subtitle: '+91 98765 43210',
-              color: AppColors.success,
+              color: context.colors.success,
               onTap: () async {
                 final Uri url = Uri(scheme: 'tel', path: '+919876543210');
                 if (await canLaunchUrl(url)) {
@@ -48,7 +49,7 @@ class SupportScreen extends StatelessWidget {
               icon: Icons.mail_outline_rounded,
               title: 'Email Support',
               subtitle: 'support@tinysteps.in',
-              color: AppColors.primary,
+              color: context.colors.primary,
               onTap: () async {
                 final Uri url = Uri(scheme: 'mailto', path: 'support@tinysteps.in');
                 if (await canLaunchUrl(url)) {
@@ -62,7 +63,7 @@ class SupportScreen extends StatelessWidget {
               icon: Icons.chat_bubble_outline_rounded,
               title: 'WhatsApp',
               subtitle: 'Message us on WhatsApp',
-              color: AppColors.success,
+              color: context.colors.success,
               onTap: () async {
                 final Uri url = Uri.parse('https://wa.me/919876543210');
                 if (await canLaunchUrl(url)) {
@@ -76,7 +77,7 @@ class SupportScreen extends StatelessWidget {
               icon: Icons.help_outline_rounded,
               title: 'FAQs',
               subtitle: 'Answers to common questions',
-              color: AppColors.secondary,
+              color: context.colors.secondary,
               onTap: () {
                 context.push('/faq');
               },
@@ -89,28 +90,28 @@ class SupportScreen extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
-                color: AppColors.primaryLight,
+                color: context.colors.primaryLight,
                 borderRadius: BorderRadius.circular(AppRadius.lg),
-                border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+                border: Border.all(color: context.colors.primary.withValues(alpha: 0.2)),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.access_time_rounded,
-                      color: AppColors.primary, size: 20),
+                  Icon(Icons.access_time_rounded,
+                      color: context.colors.primary, size: 20),
                   const SizedBox(width: AppSpacing.md),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Office Hours',
-                            style: AppTextStyles.labelBold
-                                .copyWith(color: AppColors.primary)),
+                            style: context.textStyles.labelBold
+                                .copyWith(color: context.colors.primary)),
                         const SizedBox(height: 2),
                         Text('Mon – Sat: 8:00 AM – 6:00 PM',
-                            style: AppTextStyles.bodySmall),
+                            style: context.textStyles.bodySmall),
                         Text('Sunday: Closed',
-                            style: AppTextStyles.bodySmall),
+                            style: context.textStyles.bodySmall),
                       ],
                     ),
                   ),
@@ -147,9 +148,9 @@ class _SupportCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
-          color: AppColors.white,
+          color: context.colors.bgSurface,
           borderRadius: BorderRadius.circular(AppRadius.lg),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: context.colors.border),
           boxShadow: AppShadows.card,
         ),
         child: Row(
@@ -167,14 +168,14 @@ class _SupportCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: AppTextStyles.labelBold),
+                  Text(title, style: context.textStyles.labelBold),
                   const SizedBox(height: 2),
-                  Text(subtitle, style: AppTextStyles.bodyMuted),
+                  Text(subtitle, style: context.textStyles.bodyMuted),
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_ios_rounded,
-                size: 14, color: AppColors.textMuted),
+            Icon(Icons.arrow_forward_ios_rounded,
+                size: 14, color: context.colors.textMuted),
           ],
         ),
       ),

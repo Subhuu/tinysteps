@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tinysteps/core/constants/app_theme.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 class ChildAvatar extends StatelessWidget {
   final String name;
@@ -21,11 +22,11 @@ class ChildAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     return CircleAvatar(
       radius: size / 2,
-      backgroundColor: AppColors.primaryLight,
+      backgroundColor: context.colors.primaryLight,
       child: Text(
         initials.toUpperCase(),
-        style: AppTextStyles.labelBold.copyWith(
-          color: AppColors.primary,
+        style: context.textStyles.labelBold.copyWith(
+          color: context.colors.primary,
         ),
       ),
     );

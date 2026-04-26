@@ -13,16 +13,16 @@ class AppColors {
   AppColors._();
 
   // ── Core Palette ─────────────────────────────────────────────────────────
-  static const primary        = Color(0xFFFF6B6B); // Soft Coral
-  static const primaryLight   = Color(0xFFFFE5E5); // Coral tint
-  static const primaryDark    = Color(0xFFE84F4F); // Deeper coral for pressed states
+  static const primary        = Color(0xFF14B8A6); // Cool Teal
+  static const primaryLight   = Color(0xFFCCFBF1); // Teal tint
+  static const primaryDark    = Color(0xFF0F766E); // Deeper teal for pressed states
 
-  static const secondary      = Color(0xFFC77DFF); // Gentle Lavender
-  static const secondaryLight = Color(0xFFF3E5FF); // Lavender tint
-  static const secondaryDark  = Color(0xFFA855E8); // Deeper lavender
+  static const secondary      = Color(0xFF6366F1); // Gentle Indigo
+  static const secondaryLight = Color(0xFFE0E7FF); // Indigo tint
+  static const secondaryDark  = Color(0xFF4338CA); // Deeper indigo
 
-  static const accent         = Color(0xFFFFB347); // Peach / Morning orange
-  static const accentLight    = Color(0xFFFFEDD0); // Peach tint
+  static const accent         = Color(0xFF38BDF8); // Sky Blue
+  static const accentLight    = Color(0xFFE0F2FE); // Sky tint
 
   // ── Semantic Colours ─────────────────────────────────────────────────────
   static const success        = Color(0xFF4CAF50);
@@ -35,9 +35,9 @@ class AppColors {
   static const infoLight      = Color(0xFFE3F2FD);
 
   // ── Backgrounds ──────────────────────────────────────────────────────────
-  static const bgLight        = Color(0xFFFFF9F5); // Warm White — Sunrise bg
+  static const bgLight        = Color(0xFFF8FAFC); // Cool Slate White
   static const bgSurface      = Color(0xFFFFFFFF); // Card surface
-  static const bgMuted        = Color(0xFFFFF0E8); // Subtle peach tint for sections
+  static const bgMuted        = Color(0xFFF1F5F9); // Muted slate tint for sections
 
   // ── Dark Mode Backgrounds ─────────────────────────────────────────────────
   static const bgDark         = Color(0xFF0D1117); // Deep dark base
@@ -52,13 +52,13 @@ class AppColors {
   static const textDarkMode   = Color(0xFFE8E0F0); // Off-white, easier on eyes
 
   // ── Borders & Dividers ───────────────────────────────────────────────────
-  static const border         = Color(0xFFFFE0D5); // Warm peachy border
-  static const divider        = Color(0xFFF5E6E0); // Soft divider
+  static const border         = Color(0xFFE2E8F0); // Cool slate border
+  static const divider        = Color(0xFFF8FAFC); // Soft divider
 
   // ── Gradient Stops ───────────────────────────────────────────────────────
-  static const gradientStart  = Color(0xFFFF6B6B); // Coral
-  static const gradientMid    = Color(0xFFFFB347); // Peach
-  static const gradientEnd    = Color(0xFFC77DFF); // Lavender
+  static const gradientStart  = Color(0xFF14B8A6); // Teal
+  static const gradientMid    = Color(0xFF38BDF8); // Sky Blue
+  static const gradientEnd    = Color(0xFF6366F1); // Indigo
 
   // ── Static ───────────────────────────────────────────────────────────────
   static const white          = Color(0xFFFFFFFF);
@@ -82,7 +82,7 @@ class AppGradients {
   static const sunriseSoft = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
-    colors: [Color(0xFFFFD4C2), AppColors.bgLight],
+    colors: [Color(0xFFBAE6FD), AppColors.bgLight],
   );
 
   static const coralButton = LinearGradient(
@@ -104,7 +104,7 @@ class AppGradients {
 class AppTextStyles {
   AppTextStyles._();
 
-  static TextStyle get heading1 => GoogleFonts.lexend(
+  static TextStyle get heading1 => GoogleFonts.inter(
     fontSize: 28,
     fontWeight: FontWeight.w800,
     color: AppColors.textDark,
@@ -112,7 +112,7 @@ class AppTextStyles {
     height: 1.2,
   );
 
-  static TextStyle get heading2 => GoogleFonts.lexend(
+  static TextStyle get heading2 => GoogleFonts.inter(
     fontSize: 22,
     fontWeight: FontWeight.w700,
     color: AppColors.textDark,
@@ -120,63 +120,63 @@ class AppTextStyles {
     height: 1.3,
   );
 
-  static TextStyle get heading3 => GoogleFonts.lexend(
+  static TextStyle get heading3 => GoogleFonts.inter(
     fontSize: 18,
     fontWeight: FontWeight.w600,
     color: AppColors.textDark,
     height: 1.4,
   );
 
-  static TextStyle get bodyLarge => GoogleFonts.lexend(
+  static TextStyle get bodyLarge => GoogleFonts.inter(
     fontSize: 16,
     fontWeight: FontWeight.w500,
     color: AppColors.textDark,
     height: 1.5,
   );
 
-  static TextStyle get bodyMedium => GoogleFonts.lexend(
+  static TextStyle get bodyMedium => GoogleFonts.inter(
     fontSize: 14,
     fontWeight: FontWeight.w400,
     color: AppColors.textDark,
     height: 1.5,
   );
 
-  static TextStyle get bodySmall => GoogleFonts.lexend(
+  static TextStyle get bodySmall => GoogleFonts.inter(
     fontSize: 12,
     fontWeight: FontWeight.w400,
     color: AppColors.textMuted,
     height: 1.4,
   );
 
-  static TextStyle get bodyMuted => GoogleFonts.lexend(
+  static TextStyle get bodyMuted => GoogleFonts.inter(
     fontSize: 14,
     fontWeight: FontWeight.w400,
     color: AppColors.textMuted,
     height: 1.5,
   );
 
-  static TextStyle get labelBold => GoogleFonts.lexend(
+  static TextStyle get labelBold => GoogleFonts.inter(
     fontSize: 14,
     fontWeight: FontWeight.w700,
     color: AppColors.textDark,
     letterSpacing: 0.2,
   );
 
-  static TextStyle get labelMedium => GoogleFonts.lexend(
+  static TextStyle get labelMedium => GoogleFonts.inter(
     fontSize: 12,
     fontWeight: FontWeight.w600,
     color: AppColors.textMedium,
     letterSpacing: 0.3,
   );
 
-  static TextStyle get buttonLabel => GoogleFonts.lexend(
+  static TextStyle get buttonLabel => GoogleFonts.inter(
     fontSize: 16,
     fontWeight: FontWeight.w700,
     color: AppColors.textOnPrimary,
     letterSpacing: 0.3,
   );
 
-  static TextStyle get caption => GoogleFonts.lexend(
+  static TextStyle get caption => GoogleFonts.inter(
     fontSize: 11,
     fontWeight: FontWeight.w400,
     color: AppColors.textMuted,
@@ -296,7 +296,7 @@ ThemeData sunriseLightTheme() {
       outlineVariant:   AppColors.divider,
     ),
     scaffoldBackgroundColor: AppColors.bgLight,
-    textTheme: GoogleFonts.lexendTextTheme(base.textTheme).copyWith(
+    textTheme: GoogleFonts.interTextTheme(base.textTheme).copyWith(
       displayLarge:  AppTextStyles.heading1,
       displayMedium: AppTextStyles.heading2,
       headlineMedium: AppTextStyles.heading3,
@@ -469,18 +469,19 @@ ThemeData sunriseDarkTheme() {
   final base = ThemeData.dark(useMaterial3: true);
 
   // Reduced saturation primaries for dark mode
-  const primaryDark   = Color(0xFFE85D5D); // Coral at ~80% brightness
-  const secondaryDark = Color(0xFFAA66E8); // Lavender at ~80% brightness
-  const accentDark    = Color(0xFFE89E3A); // Peach at ~80% brightness
+  // Adapted primaries for dark mode (maintaining mint/ice/teal palette)
+  const primaryDark   = Color(0xFF2DD4BF); // Brighter Teal (Teal 400) for contrast
+  const secondaryDark = Color(0xFF818CF8); // Brighter Indigo (Indigo 400)
+  const accentDark    = Color(0xFF7DD3FC); // Brighter Sky Blue (Sky 300)
 
   return base.copyWith(
     colorScheme: const ColorScheme.dark(
       primary:            primaryDark,
       onPrimary:          AppColors.white,
-      primaryContainer:   Color(0xFF4A1A1A),
+      primaryContainer:   Color(0xFF0D3D38), // Dark Teal container
       secondary:          secondaryDark,
       onSecondary:        AppColors.white,
-      secondaryContainer: Color(0xFF2D1A4A),
+      secondaryContainer: Color(0xFF1E1B4B), // Dark Indigo container
       tertiary:           accentDark,
       surface:            AppColors.bgDarkSurface,
       onSurface:          AppColors.textDarkMode,
@@ -490,7 +491,7 @@ ThemeData sunriseDarkTheme() {
       outlineVariant:     Color(0xFF2A2020),
     ),
     scaffoldBackgroundColor: AppColors.bgDark,
-    textTheme: GoogleFonts.lexendTextTheme(base.textTheme).copyWith(
+    textTheme: GoogleFonts.interTextTheme(base.textTheme).copyWith(
       displayLarge:   AppTextStyles.heading1Dark,
       displayMedium:  AppTextStyles.heading2Dark,
       bodyLarge:      AppTextStyles.bodyLargeDark,
@@ -547,6 +548,16 @@ ThemeData sunriseDarkTheme() {
     iconTheme: const IconThemeData(
       color: AppColors.textDarkMode,
       size: 24,
+    ),
+    switchTheme: SwitchThemeData(
+      thumbColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) return primaryDark;
+        return AppColors.textMuted;
+      }),
+      trackColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) return primaryDark.withValues(alpha: 0.3);
+        return const Color(0xFF2D3748);
+      }),
     ),
     dialogTheme: DialogThemeData(
       backgroundColor: AppColors.bgDarkSurface,

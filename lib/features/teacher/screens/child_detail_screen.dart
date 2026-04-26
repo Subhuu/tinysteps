@@ -3,8 +3,10 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 import 'package:tinysteps/core/constants/app_theme.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 class ChildDetailScreen extends StatefulWidget {
   final String childId;
@@ -84,12 +86,12 @@ class _ChildDetailScreenState extends State<ChildDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: AppTextStyles.bodyMuted),
+          Text(label, style: context.textStyles.bodyMuted),
           const SizedBox(height: 4),
           Text(
             value,
-            style: AppTextStyles.bodyLarge.copyWith(
-              color: isAlert ? AppColors.danger : AppColors.textDark,
+            style: context.textStyles.bodyLarge.copyWith(
+              color: isAlert ? context.colors.danger : context.colors.textDark,
               fontWeight: isAlert ? FontWeight.bold : FontWeight.w500,
             ),
           ),
@@ -104,9 +106,9 @@ class _ChildDetailScreenState extends State<ChildDetailScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: context.colors.bgSurface,
         borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.colors.border),
         boxShadow: AppShadows.card,
       ),
       child: Row(
@@ -114,11 +116,11 @@ class _ChildDetailScreenState extends State<ChildDetailScreen> {
           // Parent avatar
           CircleAvatar(
             radius: 22,
-            backgroundColor: AppColors.secondaryLight,
+            backgroundColor: context.colors.secondaryLight,
             child: Text(
               'P',
-              style: AppTextStyles.labelBold.copyWith(
-                color: AppColors.secondary,
+              style: context.textStyles.labelBold.copyWith(
+                color: context.colors.secondary,
               ),
             ),
           ),
@@ -128,12 +130,12 @@ class _ChildDetailScreenState extends State<ChildDetailScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Mother: Priya Sharma', style: AppTextStyles.labelBold),
+                Text('Mother: Priya Sharma', style: context.textStyles.labelBold),
                 const SizedBox(height: 2),
                 Text(
                   '+91 98765 43210',
-                  style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.textMuted,
+                  style: context.textStyles.bodySmall.copyWith(
+                    color: context.colors.textMuted,
                   ),
                 ),
               ],
@@ -150,8 +152,8 @@ class _ChildDetailScreenState extends State<ChildDetailScreen> {
             icon: const Icon(Icons.phone_rounded, size: 16),
             label: const Text('Call'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.success,
-              foregroundColor: AppColors.white,
+              backgroundColor: context.colors.success,
+              foregroundColor: context.colors.white,
               elevation: 0,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(AppRadius.md),
@@ -166,10 +168,10 @@ class _ChildDetailScreenState extends State<ChildDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgLight,
+      backgroundColor: context.colors.bgLight,
       appBar: AppBar(
-        title: Text(widget.childName, style: AppTextStyles.heading2),
-        backgroundColor: AppColors.bgLight,
+        title: Text(widget.childName, style: context.textStyles.heading2),
+        backgroundColor: context.colors.bgLight,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -186,8 +188,8 @@ class _ChildDetailScreenState extends State<ChildDetailScreen> {
         future: _futureData,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(color: AppColors.primary),
+            return Center(
+              child: CircularProgressIndicator(color: context.colors.primary),
             );
           }
 
@@ -196,7 +198,7 @@ class _ChildDetailScreenState extends State<ChildDetailScreen> {
               child: Text(
                 'Error loading details\n${snapshot.error}',
                 textAlign: TextAlign.center,
-                style: AppTextStyles.bodyMuted,
+                style: context.textStyles.bodyMuted,
               ),
             );
           }
@@ -239,19 +241,19 @@ class _ChildDetailScreenState extends State<ChildDetailScreen> {
                     children: [
                       CircleAvatar(
                         radius: 40,
-                        backgroundColor: AppColors.primaryLight,
+                        backgroundColor: context.colors.primaryLight,
                         child: Text(
                           name.isNotEmpty ? name[0].toUpperCase() : 'C',
-                          style: AppTextStyles.heading1.copyWith(
-                            color: AppColors.primary,
+                          style: context.textStyles.heading1.copyWith(
+                            color: context.colors.primary,
                             fontSize: 32,
                           ),
                         ),
                       ),
                       const SizedBox(height: AppSpacing.md),
-                      Text(name, style: AppTextStyles.heading1),
+                      Text(name, style: context.textStyles.heading1),
                       const SizedBox(height: 4),
-                      Text(ageStr, style: AppTextStyles.bodyMuted),
+                      Text(ageStr, style: context.textStyles.bodyMuted),
                       const SizedBox(height: AppSpacing.md),
                       Container(
                         padding: const EdgeInsets.symmetric(
@@ -260,8 +262,8 @@ class _ChildDetailScreenState extends State<ChildDetailScreen> {
                         ),
                         decoration: BoxDecoration(
                           color: isCheckedIn
-                              ? AppColors.success.withValues(alpha: 0.1)
-                              : AppColors.secondary.withValues(alpha: 0.1),
+                              ? context.colors.success.withValues(alpha: 0.1)
+                              : context.colors.secondary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(AppRadius.full),
                         ),
                         child: Text(
@@ -270,10 +272,10 @@ class _ChildDetailScreenState extends State<ChildDetailScreen> {
                               : (status == 'checked_out'
                                     ? 'Picked Up'
                                     : 'Enrolled'),
-                          style: AppTextStyles.labelBold.copyWith(
+                          style: context.textStyles.labelBold.copyWith(
                             color: isCheckedIn
-                                ? AppColors.success
-                                : AppColors.secondary,
+                                ? context.colors.success
+                                : context.colors.secondary,
                           ),
                         ),
                       ),
@@ -282,20 +284,20 @@ class _ChildDetailScreenState extends State<ChildDetailScreen> {
                 ),
                 const SizedBox(height: AppSpacing.xxl),
                 // 👇 Emergency Contact Section
-                Text('Emergency Contact', style: AppTextStyles.heading2),
+                Text('Emergency Contact', style: context.textStyles.heading2),
                 const SizedBox(height: AppSpacing.md),
                 _buildParentCallCard(),
                 const SizedBox(height: AppSpacing.xxl),
 
                 // Attendance Section
-                Text('Today\'s Attendance', style: AppTextStyles.heading2),
+                Text('Today\'s Attendance', style: context.textStyles.heading2),
                 const SizedBox(height: AppSpacing.md),
                 Container(
                   padding: const EdgeInsets.all(AppSpacing.lg),
                   decoration: BoxDecoration(
-                    color: AppColors.white,
+                    color: context.colors.bgSurface,
                     borderRadius: BorderRadius.circular(AppRadius.md),
-                    border: Border.all(color: AppColors.border),
+                    border: Border.all(color: context.colors.border),
                     boxShadow: AppShadows.card,
                   ),
                   child: Row(
@@ -303,24 +305,24 @@ class _ChildDetailScreenState extends State<ChildDetailScreen> {
                     children: [
                       Column(
                         children: [
-                          Text('Check In', style: AppTextStyles.bodyMuted),
+                          Text('Check In', style: context.textStyles.bodyMuted),
                           const SizedBox(height: 4),
                           Text(
                             checkInStr,
-                            style: AppTextStyles.bodyLarge.copyWith(
+                            style: context.textStyles.bodyLarge.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                         ],
                       ),
-                      Container(width: 1, height: 40, color: AppColors.border),
+                      Container(width: 1, height: 40, color: context.colors.border),
                       Column(
                         children: [
-                          Text('Check Out', style: AppTextStyles.bodyMuted),
+                          Text('Check Out', style: context.textStyles.bodyMuted),
                           const SizedBox(height: 4),
                           Text(
                             checkOutStr,
-                            style: AppTextStyles.bodyLarge.copyWith(
+                            style: context.textStyles.bodyLarge.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -332,15 +334,15 @@ class _ChildDetailScreenState extends State<ChildDetailScreen> {
                 const SizedBox(height: AppSpacing.xxl),
 
                 // Details Section
-                Text('Child Information', style: AppTextStyles.heading2),
+                Text('Child Information', style: context.textStyles.heading2),
                 const SizedBox(height: AppSpacing.md),
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(AppSpacing.lg),
                   decoration: BoxDecoration(
-                    color: AppColors.white,
+                    color: context.colors.bgSurface,
                     borderRadius: BorderRadius.circular(AppRadius.md),
-                    border: Border.all(color: AppColors.border),
+                    border: Border.all(color: context.colors.border),
                     boxShadow: AppShadows.card,
                   ),
                   child: Column(

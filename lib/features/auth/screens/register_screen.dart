@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 import 'package:tinysteps/core/constants/app_theme.dart';
 import 'package:tinysteps/features/auth/widgets/auth_widgets.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // RegisterScreen — Multi-step signup
@@ -147,7 +149,7 @@ class _RegisterScreenState extends State<RegisterScreen>
             SizedBox(width: 8),
             Expanded(child: Text('Account created! Check your email to verify.')),
           ]),
-          backgroundColor: AppColors.success,
+          backgroundColor: context.colors.success,
           behavior: SnackBarBehavior.floating,
           margin: const EdgeInsets.all(AppSpacing.md),
           shape: RoundedRectangleBorder(
@@ -178,19 +180,19 @@ class _RegisterScreenState extends State<RegisterScreen>
         final cs = Theme.of(ctx).colorScheme;
         final isDark = Theme.of(ctx).brightness == Brightness.dark;
         return AlertDialog(
-          backgroundColor: isDark ? AppColors.bgDarkSurface : AppColors.bgSurface,
+          backgroundColor: isDark ? context.colors.bgDarkSurface : context.colors.bgSurface,
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(AppRadius.xl)),
-          icon: const Icon(Icons.email_outlined,
-              color: AppColors.primary, size: 36),
+          icon: Icon(Icons.email_outlined,
+              color: context.colors.primary, size: 36),
           title: Text(
             'Email already registered',
-            style: AppTextStyles.heading3.copyWith(color: cs.onSurface),
+            style: context.textStyles.heading3.copyWith(color: cs.onSurface),
             textAlign: TextAlign.center,
           ),
           content: Text(
             'An account with this email already exists. Did you mean to sign in instead?',
-            style: AppTextStyles.bodyMedium
+            style: context.textStyles.bodyMedium
                 .copyWith(color: cs.onSurface.withValues(alpha: 0.55)),
             textAlign: TextAlign.center,
           ),
@@ -204,7 +206,7 @@ class _RegisterScreenState extends State<RegisterScreen>
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
+                backgroundColor: context.colors.primary,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(AppRadius.full)),
@@ -229,7 +231,7 @@ class _RegisterScreenState extends State<RegisterScreen>
         const SizedBox(width: 8),
         Expanded(child: Text(msg)),
       ]),
-      backgroundColor: AppColors.danger,
+      backgroundColor: context.colors.danger,
       behavior: SnackBarBehavior.floating,
       margin: const EdgeInsets.all(AppSpacing.md),
       shape: RoundedRectangleBorder(
@@ -257,7 +259,7 @@ class _RegisterScreenState extends State<RegisterScreen>
               height: 200,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppColors.secondary
+                color: context.colors.secondary
                     .withValues(alpha: isDark ? 0.08 : 0.10),
               ),
             ),
@@ -322,26 +324,26 @@ class _RegisterScreenState extends State<RegisterScreen>
                   padding: const EdgeInsets.all(AppSpacing.xl),
                   decoration: BoxDecoration(
                     color: isDark
-                        ? AppColors.bgDarkSurface
-                        : AppColors.bgSurface,
+                        ? context.colors.bgDarkSurface
+                        : context.colors.bgSurface,
                     borderRadius: BorderRadius.circular(AppRadius.xl),
                     boxShadow: AppShadows.floating,
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const SizedBox(
+                      SizedBox(
                         width: 40,
                         height: 40,
                         child: CircularProgressIndicator(
-                          color: AppColors.primary,
+                          color: context.colors.primary,
                           strokeWidth: 3,
                         ),
                       ),
                       const SizedBox(height: AppSpacing.md),
                       Text('Setting up your account…',
-                          style: AppTextStyles.bodyMedium
-                              .copyWith(color: AppColors.textMuted)),
+                          style: context.textStyles.bodyMedium
+                              .copyWith(color: context.colors.textMuted)),
                     ],
                   ),
                 ),
@@ -439,7 +441,7 @@ class _RegisterScreenState extends State<RegisterScreen>
       builder: (ctx, child) => Theme(
         data: Theme.of(ctx).copyWith(
           colorScheme: Theme.of(ctx).colorScheme.copyWith(
-                primary: AppColors.primary,
+                primary: context.colors.primary,
               ),
         ),
         child: child!,
@@ -485,8 +487,8 @@ class _RoleSelectionStepState extends State<_RoleSelectionStep> {
 
         // ── Heading ──────────────────────────────────────────────────
         ShaderMask(
-          shaderCallback: (b) => const LinearGradient(
-            colors: [AppColors.primary, AppColors.secondary],
+          shaderCallback: (b) => LinearGradient(
+            colors: [context.colors.primary, context.colors.secondary],
           ).createShader(b),
           child: Text('Create account',
               style: GoogleFonts.lexend(
@@ -523,7 +525,7 @@ class _RoleSelectionStepState extends State<_RoleSelectionStep> {
                   _showStaffOptions
                       ? 'Hide staff options'
                       : 'Are you staff or admin?',
-                  style: AppTextStyles.bodySmall.copyWith(
+                  style: context.textStyles.bodySmall.copyWith(
                     color: cs.onSurface.withValues(alpha: 0.45),
                     decoration: TextDecoration.underline,
                     decorationColor: cs.onSurface.withValues(alpha: 0.3),
@@ -558,22 +560,22 @@ class _RoleSelectionStepState extends State<_RoleSelectionStep> {
                   padding: const EdgeInsets.symmetric(
                       horizontal: AppSpacing.md, vertical: AppSpacing.sm),
                   decoration: BoxDecoration(
-                    color: AppColors.accent.withValues(alpha: 0.08),
+                    color: context.colors.accent.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(AppRadius.md),
                     border: Border.all(
-                        color: AppColors.accent.withValues(alpha: 0.25)),
+                        color: context.colors.accent.withValues(alpha: 0.25)),
                   ),
                   child: Row(
                     children: [
                       Icon(Icons.info_outline_rounded,
                           size: 16,
-                          color: AppColors.accent.withValues(alpha: 0.8)),
+                          color: context.colors.accent.withValues(alpha: 0.8)),
                       const SizedBox(width: AppSpacing.sm),
                       Expanded(
                         child: Text(
                           'Staff & admin accounts require a referral code from the center.',
-                          style: AppTextStyles.bodySmall.copyWith(
-                              color: AppColors.accent
+                          style: context.textStyles.bodySmall.copyWith(
+                              color: context.colors.accent
                                   .withValues(alpha: 0.85)),
                         ),
                       ),
@@ -585,7 +587,7 @@ class _RoleSelectionStepState extends State<_RoleSelectionStep> {
                   icon: Icons.school_rounded,
                   title: 'Teacher / Staff',
                   subtitle: 'I work at the daycare',
-                  color: AppColors.secondary,
+                  color: context.colors.secondary,
                   isDark: isDark,
                   onTap: () => widget.onSelect('teacher'),
                 ),
@@ -594,7 +596,7 @@ class _RoleSelectionStepState extends State<_RoleSelectionStep> {
                   icon: Icons.admin_panel_settings_rounded,
                   title: 'Admin',
                   subtitle: 'I manage the center',
-                  color: AppColors.accent,
+                  color: context.colors.accent,
                   isDark: isDark,
                   onTap: () => widget.onSelect('admin'),
                 ),
@@ -611,14 +613,14 @@ class _RoleSelectionStepState extends State<_RoleSelectionStep> {
             onTap: widget.onLogin,
             child: RichText(
               text: TextSpan(
-                style: AppTextStyles.bodySmall
+                style: context.textStyles.bodySmall
                     .copyWith(color: cs.onSurface.withValues(alpha: 0.5)),
                 children: [
                   const TextSpan(text: 'Already have an account? '),
-                  const TextSpan(
+                  TextSpan(
                     text: 'Sign in',
                     style: TextStyle(
-                        color: AppColors.primary,
+                        color: context.colors.primary,
                         fontWeight: FontWeight.w700),
                   ),
                 ],
@@ -656,7 +658,7 @@ class _ParentHeroCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppRadius.xl),
             boxShadow: [
               BoxShadow(
-                color: AppColors.primary.withValues(alpha: 0.35),
+                color: context.colors.primary.withValues(alpha: 0.35),
                 blurRadius: 20,
                 offset: const Offset(0, 8),
               ),
@@ -688,7 +690,7 @@ class _ParentHeroCard extends StatelessWidget {
                               color: Colors.white)),
                       const SizedBox(height: 4),
                       Text('Enroll your child & track their day',
-                          style: AppTextStyles.bodySmall
+                          style: context.textStyles.bodySmall
                               .copyWith(color: Colors.white.withValues(alpha: 0.85))),
                     ],
                   ),
@@ -733,7 +735,7 @@ class _CompactRoleCard extends StatelessWidget {
           padding: const EdgeInsets.symmetric(
               horizontal: AppSpacing.md, vertical: AppSpacing.md),
           decoration: BoxDecoration(
-            color: isDark ? AppColors.bgDarkSurface : AppColors.bgSurface,
+            color: isDark ? context.colors.bgDarkSurface : context.colors.bgSurface,
             borderRadius: BorderRadius.circular(AppRadius.lg),
             border: Border.all(
                 color: color.withValues(alpha: isDark ? 0.3 : 0.2)),
@@ -760,7 +762,7 @@ class _CompactRoleCard extends StatelessWidget {
                             ?.copyWith(fontSize: 17, color: cs.onSurface)),
                     const SizedBox(height: 2),
                     Text(subtitle,
-                        style: AppTextStyles.bodySmall
+                        style: context.textStyles.bodySmall
                             .copyWith(color: cs.onSurface.withValues(alpha: 0.5))),
                   ],
                 ),
@@ -901,10 +903,10 @@ class _DetailsStepState extends State<_DetailsStep> {
         children: [
           const SizedBox(height: AppSpacing.md),
           Text('Your details',
-              style: Theme.of(context).textTheme.displayMedium),
+              style: context.textStyles.heading2),
           const SizedBox(height: AppSpacing.xs),
           Text('Fill in your account information',
-              style: AppTextStyles.bodyMuted
+              style: context.textStyles.bodyMuted
                   .copyWith(color: cs.onSurface.withValues(alpha: 0.5))),
           const SizedBox(height: AppSpacing.lg),
 
@@ -1126,7 +1128,7 @@ class _PhoneField extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(label,
-              style: AppTextStyles.labelBold.copyWith(color: cs.onSurface)),
+              style: context.textStyles.labelBold.copyWith(color: cs.onSurface)),
           const SizedBox(height: 6),
           Row(
             children: [
@@ -1135,7 +1137,7 @@ class _PhoneField extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(
                     horizontal: 14, vertical: 15),
                 decoration: BoxDecoration(
-                  color: isDark ? AppColors.bgDarkMuted : AppColors.bgLight,
+                  color: isDark ? context.colors.bgDarkMuted : context.colors.bgLight,
                   borderRadius: const BorderRadius.horizontal(
                       left: Radius.circular(AppRadius.md)),
                   border: Border.all(
@@ -1146,7 +1148,7 @@ class _PhoneField extends StatelessWidget {
                     const Text('🇮🇳', style: TextStyle(fontSize: 16)),
                     const SizedBox(width: 6),
                     Text('+91',
-                        style: AppTextStyles.labelBold
+                        style: context.textStyles.labelBold
                             .copyWith(color: cs.onSurface)),
                   ],
                 ),
@@ -1157,17 +1159,17 @@ class _PhoneField extends StatelessWidget {
                   controller: digitsCtrl,
                   keyboardType: TextInputType.phone,
                   maxLength: 10,
-                  style: AppTextStyles.bodyMedium
+                  style: context.textStyles.bodyMedium
                       .copyWith(color: cs.onSurface),
                   decoration: InputDecoration(
                     counterText: '',
                     hintText: '98765 43210',
-                    hintStyle: AppTextStyles.bodyMuted
+                    hintStyle: context.textStyles.bodyMuted
                         .copyWith(color: cs.onSurface.withValues(alpha: 0.35)),
                     filled: true,
                     fillColor: isDark
-                        ? AppColors.bgDarkMuted
-                        : AppColors.bgLight,
+                        ? context.colors.bgDarkMuted
+                        : context.colors.bgLight,
                     contentPadding: const EdgeInsets.symmetric(
                         horizontal: 14, vertical: 15),
                     border: OutlineInputBorder(
@@ -1185,20 +1187,20 @@ class _PhoneField extends StatelessWidget {
                     focusedBorder: OutlineInputBorder(
                       borderRadius: const BorderRadius.horizontal(
                           right: Radius.circular(AppRadius.md)),
-                      borderSide: const BorderSide(
-                          color: AppColors.primary, width: 1.8),
+                      borderSide: BorderSide(
+                          color: context.colors.primary, width: 1.8),
                     ),
                     errorBorder: OutlineInputBorder(
                       borderRadius: const BorderRadius.horizontal(
                           right: Radius.circular(AppRadius.md)),
-                      borderSide: const BorderSide(
-                          color: AppColors.danger),
+                      borderSide: BorderSide(
+                          color: context.colors.danger),
                     ),
                     focusedErrorBorder: OutlineInputBorder(
                       borderRadius: const BorderRadius.horizontal(
                           right: Radius.circular(AppRadius.md)),
-                      borderSide: const BorderSide(
-                          color: AppColors.danger, width: 1.8),
+                      borderSide: BorderSide(
+                          color: context.colors.danger, width: 1.8),
                     ),
                   ),
                   validator: (v) {
@@ -1247,12 +1249,12 @@ class _DropdownField<T> extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(label,
-              style: AppTextStyles.labelBold.copyWith(color: cs.onSurface)),
+              style: context.textStyles.labelBold.copyWith(color: cs.onSurface)),
           const SizedBox(height: 6),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
             decoration: BoxDecoration(
-              color: isDark ? AppColors.bgDarkMuted : AppColors.bgLight,
+              color: isDark ? context.colors.bgDarkMuted : context.colors.bgLight,
               borderRadius: BorderRadius.circular(AppRadius.md),
               border:
                   Border.all(color: cs.outline.withValues(alpha: 0.4)),
@@ -1269,9 +1271,9 @@ class _DropdownField<T> extends StatelessWidget {
                       value: value,
                       isExpanded: true,
                       dropdownColor: isDark
-                          ? AppColors.bgDarkSurface
-                          : AppColors.bgSurface,
-                      style: AppTextStyles.bodyMedium
+                          ? context.colors.bgDarkSurface
+                          : context.colors.bgSurface,
+                      style: context.textStyles.bodyMedium
                           .copyWith(color: cs.onSurface),
                       icon: Icon(Icons.keyboard_arrow_down_rounded,
                           color: cs.onSurface.withValues(alpha: 0.4)),
@@ -1340,11 +1342,11 @@ class _ChildInfoStep extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.12),
+                  color: context.colors.primary.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(AppRadius.md),
                 ),
-                child: const Icon(Icons.child_care_rounded,
-                    color: AppColors.primary, size: 24),
+                child: Icon(Icons.child_care_rounded,
+                    color: context.colors.primary, size: 24),
               ),
               const SizedBox(width: AppSpacing.md),
               Expanded(
@@ -1352,9 +1354,9 @@ class _ChildInfoStep extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text("Your child's info",
-                        style: Theme.of(context).textTheme.displayMedium),
+                        style: context.textStyles.heading2),
                     Text("You can add more children after sign-up",
-                        style: AppTextStyles.bodySmall.copyWith(
+                        style: context.textStyles.bodySmall.copyWith(
                             color: cs.onSurface.withValues(alpha: 0.5))),
                   ],
                 ),
@@ -1379,7 +1381,7 @@ class _ChildInfoStep extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Date of Birth", style: AppTextStyles.labelBold
+                Text("Date of Birth", style: context.textStyles.labelBold
                     .copyWith(color: cs.onSurface)),
                 const SizedBox(height: 6),
                 GestureDetector(
@@ -1389,7 +1391,7 @@ class _ChildInfoStep extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(
                         horizontal: AppSpacing.md, vertical: 15),
                     decoration: BoxDecoration(
-                      color: isDark ? AppColors.bgDarkMuted : AppColors.bgLight,
+                      color: isDark ? context.colors.bgDarkMuted : context.colors.bgLight,
                       borderRadius: BorderRadius.circular(AppRadius.md),
                       border: Border.all(
                           color: cs.outline.withValues(alpha: 0.4)),
@@ -1405,9 +1407,9 @@ class _ChildInfoStep extends StatelessWidget {
                               ? '${childDob!.day}/${childDob!.month}/${childDob!.year}'
                               : 'Select date of birth',
                           style: childDob != null
-                              ? AppTextStyles.bodyMedium
+                              ? context.textStyles.bodyMedium
                                   .copyWith(color: cs.onSurface)
-                              : AppTextStyles.bodyMuted.copyWith(
+                              : context.textStyles.bodyMuted.copyWith(
                                   color: cs.onSurface.withValues(alpha: 0.35)),
                         ),
                       ],
@@ -1424,7 +1426,7 @@ class _ChildInfoStep extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Gender', style: AppTextStyles.labelBold
+                Text('Gender', style: context.textStyles.labelBold
                     .copyWith(color: cs.onSurface)),
                 const SizedBox(height: 6),
                 Container(
@@ -1432,7 +1434,7 @@ class _ChildInfoStep extends StatelessWidget {
                       const EdgeInsets.symmetric(horizontal: AppSpacing.md),
                   decoration: BoxDecoration(
                     color:
-                        isDark ? AppColors.bgDarkMuted : AppColors.bgLight,
+                        isDark ? context.colors.bgDarkMuted : context.colors.bgLight,
                     borderRadius: BorderRadius.circular(AppRadius.md),
                     border: Border.all(
                         color: cs.outline.withValues(alpha: 0.4)),
@@ -1442,9 +1444,9 @@ class _ChildInfoStep extends StatelessWidget {
                       value: childGender,
                       isExpanded: true,
                       dropdownColor: isDark
-                          ? AppColors.bgDarkSurface
-                          : AppColors.bgSurface,
-                      style: AppTextStyles.bodyMedium
+                          ? context.colors.bgDarkSurface
+                          : context.colors.bgSurface,
+                      style: context.textStyles.bodyMedium
                           .copyWith(color: cs.onSurface),
                       items: const [
                         DropdownMenuItem(
@@ -1496,7 +1498,7 @@ class _ChildInfoStep extends StatelessWidget {
                 Expanded(
                   child: Text(
                     'Leave empty if you don\'t have a code yet — admin can assign your child to a classroom later.',
-                    style: AppTextStyles.bodySmall.copyWith(
+                    style: context.textStyles.bodySmall.copyWith(
                         color: cs.onSurface.withValues(alpha: 0.45)),
                   ),
                 ),
@@ -1510,22 +1512,22 @@ class _ChildInfoStep extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(AppSpacing.md),
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.08),
+              color: context.colors.primary.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(AppRadius.md),
               border: Border.all(
-                  color: AppColors.primary.withValues(alpha: 0.2)),
+                  color: context.colors.primary.withValues(alpha: 0.2)),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.info_outline,
-                    color: AppColors.primary, size: 18),
+                Icon(Icons.info_outline,
+                    color: context.colors.primary, size: 18),
                 const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Text(
                     'This info is visible to your child\'s assigned teacher and the center admin. You can update it anytime from your profile.',
-                    style: AppTextStyles.bodySmall.copyWith(
-                        color: AppColors.primary.withValues(alpha: 0.85)),
+                    style: context.textStyles.bodySmall.copyWith(
+                        color: context.colors.primary.withValues(alpha: 0.85)),
                   ),
                 ),
               ],
@@ -1604,7 +1606,7 @@ class _Divider extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
             child: Text(label,
-                style: AppTextStyles.labelMedium
+                style: context.textStyles.labelMedium
                     .copyWith(color: cs.onSurface.withValues(alpha: 0.45))),
           ),
           Expanded(
@@ -1634,7 +1636,7 @@ class _StepIndicator extends StatelessWidget {
               width: active ? 28 : 8,
               height: 8,
               decoration: BoxDecoration(
-                color: active ? AppColors.primary : AppColors.border,
+                color: active ? context.colors.primary : context.colors.border,
                 borderRadius: BorderRadius.circular(4),
               ),
             ),

@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:tinysteps/core/constants/app_theme.dart';
+import 'package:tinysteps/core/providers/theme_provider.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 /// Shared across all roles — dark mode, language, display preferences.
 /// Navigate here via context.push('/app-settings') from any settings screen.
-class AppSettingsScreen extends StatefulWidget {
+class AppSettingsScreen extends ConsumerStatefulWidget {
   const AppSettingsScreen({super.key});
 
   @override
-  State<AppSettingsScreen> createState() => _AppSettingsScreenState();
+  ConsumerState<AppSettingsScreen> createState() => _AppSettingsScreenState();
 }
 
-class _AppSettingsScreenState extends State<AppSettingsScreen> {
+class _AppSettingsScreenState extends ConsumerState<AppSettingsScreen> {
 
-  final bool _darkMode = false;
   String _language = 'English';
   bool _compactMode = false;
 
@@ -28,11 +30,15 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeMode = ref.watch(themeModeProvider);
+    final isDarkMode = themeMode == ThemeMode.dark || 
+        (themeMode == ThemeMode.system && MediaQuery.platformBrightnessOf(context) == Brightness.dark);
+
     return Scaffold(
-      backgroundColor: AppColors.bgLight,
+      backgroundColor: context.colors.bgLight,
       appBar: AppBar(
-        title: Text('App Settings', style: AppTextStyles.heading2),
-        backgroundColor: AppColors.bgLight,
+        title: Text('App Settings', style: context.textStyles.heading2),
+        backgroundColor: context.colors.bgLight,
         elevation: 0,
         surfaceTintColor: Colors.transparent,
       ),
@@ -52,33 +58,32 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                     Container(
                       padding: const EdgeInsets.all(AppSpacing.xs),
                       decoration: BoxDecoration(
-                        color: AppColors.textDark.withValues(alpha: 0.08),
+                        color: context.colors.textDark.withValues(alpha: 0.08),
                         borderRadius: BorderRadius.circular(AppRadius.xs),
                       ),
-                      child: const Icon(Icons.dark_mode_outlined,
-                          color: AppColors.textDark, size: 18),
+                      child: Icon(Icons.dark_mode_outlined,
+                          color: context.colors.textDark, size: 18),
                     ),
                     const SizedBox(width: AppSpacing.md),
-                    Text('Dark Mode', style: AppTextStyles.labelBold),
+                    Text('Dark Mode', style: context.textStyles.bodyLarge),
                   ],
                 ),
                 subtitle: Padding(
                   padding: const EdgeInsets.only(
                       left: AppSpacing.md + AppSpacing.xs + 18,
                       top: 2),
-                  child: Text('Coming soon — stay tuned!',
-                      style: AppTextStyles.bodySmall),
+                  child: Text('Toggle application theme',
+                      style: context.textStyles.bodySmall),
                 ),
-                activeThumbColor: AppColors.primary,
-                activeTrackColor: AppColors.primaryLight,
-                value: _darkMode,
-                onChanged: (_) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Dark mode coming soon!')),
-                  );
+                activeThumbColor: Theme.of(context).switchTheme.thumbColor?.resolve({WidgetState.selected}),
+                activeTrackColor: Theme.of(context).switchTheme.trackColor?.resolve({WidgetState.selected}),
+                value: isDarkMode,
+                onChanged: (val) {
+                  ref.read(themeModeProvider.notifier).state = 
+                      val ? ThemeMode.dark : ThemeMode.light;
                 },
               ),
-              const Divider(height: 1, color: AppColors.border),
+              const Divider(height: 1),
               SwitchListTile(
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: AppSpacing.md),
@@ -87,14 +92,14 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                     Container(
                       padding: const EdgeInsets.all(AppSpacing.xs),
                       decoration: BoxDecoration(
-                        color: AppColors.primaryLight,
+                        color: context.colors.primaryLight,
                         borderRadius: BorderRadius.circular(AppRadius.xs),
                       ),
-                      child: const Icon(Icons.view_compact_outlined,
-                          color: AppColors.primary, size: 18),
+                      child: Icon(Icons.view_compact_outlined,
+                          color: context.colors.primary, size: 18),
                     ),
                     const SizedBox(width: AppSpacing.md),
-                    Text('Compact Mode', style: AppTextStyles.labelBold),
+                    Text('Compact Mode', style: context.textStyles.bodyLarge),
                   ],
                 ),
                 subtitle: Padding(
@@ -102,10 +107,10 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                       left: AppSpacing.md + AppSpacing.xs + 18,
                       top: 2),
                   child: Text('Reduce spacing in lists',
-                      style: AppTextStyles.bodySmall),
+                      style: context.textStyles.bodySmall),
                 ),
-                activeThumbColor: AppColors.primary,
-                activeTrackColor: AppColors.primaryLight,
+                activeThumbColor: Theme.of(context).switchTheme.thumbColor?.resolve({WidgetState.selected}),
+                activeTrackColor: Theme.of(context).switchTheme.trackColor?.resolve({WidgetState.selected}),
                 value: _compactMode,
                 onChanged: (val) => setState(() => _compactMode = val),
               ),
@@ -124,27 +129,27 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                     Container(
                       padding: const EdgeInsets.all(AppSpacing.xs),
                       decoration: BoxDecoration(
-                        color: AppColors.secondaryLight,
+                        color: context.colors.secondaryLight,
                         borderRadius: BorderRadius.circular(AppRadius.xs),
                       ),
-                      child: const Icon(Icons.language_rounded,
-                          color: AppColors.secondary, size: 18),
+                      child: Icon(Icons.language_rounded,
+                          color: context.colors.secondary, size: 18),
                     ),
                     const SizedBox(width: AppSpacing.md),
                     Expanded(
                         child: Text('Display Language',
-                            style: AppTextStyles.labelBold)),
+                            style: context.textStyles.bodyLarge)),
                     DropdownButton<String>(
                       value: _language,
                       underline: const SizedBox(),
-                      icon: const Icon(Icons.arrow_drop_down_rounded,
-                          color: AppColors.textMuted),
-                      style: AppTextStyles.bodyMedium,
+                      icon: Icon(Icons.arrow_drop_down_rounded,
+                          color: context.colors.textMuted),
+                      style: context.textStyles.bodyMedium,
                       items: _languages
                           .map((l) => DropdownMenuItem(
                               value: l,
                               child: Text(l,
-                                  style: AppTextStyles.bodyMedium)))
+                                  style: context.textStyles.bodyMedium)))
                           .toList(),
                       onChanged: (v) {
                         if (v != null) setState(() => _language = v);
@@ -165,8 +170,8 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                 return Center(
                   child: Text(
                     'TinySteps v$version',
-                    style: AppTextStyles.caption
-                        .copyWith(color: AppColors.textMuted),
+                    style: context.textStyles.caption
+                        .copyWith(color: context.colors.textMuted),
                   ),
                 );
               },
@@ -182,19 +187,18 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
         padding: const EdgeInsets.only(bottom: AppSpacing.sm),
         child: Text(
           label.toUpperCase(),
-          style: AppTextStyles.caption.copyWith(
+          style: context.textStyles.bodySmall.copyWith(
             fontWeight: FontWeight.w700,
             letterSpacing: 1.2,
-            color: AppColors.textMuted,
           ),
         ),
       );
 
   Widget _card(List<Widget> children) => Container(
         decoration: BoxDecoration(
-          color: AppColors.white,
+          color: context.colors.bgSurface,
           borderRadius: BorderRadius.circular(AppRadius.lg),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: context.colors.border),
           boxShadow: AppShadows.card,
         ),
         child: Column(children: children),

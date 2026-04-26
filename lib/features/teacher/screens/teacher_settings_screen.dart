@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:tinysteps/core/constants/app_theme.dart';
 import 'package:tinysteps/core/widgets/logout_dialog.dart';
 import 'package:tinysteps/features/auth/screens/change_password_screen.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 
 /// Teacher Settings Screen — profile + preferences + account
@@ -72,11 +73,11 @@ class _TeacherSettingsScreenState extends State<TeacherSettingsScreen> {
     await showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.bgLight,
+        backgroundColor: context.colors.bgLight,
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadius.xl)),
-        title: Text('Edit Profile', style: AppTextStyles.heading3),
+        title: Text('Edit Profile', style: context.textStyles.heading3),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -92,11 +93,11 @@ class _TeacherSettingsScreenState extends State<TeacherSettingsScreen> {
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child: Text('Cancel',
-                style: AppTextStyles.labelBold.copyWith(color: AppColors.textMuted)),
+                style: context.textStyles.labelBold.copyWith(color: context.colors.textMuted)),
           ),
           FilledButton(
             style: FilledButton.styleFrom(
-              backgroundColor: AppColors.secondary,
+              backgroundColor: context.colors.secondary,
               shape: RoundedRectangleBorder(borderRadius: AppRadius.buttonRadius),
             ),
             onPressed: () async {
@@ -109,7 +110,7 @@ class _TeacherSettingsScreenState extends State<TeacherSettingsScreen> {
               if (ctx.mounted) Navigator.pop(ctx);
               await _loadProfile();
             },
-            child: Text('Save', style: AppTextStyles.buttonLabel),
+            child: Text('Save', style: context.textStyles.buttonLabel),
           ),
         ],
       ),
@@ -121,24 +122,24 @@ class _TeacherSettingsScreenState extends State<TeacherSettingsScreen> {
     return TextFormField(
       controller: ctrl,
       keyboardType: keyboardType,
-      style: AppTextStyles.bodyMedium,
+      style: context.textStyles.bodyMedium,
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: AppTextStyles.labelMedium,
-        prefixIcon: Icon(icon, color: AppColors.secondary, size: 20),
+        labelStyle: context.textStyles.labelMedium,
+        prefixIcon: Icon(icon, color: context.colors.secondary, size: 20),
         filled: true,
-        fillColor: AppColors.bgSurface,
+        fillColor: context.colors.bgSurface,
         border: OutlineInputBorder(
           borderRadius: AppRadius.inputRadius,
-          borderSide: const BorderSide(color: AppColors.border),
+          borderSide: BorderSide(color: context.colors.border),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: AppRadius.inputRadius,
-          borderSide: const BorderSide(color: AppColors.border),
+          borderSide: BorderSide(color: context.colors.border),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: AppRadius.inputRadius,
-          borderSide: const BorderSide(color: AppColors.secondary, width: 2),
+          borderSide: BorderSide(color: context.colors.secondary, width: 2),
         ),
         contentPadding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.md, vertical: AppSpacing.sm),
@@ -152,10 +153,10 @@ class _TeacherSettingsScreenState extends State<TeacherSettingsScreen> {
         _fullName.isNotEmpty ? _fullName[0].toUpperCase() : 'T';
 
     return Scaffold(
-      backgroundColor: AppColors.bgLight,
+      backgroundColor: context.colors.bgLight,
       body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(color: AppColors.secondary))
+          ? Center(
+              child: CircularProgressIndicator(color: context.colors.secondary))
           : CustomScrollView(
               slivers: [
                 // ── Lavender Gradient Profile Header ───────────────────
@@ -176,21 +177,21 @@ class _TeacherSettingsScreenState extends State<TeacherSettingsScreen> {
                             Row(
                               children: [
                                 Text('Settings',
-                                    style: AppTextStyles.heading2
-                                        .copyWith(color: AppColors.white)),
+                                    style: context.textStyles.heading2
+                                        .copyWith(color: context.colors.white)),
                                 const Spacer(),
                                 IconButton(
                                   onPressed: _showEditProfileDialog,
                                   icon: Container(
                                     padding: const EdgeInsets.all(AppSpacing.xs),
                                     decoration: BoxDecoration(
-                                      color: AppColors.white
+                                      color: context.colors.white
                                           .withValues(alpha: 0.25),
                                       borderRadius:
                                           BorderRadius.circular(AppRadius.sm),
                                     ),
-                                    child: const Icon(Icons.edit_outlined,
-                                        color: AppColors.white, size: 20),
+                                    child: Icon(Icons.edit_outlined,
+                                        color: context.colors.white, size: 20),
                                   ),
                                 ),
                               ],
@@ -204,17 +205,17 @@ class _TeacherSettingsScreenState extends State<TeacherSettingsScreen> {
                                       width: 72,
                                       height: 72,
                                       decoration: BoxDecoration(
-                                        color: AppColors.white
+                                        color: context.colors.white
                                             .withValues(alpha: 0.25),
                                         shape: BoxShape.circle,
                                         border: Border.all(
-                                            color: AppColors.white, width: 2),
+                                            color: context.colors.white, width: 2),
                                       ),
                                       child: Center(
                                         child: Text(
                                           initial,
-                                          style: AppTextStyles.heading1
-                                              .copyWith(color: AppColors.white),
+                                          style: context.textStyles.heading1
+                                              .copyWith(color: context.colors.white),
                                         ),
                                       ),
                                     ),
@@ -226,17 +227,17 @@ class _TeacherSettingsScreenState extends State<TeacherSettingsScreen> {
                                         padding: const EdgeInsets.all(3),
                                         decoration: BoxDecoration(
                                           color: _isApproved
-                                              ? AppColors.success
-                                              : AppColors.warning,
+                                              ? context.colors.success
+                                              : context.colors.warning,
                                           shape: BoxShape.circle,
                                           border: Border.all(
-                                              color: AppColors.white, width: 2),
+                                              color: context.colors.white, width: 2),
                                         ),
                                         child: Icon(
                                           _isApproved
                                               ? Icons.check
                                               : Icons.hourglass_top_rounded,
-                                          color: AppColors.white,
+                                          color: context.colors.white,
                                           size: 10,
                                         ),
                                       ),
@@ -252,14 +253,14 @@ class _TeacherSettingsScreenState extends State<TeacherSettingsScreen> {
                                         _fullName.isNotEmpty
                                             ? _fullName
                                             : 'Teacher',
-                                        style: AppTextStyles.heading3
-                                            .copyWith(color: AppColors.white),
+                                        style: context.textStyles.heading3
+                                            .copyWith(color: context.colors.white),
                                       ),
                                       const SizedBox(height: 2),
                                       Text(
                                         _email,
-                                        style: AppTextStyles.bodySmall.copyWith(
-                                            color: AppColors.white
+                                        style: context.textStyles.bodySmall.copyWith(
+                                            color: context.colors.white
                                                 .withValues(alpha: 0.85)),
                                       ),
                                       const SizedBox(height: AppSpacing.xs),
@@ -270,8 +271,8 @@ class _TeacherSettingsScreenState extends State<TeacherSettingsScreen> {
                                                 : 'Teacher')
                                             : 'Pending Approval',
                                         _isApproved
-                                            ? AppColors.white
-                                            : AppColors.warning,
+                                            ? context.colors.white
+                                            : context.colors.warning,
                                       ),
                                     ],
                                   ),
@@ -294,13 +295,13 @@ class _TeacherSettingsScreenState extends State<TeacherSettingsScreen> {
                       _infoCard(children: [
                         if (_phone.isNotEmpty) ...[
                           _infoRow(Icons.phone_outlined, 'Phone', _phone),
-                          const Divider(
-                              height: AppSpacing.lg, color: AppColors.border),
+                          Divider(
+                              height: AppSpacing.lg, color: context.colors.border),
                         ],
                         if (_staffId.isNotEmpty) ...[
                           _infoRow(Icons.numbers, 'Staff ID', _staffId),
-                          const Divider(
-                              height: AppSpacing.lg, color: AppColors.border),
+                          Divider(
+                              height: AppSpacing.lg, color: context.colors.border),
                         ],
                         if (_joiningDate.isNotEmpty)
                           _infoRow(Icons.calendar_today_outlined, 'Joined',
@@ -317,14 +318,14 @@ class _TeacherSettingsScreenState extends State<TeacherSettingsScreen> {
                       _sectionLabel('Preferences'),
                       _settingsTile(
                         icon: Icons.notifications_none_rounded,
-                        iconColor: AppColors.accent,
+                        iconColor: context.colors.accent,
                         title: 'Push Notifications',
                         subtitle: 'Attendance alerts & messages',
                         onTap: () => context.push('/notifications'),
                       ),
                       _settingsTile(
                         icon: Icons.settings_outlined,
-                        iconColor: AppColors.info,
+                        iconColor: context.colors.info,
                         title: 'App Settings',
                         subtitle: 'Appearance and language',
                         onTap: () => context.push('/app-settings'),
@@ -334,19 +335,19 @@ class _TeacherSettingsScreenState extends State<TeacherSettingsScreen> {
                       _sectionLabel('Support & Legal'),
                       _settingsTile(
                         icon: Icons.help_outline_rounded,
-                        iconColor: AppColors.secondary,
+                        iconColor: context.colors.secondary,
                         title: 'Help Center',
                         onTap: () => context.push('/support'),
                       ),
                       _settingsTile(
                         icon: Icons.description_outlined,
-                        iconColor: AppColors.textMuted,
+                        iconColor: context.colors.textMuted,
                         title: 'Privacy Policy',
                         onTap: () => context.push('/privacy-policy'),
                       ),
                       _settingsTile(
                         icon: Icons.info_outline_rounded,
-                        iconColor: AppColors.textMuted,
+                        iconColor: context.colors.textMuted,
                         title: 'About TinySteps',
                         subtitle: 'Version info & credits',
                         onTap: () => context.push('/about'),
@@ -356,7 +357,7 @@ class _TeacherSettingsScreenState extends State<TeacherSettingsScreen> {
                       _sectionLabel('Account'),
                       _settingsTile(
                         icon: Icons.lock_outline_rounded,
-                        iconColor: AppColors.warning,
+                        iconColor: context.colors.warning,
                         title: 'Change Password',
                         onTap: () => Navigator.push(
                           context,
@@ -394,7 +395,7 @@ class _TeacherSettingsScreenState extends State<TeacherSettingsScreen> {
       ),
       child: Text(
         label,
-        style: AppTextStyles.caption.copyWith(
+        style: context.textStyles.caption.copyWith(
           color: color,
           fontWeight: FontWeight.bold,
           letterSpacing: 0.3,
@@ -407,9 +408,9 @@ class _TeacherSettingsScreenState extends State<TeacherSettingsScreen> {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: context.colors.bgSurface,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.colors.border),
         boxShadow: AppShadows.card,
       ),
       child: Column(children: children),
@@ -422,17 +423,17 @@ class _TeacherSettingsScreenState extends State<TeacherSettingsScreen> {
         Container(
           padding: const EdgeInsets.all(AppSpacing.sm),
           decoration: BoxDecoration(
-            color: AppColors.secondaryLight,
+            color: context.colors.secondaryLight,
             borderRadius: BorderRadius.circular(AppRadius.sm),
           ),
-          child: Icon(icon, color: AppColors.secondary, size: 16),
+          child: Icon(icon, color: context.colors.secondary, size: 16),
         ),
         const SizedBox(width: AppSpacing.md),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label, style: AppTextStyles.caption),
-            Text(value, style: AppTextStyles.labelBold),
+            Text(label, style: context.textStyles.caption),
+            Text(value, style: context.textStyles.labelBold),
           ],
         ),
       ],
@@ -445,10 +446,10 @@ class _TeacherSettingsScreenState extends State<TeacherSettingsScreen> {
           const EdgeInsets.only(bottom: AppSpacing.sm, top: AppSpacing.xs),
       child: Text(
         label.toUpperCase(),
-        style: AppTextStyles.caption.copyWith(
+        style: context.textStyles.caption.copyWith(
           fontWeight: FontWeight.w700,
           letterSpacing: 1.2,
-          color: AppColors.textMuted,
+          color: context.colors.textMuted,
         ),
       ),
     );
@@ -465,9 +466,9 @@ class _TeacherSettingsScreenState extends State<TeacherSettingsScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.sm),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: context.colors.bgSurface,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: AppColors.border.withValues(alpha: 0.6)),
+        border: Border.all(color: context.colors.border.withValues(alpha: 0.6)),
         boxShadow: AppShadows.card,
       ),
       child: ListTile(
@@ -481,15 +482,15 @@ class _TeacherSettingsScreenState extends State<TeacherSettingsScreen> {
           ),
           child: Icon(icon, color: iconColor, size: 20),
         ),
-        title: Text(title, style: AppTextStyles.bodyLarge),
+        title: Text(title, style: context.textStyles.bodyLarge),
         subtitle: subtitle != null
             ? Text(subtitle,
-                style: AppTextStyles.bodySmall
-                    .copyWith(color: AppColors.textMuted))
+                style: context.textStyles.bodySmall
+                    .copyWith(color: context.colors.textMuted))
             : null,
         trailing: trailing ??
-            const Icon(Icons.chevron_right_rounded,
-                color: AppColors.textMuted, size: 20),
+            Icon(Icons.chevron_right_rounded,
+                color: context.colors.textMuted, size: 20),
         onTap: onTap,
       ),
     );
@@ -503,9 +504,9 @@ class _TeacherSettingsScreenState extends State<TeacherSettingsScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.sm),
       decoration: BoxDecoration(
-        color: AppColors.dangerLight,
+        color: context.colors.dangerLight,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: AppColors.danger.withValues(alpha: 0.25)),
+        border: Border.all(color: context.colors.danger.withValues(alpha: 0.25)),
       ),
       child: ListTile(
         shape: RoundedRectangleBorder(
@@ -513,15 +514,15 @@ class _TeacherSettingsScreenState extends State<TeacherSettingsScreen> {
         leading: Container(
           padding: const EdgeInsets.all(AppSpacing.sm),
           decoration: BoxDecoration(
-            color: AppColors.danger.withValues(alpha: 0.12),
+            color: context.colors.danger.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(AppRadius.sm),
           ),
-          child: Icon(icon, color: AppColors.danger, size: 20),
+          child: Icon(icon, color: context.colors.danger, size: 20),
         ),
         title: Text(title,
-            style: AppTextStyles.bodyLarge.copyWith(color: AppColors.danger)),
-        trailing: const Icon(Icons.chevron_right_rounded,
-            color: AppColors.danger, size: 20),
+            style: context.textStyles.bodyLarge.copyWith(color: context.colors.danger)),
+        trailing: Icon(Icons.chevron_right_rounded,
+            color: context.colors.danger, size: 20),
         onTap: onTap,
       ),
     );
