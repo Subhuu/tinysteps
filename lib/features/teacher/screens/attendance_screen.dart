@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 import 'package:tinysteps/core/constants/app_theme.dart';
 import 'package:tinysteps/features/parent/widgets/qr_display_sheet.dart'
@@ -297,19 +298,19 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('$permissionName Permission Required', style: AppTextStyles.heading2),
-        content: Text('Please grant $permissionName access in your app settings to use this feature.', style: AppTextStyles.bodyMedium),
+        title: Text('$permissionName Permission Required', style: context.textStyles.heading2),
+        content: Text('Please grant $permissionName access in your app settings to use this feature.', style: context.textStyles.bodyMedium),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Cancel', style: TextStyle(color: AppColors.textMuted)),
+            child: Text('Cancel', style: TextStyle(color: context.colors.textMuted)),
           ),
           TextButton(
             onPressed: () {
               Navigator.of(ctx).pop();
               openAppSettings();
             },
-            child: const Text('Open Settings', style: TextStyle(color: AppColors.primary)),
+            child: Text('Open Settings', style: TextStyle(color: context.colors.primary)),
           ),
         ],
       )
@@ -320,10 +321,10 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgLight,
+      backgroundColor: context.colors.bgLight,
       appBar: AppBar(
-        title: Text('Attendance Scanner', style: AppTextStyles.heading2),
-        backgroundColor: AppColors.bgLight,
+        title: Text('Attendance Scanner', style: context.textStyles.heading2),
+        backgroundColor: context.colors.bgLight,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -349,7 +350,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
         const SizedBox(height: AppSpacing.lg),
         Text(
           'Point camera at the parent\'s QR code',
-          style: AppTextStyles.bodyMuted,
+          style: context.textStyles.bodyMuted,
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: AppSpacing.lg),
@@ -362,7 +363,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
             clipBehavior: Clip.antiAlias,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(AppRadius.xl),
-              border: Border.all(color: AppColors.primary, width: 3),
+              border: Border.all(color: context.colors.primary, width: 3),
             ),
             child: MobileScanner(
               controller: _controller,
@@ -407,7 +408,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
         // Corner markers visual hint
         Text(
           'Align the QR code inside the frame',
-          style: AppTextStyles.caption,
+          style: context.textStyles.caption,
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: AppSpacing.xl),
@@ -415,15 +416,15 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
         // Upload from gallery button
         FilledButton.icon(
           onPressed: _uploadFromGallery,
-          icon: const Icon(Icons.image_outlined, color: AppColors.textDark),
-          label: const Text('Upload from gallery', style: TextStyle(color: AppColors.textDark)),
+          icon: Icon(Icons.image_outlined, color: context.colors.textDark),
+          label: Text('Upload from gallery', style: TextStyle(color: context.colors.textDark)),
           style: FilledButton.styleFrom(
-            backgroundColor: AppColors.bgLight,
+            backgroundColor: context.colors.bgLight,
             elevation: 0,
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl, vertical: AppSpacing.md),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(AppRadius.full),
-              side: const BorderSide(color: AppColors.border),
+              side: BorderSide(color: context.colors.border),
             ),
           ),
         ),
@@ -450,7 +451,7 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                 label: const Text('Scan Next'),
                 onPressed: _reset,
                 style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.primary,
+                  backgroundColor: context.colors.primary,
                   padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
                   shape: RoundedRectangleBorder(
                     borderRadius: AppRadius.buttonRadius,
@@ -466,21 +467,21 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   Widget _buildResultIcon() {
     switch (_state) {
       case _ScanState.loading:
-        return const CircularProgressIndicator(color: AppColors.primary);
+        return CircularProgressIndicator(color: context.colors.primary);
       case _ScanState.checkedIn:
-        return const Icon(Icons.login_rounded, size: 100, color: AppColors.success);
+        return Icon(Icons.login_rounded, size: 100, color: context.colors.success);
       case _ScanState.checkedOut:
-        return const Icon(Icons.logout_rounded, size: 100, color: AppColors.secondary);
+        return Icon(Icons.logout_rounded, size: 100, color: context.colors.secondary);
       case _ScanState.alreadyOut:
-        return const Icon(Icons.info_outline, size: 100, color: AppColors.warning);
+        return Icon(Icons.info_outline, size: 100, color: context.colors.warning);
       case _ScanState.assigned:
-        return const Icon(Icons.how_to_reg_rounded, size: 100, color: AppColors.success);
+        return Icon(Icons.how_to_reg_rounded, size: 100, color: context.colors.success);
       case _ScanState.otherClass:
-        return const Icon(Icons.block_rounded, size: 100, color: AppColors.warning);
+        return Icon(Icons.block_rounded, size: 100, color: context.colors.warning);
       case _ScanState.invalid:
-        return const Icon(Icons.qr_code_2, size: 100, color: AppColors.danger);
+        return Icon(Icons.qr_code_2, size: 100, color: context.colors.danger);
       case _ScanState.error:
-        return const Icon(Icons.cloud_off_rounded, size: 100, color: AppColors.danger);
+        return Icon(Icons.cloud_off_rounded, size: 100, color: context.colors.danger);
       default:
         return const SizedBox.shrink();
     }
@@ -489,16 +490,16 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
   Widget _buildResultText() {
     switch (_state) {
       case _ScanState.loading:
-        return Text('Processing scan...', style: AppTextStyles.bodyMuted);
+        return Text('Processing scan...', style: context.textStyles.bodyMuted);
 
       case _ScanState.checkedIn:
         return Column(
           children: [
-            Text(_childName, style: AppTextStyles.heading1),
+            Text(_childName, style: context.textStyles.heading1),
             const SizedBox(height: AppSpacing.sm),
             Text(
               '✅ Checked In at $_timeLabel',
-              style: AppTextStyles.bodyLarge.copyWith(color: AppColors.success),
+              style: context.textStyles.bodyLarge.copyWith(color: context.colors.success),
               textAlign: TextAlign.center,
             ),
           ],
@@ -507,11 +508,11 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       case _ScanState.checkedOut:
         return Column(
           children: [
-            Text(_childName, style: AppTextStyles.heading1),
+            Text(_childName, style: context.textStyles.heading1),
             const SizedBox(height: AppSpacing.sm),
             Text(
               '👋 Checked Out at $_timeLabel',
-              style: AppTextStyles.bodyLarge.copyWith(color: AppColors.secondary),
+              style: context.textStyles.bodyLarge.copyWith(color: context.colors.secondary),
               textAlign: TextAlign.center,
             ),
           ],
@@ -520,11 +521,11 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       case _ScanState.alreadyOut:
         return Column(
           children: [
-            Text(_childName, style: AppTextStyles.heading1),
+            Text(_childName, style: context.textStyles.heading1),
             const SizedBox(height: AppSpacing.sm),
             Text(
               '$_childName has already checked out today.',
-              style: AppTextStyles.bodyMuted,
+              style: context.textStyles.bodyMuted,
               textAlign: TextAlign.center,
             ),
           ],
@@ -533,13 +534,13 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       case _ScanState.invalid:
         return Column(
           children: [
-            Text('Invalid QR Code', style: AppTextStyles.heading2.copyWith(color: AppColors.danger)),
+            Text('Invalid QR Code', style: context.textStyles.heading2.copyWith(color: context.colors.danger)),
             const SizedBox(height: AppSpacing.sm),
             Text(
               _message.isNotEmpty
                   ? _message
                   : 'This QR code is not recognised.',
-              style: AppTextStyles.bodyMuted,
+              style: context.textStyles.bodyMuted,
               textAlign: TextAlign.center,
             ),
           ],
@@ -548,11 +549,11 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       case _ScanState.error:
         return Column(
           children: [
-            Text('Connection Error', style: AppTextStyles.heading2.copyWith(color: AppColors.danger)),
+            Text('Connection Error', style: context.textStyles.heading2.copyWith(color: context.colors.danger)),
             const SizedBox(height: AppSpacing.sm),
             Text(
               _message.isNotEmpty ? _message : 'Please check your connection and try again.',
-              style: AppTextStyles.bodyMuted,
+              style: context.textStyles.bodyMuted,
               textAlign: TextAlign.center,
             ),
           ],
@@ -560,17 +561,17 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       case _ScanState.assigned:
         return Column(
           children: [
-            Text(_childName, style: AppTextStyles.heading1),
+            Text(_childName, style: context.textStyles.heading1),
             const SizedBox(height: AppSpacing.sm),
             Text(
               '✅ $_message',
-              style: AppTextStyles.bodyLarge.copyWith(color: AppColors.success),
+              style: context.textStyles.bodyLarge.copyWith(color: context.colors.success),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(
               'The child has been enrolled in your classroom.',
-              style: AppTextStyles.bodyMuted,
+              style: context.textStyles.bodyMuted,
               textAlign: TextAlign.center,
             ),
           ],
@@ -579,17 +580,17 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       case _ScanState.otherClass:
         return Column(
           children: [
-            Text(_childName, style: AppTextStyles.heading1),
+            Text(_childName, style: context.textStyles.heading1),
             const SizedBox(height: AppSpacing.sm),
             Text(
               _message,
-              style: AppTextStyles.bodyLarge.copyWith(color: AppColors.warning),
+              style: context.textStyles.bodyLarge.copyWith(color: context.colors.warning),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(
               'You can only mark attendance for children in your classroom.',
-              style: AppTextStyles.bodyMuted,
+              style: context.textStyles.bodyMuted,
               textAlign: TextAlign.center,
             ),
           ],

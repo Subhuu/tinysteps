@@ -4,6 +4,7 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:tinysteps/core/constants/app_theme.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 // ── Public helper to show the QR sheet ────────────────────────────────────────
 void showQRDisplaySheet(
@@ -14,7 +15,7 @@ void showQRDisplaySheet(
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
-    backgroundColor: AppColors.transparent,
+    backgroundColor: context.colors.transparent,
     builder: (_) => _QRDisplaySheet(childId: childId, childName: childName),
   );
 }
@@ -124,9 +125,9 @@ class _QRDisplaySheetState extends State<_QRDisplaySheet> {
   }
 
   Color _timerColor() {
-    if (_secondsLeft > 120) return AppColors.success;
-    if (_secondsLeft > 60) return AppColors.warning;
-    return AppColors.danger;
+    if (_secondsLeft > 120) return context.colors.success;
+    if (_secondsLeft > 60) return context.colors.warning;
+    return context.colors.danger;
   }
 
   @override
@@ -139,7 +140,7 @@ class _QRDisplaySheetState extends State<_QRDisplaySheet> {
         AppSpacing.xl,
       ),
       decoration: BoxDecoration(
-        color: AppColors.bgLight,
+        color: context.colors.bgLight,
         borderRadius: AppRadius.sheetRadius,
       ),
       child: Column(
@@ -150,16 +151,16 @@ class _QRDisplaySheetState extends State<_QRDisplaySheet> {
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: AppColors.border,
+              color: context.colors.border,
               borderRadius: BorderRadius.circular(AppRadius.full),
             ),
           ),
           const SizedBox(height: AppSpacing.lg),
 
           // Title
-          Text('Child Check-In QR', style: AppTextStyles.heading2),
+          Text('Child Check-In QR', style: context.textStyles.heading2),
           const SizedBox(height: AppSpacing.xs),
-          Text(widget.childName, style: AppTextStyles.bodyMuted),
+          Text(widget.childName, style: context.textStyles.bodyMuted),
 
           const SizedBox(height: AppSpacing.xl),
 
@@ -167,7 +168,7 @@ class _QRDisplaySheetState extends State<_QRDisplaySheet> {
           Container(
             padding: const EdgeInsets.all(AppSpacing.lg),
             decoration: BoxDecoration(
-              color: AppColors.bgSurface,
+              color: context.colors.bgSurface,
               borderRadius: BorderRadius.circular(AppRadius.xl),
               boxShadow: AppShadows.card,
             ),
@@ -176,13 +177,13 @@ class _QRDisplaySheetState extends State<_QRDisplaySheet> {
                 // 👶 Avatar
                 CircleAvatar(
                   radius: 28,
-                  backgroundColor: AppColors.primaryLight.withValues(
+                  backgroundColor: context.colors.primaryLight.withValues(
                     alpha: 0.3,
                   ),
                   child: Text(
                     widget.childName[0],
-                    style: AppTextStyles.heading2.copyWith(
-                      color: AppColors.primary,
+                    style: context.textStyles.heading2.copyWith(
+                      color: context.colors.primary,
                     ),
                   ),
                 ),
@@ -192,14 +193,14 @@ class _QRDisplaySheetState extends State<_QRDisplaySheet> {
                 QrImageView(
                   data: _qrPayload,
                   size: 220,
-                  backgroundColor: AppColors.bgSurface,
-                  eyeStyle: const QrEyeStyle(
+                  backgroundColor: context.colors.bgSurface,
+                  eyeStyle: QrEyeStyle(
                     eyeShape: QrEyeShape.square,
-                    color: AppColors.textDark,
+                    color: context.colors.textDark,
                   ),
-                  dataModuleStyle: const QrDataModuleStyle(
+                  dataModuleStyle: QrDataModuleStyle(
                     dataModuleShape: QrDataModuleShape.square,
-                    color: AppColors.textDark,
+                    color: context.colors.textDark,
                   ),
                 ),
               ],
@@ -214,10 +215,10 @@ class _QRDisplaySheetState extends State<_QRDisplaySheet> {
             children: [
               Icon(Icons.timer_outlined, size: 16, color: _timerColor()),
               const SizedBox(width: 6),
-              Text('Refreshes in ', style: AppTextStyles.bodySmall),
+              Text('Refreshes in ', style: context.textStyles.bodySmall),
               Text(
                 _formatTime(_secondsLeft),
-                style: AppTextStyles.labelBold.copyWith(color: _timerColor()),
+                style: context.textStyles.labelBold.copyWith(color: _timerColor()),
               ),
             ],
           ),
@@ -225,7 +226,7 @@ class _QRDisplaySheetState extends State<_QRDisplaySheet> {
           const SizedBox(height: AppSpacing.xs),
           Text(
             'QR rotates every 5 minutes for security',
-            style: AppTextStyles.caption,
+            style: context.textStyles.caption,
             textAlign: TextAlign.center,
           ),
 
@@ -235,14 +236,14 @@ class _QRDisplaySheetState extends State<_QRDisplaySheet> {
           Container(
             padding: const EdgeInsets.all(AppSpacing.md),
             decoration: BoxDecoration(
-              color: AppColors.primaryLight.withValues(alpha: 0.3),
+              color: context.colors.primaryLight.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(AppRadius.md),
             ),
             child: Row(
               children: [
-                const Icon(
+                Icon(
                   Icons.info_outline,
-                  color: AppColors.primary,
+                  color: context.colors.primary,
                   size: 18,
                 ),
                 const SizedBox(width: AppSpacing.sm),
@@ -250,8 +251,8 @@ class _QRDisplaySheetState extends State<_QRDisplaySheet> {
                   child: Text(
                     'Show this to the teacher at drop-off or pickup. '
                     'They will scan it to mark attendance.',
-                    style: AppTextStyles.bodySmall.copyWith(
-                      color: AppColors.primary,
+                    style: context.textStyles.bodySmall.copyWith(
+                      color: context.colors.primary,
                     ),
                   ),
                 ),
@@ -267,7 +268,7 @@ class _QRDisplaySheetState extends State<_QRDisplaySheet> {
             child: OutlinedButton(
               onPressed: () => Navigator.pop(context),
               style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: AppColors.border),
+                side: BorderSide(color: context.colors.border),
                 padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
                 shape: RoundedRectangleBorder(
                   borderRadius: AppRadius.buttonRadius,
@@ -275,8 +276,8 @@ class _QRDisplaySheetState extends State<_QRDisplaySheet> {
               ),
               child: Text(
                 'Close',
-                style: AppTextStyles.labelBold.copyWith(
-                  color: AppColors.textMedium,
+                style: context.textStyles.labelBold.copyWith(
+                  color: context.colors.textMedium,
                 ),
               ),
             ),

@@ -1,3 +1,4 @@
+import 'package:tinysteps/core/theme/theme_ext.dart';
 import 'package:flutter/material.dart';
 import 'package:tinysteps/core/constants/app_theme.dart';
 import 'child_avatar.dart';
@@ -21,7 +22,7 @@ class AttendanceCard extends StatelessWidget {
       padding: const EdgeInsets.all(AppSpacing.md),
       margin: const EdgeInsets.only(bottom: AppSpacing.sm),
       decoration: BoxDecoration(
-        color: AppColors.bgSurface,
+        color: context.colors.bgSurface,
         borderRadius: AppRadius.cardRadius,
         boxShadow: AppShadows.card,
       ),
@@ -35,11 +36,11 @@ class AttendanceCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(childName, style: AppTextStyles.bodyLarge),
+                Text(childName, style: context.textStyles.bodyLarge),
 
                 const SizedBox(height: 2),
 
-                Text(time, style: AppTextStyles.bodySmall),
+                Text(time, style: context.textStyles.bodySmall),
               ],
             ),
           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tinysteps/core/constants/app_theme.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 class ChildProfileScreen extends StatefulWidget {
   final String childId;
@@ -93,10 +94,10 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
       setState(() => _isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          backgroundColor: AppColors.danger,
+          backgroundColor: context.colors.danger,
           content: Text(
             'Failed to load child details.',
-            style: AppTextStyles.bodySmall.copyWith(color: AppColors.white),
+            style: context.textStyles.bodySmall.copyWith(color: context.colors.white),
           ),
         ),
       );
@@ -146,10 +147,10 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          backgroundColor: AppColors.danger,
+          backgroundColor: context.colors.danger,
           content: Text(
             'Failed to save: ${e.message}',
-            style: AppTextStyles.bodySmall.copyWith(color: AppColors.white),
+            style: context.textStyles.bodySmall.copyWith(color: context.colors.white),
           ),
         ),
       );
@@ -161,10 +162,10 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgLight,
+      backgroundColor: context.colors.bgLight,
       appBar: AppBar(
-        title: Text(widget.childName, style: AppTextStyles.heading2),
-        backgroundColor: AppColors.bgLight,
+        title: Text(widget.childName, style: context.textStyles.heading2),
+        backgroundColor: context.colors.bgLight,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -172,8 +173,8 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
         ),
       ),
       body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(color: AppColors.primary),
+          ? Center(
+              child: CircularProgressIndicator(color: context.colors.primary),
             )
           : SingleChildScrollView(
               padding: const EdgeInsets.all(AppSpacing.lg),
@@ -184,13 +185,13 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                   Center(
                     child: CircleAvatar(
                       radius: 40,
-                      backgroundColor: AppColors.primary.withValues(alpha: 0.15),
+                      backgroundColor: context.colors.primary.withValues(alpha: 0.15),
                       child: Text(
                         widget.childName.isNotEmpty
                             ? widget.childName[0].toUpperCase()
                             : 'C',
                         style: TextStyle(
-                          color: AppColors.primary,
+                          color: context.colors.primary,
                           fontWeight: FontWeight.bold,
                           fontSize: 32,
                         ),
@@ -199,13 +200,13 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                   ),
                   const SizedBox(height: AppSpacing.xl),
 
-                  Text('Child Details', style: AppTextStyles.heading3),
+                  Text('Child Details', style: context.textStyles.heading3),
                   const SizedBox(height: AppSpacing.md),
 
                   // Full Name
                   TextFormField(
                     controller: _nameController,
-                    style: AppTextStyles.bodyLarge,
+                    style: context.textStyles.bodyLarge,
                     decoration: _inputDecoration(
                       label: 'Full Name',
                       icon: Icons.person_outline,
@@ -218,7 +219,7 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                     onTap: () => _pickDate(context),
                     child: AbsorbPointer(
                       child: TextFormField(
-                        style: AppTextStyles.bodyLarge,
+                        style: context.textStyles.bodyLarge,
                         decoration: _inputDecoration(
                           label: 'Date of Birth',
                           icon: Icons.cake_outlined,
@@ -247,7 +248,7 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                   // Allergies
                   TextFormField(
                     controller: _allergiesController,
-                    style: AppTextStyles.bodyLarge,
+                    style: context.textStyles.bodyLarge,
                     decoration: _inputDecoration(
                       label: 'Allergies',
                       icon: Icons.warning_amber_outlined,
@@ -259,7 +260,7 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                   TextFormField(
                     controller: _medicalNotesController,
                     maxLines: 3,
-                    style: AppTextStyles.bodyLarge,
+                    style: context.textStyles.bodyLarge,
                     decoration: _inputDecoration(
                       label: 'Medical Notes',
                       icon: Icons.medical_information_outlined,
@@ -287,7 +288,7 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                   // Address
                   TextFormField(
                     initialValue: _address,
-                    style: AppTextStyles.bodyLarge,
+                    style: context.textStyles.bodyLarge,
                     maxLines: 2,
                     decoration: _inputDecoration(
                       label: 'Home Address',
@@ -301,18 +302,18 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                   Container(
                     padding: const EdgeInsets.all(AppSpacing.md),
                     decoration: BoxDecoration(
-                      color: AppColors.bgMuted,
+                      color: context.colors.bgMuted,
                       borderRadius: BorderRadius.circular(AppRadius.md),
-                      border: Border.all(color: AppColors.border),
+                      border: Border.all(color: context.colors.border),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.school_outlined, color: AppColors.textMuted, size: 20),
+                        Icon(Icons.school_outlined, color: context.colors.textMuted, size: 20),
                         const SizedBox(width: AppSpacing.sm),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Classroom: $_classroomName', style: AppTextStyles.labelBold),
+                            Text('Classroom: $_classroomName', style: context.textStyles.labelBold),
                           ],
                         ),
                       ],
@@ -320,7 +321,7 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                   ),
                   Text(
                     'Classroom assignment is managed by admin.',
-                    style: AppTextStyles.caption,
+                    style: context.textStyles.caption,
                   ),
 
                   const SizedBox(height: AppSpacing.xxl),
@@ -331,21 +332,21 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
                     child: ElevatedButton(
                       onPressed: _isSaving ? null : _saveChanges,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.6),
+                        backgroundColor: context.colors.primary,
+                        disabledBackgroundColor: context.colors.primary.withValues(alpha: 0.6),
                         shape: RoundedRectangleBorder(borderRadius: AppRadius.buttonRadius),
                         padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
                       ),
                       child: _isSaving
-                          ? const SizedBox(
+                          ? SizedBox(
                               height: 20,
                               width: 20,
                               child: CircularProgressIndicator(
-                                color: AppColors.white,
+                                color: context.colors.white,
                                 strokeWidth: 2,
                               ),
                             )
-                          : Text('Save Changes', style: AppTextStyles.buttonLabel),
+                          : Text('Save Changes', style: context.textStyles.buttonLabel),
                     ),
                   ),
                 ],
@@ -357,21 +358,21 @@ class _ChildProfileScreenState extends State<ChildProfileScreen> {
   InputDecoration _inputDecoration({required String label, required IconData icon}) {
     return InputDecoration(
       labelText: label,
-      labelStyle: AppTextStyles.labelMedium,
-      prefixIcon: Icon(icon, color: AppColors.secondary),
+      labelStyle: context.textStyles.labelMedium,
+      prefixIcon: Icon(icon, color: context.colors.secondary),
       filled: true,
-      fillColor: AppColors.bgSurface,
+      fillColor: context.colors.bgSurface,
       border: OutlineInputBorder(
         borderRadius: AppRadius.inputRadius,
-        borderSide: const BorderSide(color: AppColors.border),
+        borderSide: BorderSide(color: context.colors.border),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: AppRadius.inputRadius,
-        borderSide: const BorderSide(color: AppColors.border),
+        borderSide: BorderSide(color: context.colors.border),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: AppRadius.inputRadius,
-        borderSide: const BorderSide(color: AppColors.primary, width: 2),
+        borderSide: BorderSide(color: context.colors.primary, width: 2),
       ),
     );
   }

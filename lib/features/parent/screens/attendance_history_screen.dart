@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 import 'package:tinysteps/core/constants/app_theme.dart';
 import 'package:tinysteps/features/parent/widgets/attendance_card.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 class AttendanceHistoryScreen extends StatefulWidget {
   const AttendanceHistoryScreen({super.key});
@@ -43,28 +45,28 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgLight,
+      backgroundColor: context.colors.bgLight,
       appBar: AppBar(
-        title: Text('Attendance', style: AppTextStyles.heading2),
-        backgroundColor: AppColors.bgLight,
+        title: Text('Attendance', style: context.textStyles.heading2),
+        backgroundColor: context.colors.bgLight,
         elevation: 0,
       ),
       body: RefreshIndicator(
-        color: AppColors.primary,
+        color: context.colors.primary,
         onRefresh: () async => setState(() => _load()),
         child: FutureBuilder<List<dynamic>>(
           future: _recordsFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(color: AppColors.primary),
+              return Center(
+                child: CircularProgressIndicator(color: context.colors.primary),
               );
             }
             if (snapshot.hasError) {
               return Center(
                 child: Text(
                   'Failed to load attendance.\nPull down to retry.',
-                  style: AppTextStyles.bodyMuted,
+                  style: context.textStyles.bodyMuted,
                   textAlign: TextAlign.center,
                 ),
               );
@@ -80,14 +82,14 @@ class _AttendanceHistoryScreenState extends State<AttendanceHistoryScreen> {
                     Icon(
                       Icons.assignment_outlined,
                       size: 64,
-                      color: AppColors.primary.withValues(alpha: 0.4),
+                      color: context.colors.primary.withValues(alpha: 0.4),
                     ),
                     const SizedBox(height: AppSpacing.md),
-                    Text('No attendance records yet.', style: AppTextStyles.heading3),
+                    Text('No attendance records yet.', style: context.textStyles.heading3),
                     const SizedBox(height: AppSpacing.sm),
                     Text(
                       'Records will appear here once a teacher\nscans your child\'s QR code.',
-                      style: AppTextStyles.bodyMuted,
+                      style: context.textStyles.bodyMuted,
                       textAlign: TextAlign.center,
                     ),
                   ],

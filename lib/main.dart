@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'core/constants/app_theme.dart';
+import 'core/providers/theme_provider.dart';
 import 'core/router/app_router.dart';
 
 Future<void> main() async {
@@ -33,13 +34,14 @@ class TinyStepsApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(appRouterProvider);
+    final themeMode = ref.watch(themeModeProvider);
 
     return MaterialApp.router(
       title: 'TinySteps',
       debugShowCheckedModeBanner: false,
       theme: sunriseLightTheme(),
       darkTheme: sunriseDarkTheme(),
-      themeMode: ThemeMode.system,
+      themeMode: themeMode,
       routerConfig: router,
     );
   }

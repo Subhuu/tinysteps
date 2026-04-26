@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tinysteps/core/constants/app_theme.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 class BottomNavBarItem {
   final IconData icon;
@@ -31,7 +32,7 @@ class BottomNavBar extends StatelessWidget {
     // ColoredBox fills the entire bottomNavigationBar slot with bgLight so
     // the area behind the floating pill doesn't go black on Android.
     return ColoredBox(
-      color: AppColors.bgLight,
+      color: context.colors.bgLight,
       child: Container(
         margin: EdgeInsets.only(
           left: AppSpacing.md,
@@ -41,7 +42,7 @@ class BottomNavBar extends StatelessWidget {
         ),
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: AppSpacing.sm),
         decoration: BoxDecoration(
-          color: AppColors.bgSurface,
+          color: context.colors.bgSurface,
           borderRadius: BorderRadius.circular(999),
           boxShadow: [
             BoxShadow(
@@ -57,37 +58,39 @@ class BottomNavBar extends StatelessWidget {
             final isSelected = index == currentIndex;
             final item = items[index];
 
-            return GestureDetector(
-              onTap: () => onTap(index),
-              behavior: HitTestBehavior.opaque,
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 250),
-                curve: Curves.easeOut,
-                padding: isSelected
-                    ? const EdgeInsets.symmetric(horizontal: 20, vertical: 10)
-                    : const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                decoration: BoxDecoration(
-                  color: isSelected ? AppColors.primaryLight : Colors.transparent,
-                  borderRadius: BorderRadius.circular(999),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      item.icon,
-                      color: isSelected ? AppColors.primary : AppColors.textMuted,
-                      size: 24,
-                    ),
-                    if (isSelected) ...[
-                      const SizedBox(width: AppSpacing.xs),
+            return Expanded(
+              child: GestureDetector(
+                onTap: () => onTap(index),
+                behavior: HitTestBehavior.opaque,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  curve: Curves.easeOut,
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  decoration: BoxDecoration(
+                    color: isSelected ? context.colors.primaryLight : Colors.transparent,
+                    borderRadius: BorderRadius.circular(AppRadius.lg),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        item.icon,
+                        color: isSelected ? context.colors.primary : context.colors.textMuted,
+                        size: 24,
+                      ),
+                      const SizedBox(height: AppSpacing.xxs),
                       Text(
                         item.label,
-                        style: AppTextStyles.labelMedium.copyWith(
-                          color: AppColors.primary,
+                        style: context.textStyles.caption.copyWith(
+                          color: isSelected ? context.colors.primary : context.colors.textMuted,
+                          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
-                  ],
+                  ),
                 ),
               ),
             );

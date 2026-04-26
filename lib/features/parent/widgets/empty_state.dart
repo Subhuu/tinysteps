@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tinysteps/core/constants/app_theme.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 /// A simple column with an icon and text for when a list has nothing to show yet
 class EmptyState extends StatelessWidget {
@@ -22,20 +23,20 @@ class EmptyState extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(AppSpacing.lg),
-            decoration: const BoxDecoration(
-              color: AppColors.bgMuted,
+            decoration: BoxDecoration(
+              color: context.colors.bgMuted,
               shape: BoxShape.circle,
             ),
             child: Icon(
               icon,
               size: 48,
-              color: AppColors.textMuted.withValues(alpha: 0.5),
+              color: context.colors.textMuted.withValues(alpha: 0.5),
             ),
           ),
           const SizedBox(height: AppSpacing.md),
           Text(
             label,
-            style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textMuted),
+            style: context.textStyles.bodyMedium.copyWith(color: context.colors.textMuted),
             textAlign: TextAlign.center,
           ),
         ],

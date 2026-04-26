@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tinysteps/core/constants/app_theme.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 class EmptyState extends StatelessWidget {
   final String message;
@@ -13,12 +14,12 @@ class EmptyState extends StatelessWidget {
         Icon(
           Icons.inbox_outlined,
           size: 48,
-          color: AppColors.textMuted,
+          color: context.colors.textMuted,
         ),
         const SizedBox(height: AppSpacing.sm),
         Text(
           message,
-          style: AppTextStyles.bodyMuted,
+          style: context.textStyles.bodyMuted,
         ),
       ],
     );

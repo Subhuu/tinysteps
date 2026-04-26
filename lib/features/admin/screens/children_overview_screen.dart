@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tinysteps/core/constants/app_theme.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 /// Admin Children Overview — all enrolled children with classroom + teacher info
 class ChildrenOverviewScreen extends StatefulWidget {
@@ -89,10 +90,10 @@ class _ChildrenOverviewScreenState extends State<ChildrenOverviewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgLight,
+      backgroundColor: context.colors.bgLight,
       appBar: AppBar(
-        title: Text('All Children', style: AppTextStyles.heading2),
-        backgroundColor: AppColors.bgLight,
+        title: Text('All Children', style: context.textStyles.heading2),
+        backgroundColor: context.colors.bgLight,
         elevation: 0,
         automaticallyImplyLeading: false,
       ),
@@ -103,10 +104,10 @@ class _ChildrenOverviewScreenState extends State<ChildrenOverviewScreen> {
             padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.md),
             child: TextField(
               controller: _searchController,
-              style: AppTextStyles.bodyMedium,
+              style: context.textStyles.bodyMedium,
               decoration: InputDecoration(
                 hintText: 'Search child name...',
-                prefixIcon: const Icon(Icons.search, color: AppColors.primary, size: 20),
+                prefixIcon: Icon(Icons.search, color: context.colors.primary, size: 20),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
                   icon: const Icon(Icons.clear, size: 20),
@@ -114,15 +115,15 @@ class _ChildrenOverviewScreenState extends State<ChildrenOverviewScreen> {
                 )
                     : null,
                 filled: true,
-                fillColor: AppColors.white,
+                fillColor: context.colors.bgSurface,
                 contentPadding: const EdgeInsets.symmetric(vertical: 0),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(AppRadius.md),
-                  borderSide: const BorderSide(color: AppColors.border),
+                  borderSide: BorderSide(color: context.colors.border),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(AppRadius.md),
-                  borderSide: const BorderSide(color: AppColors.border),
+                  borderSide: BorderSide(color: context.colors.border),
                 ),
               ),
             ),
@@ -131,7 +132,7 @@ class _ChildrenOverviewScreenState extends State<ChildrenOverviewScreen> {
           // ── List Area ──────────────────────────────────────────────
           Expanded(
             child: RefreshIndicator(
-              color: AppColors.primary,
+              color: context.colors.primary,
               onRefresh: _load,
               child: _buildContent(),
             ),
@@ -143,7 +144,7 @@ class _ChildrenOverviewScreenState extends State<ChildrenOverviewScreen> {
 
   Widget _buildContent() {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(color: AppColors.primary));
+      return Center(child: CircularProgressIndicator(color: context.colors.primary));
     }
 
     if (_errorMessage != null) {
@@ -153,11 +154,11 @@ class _ChildrenOverviewScreenState extends State<ChildrenOverviewScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.error_outline, color: AppColors.danger, size: 40),
+              Icon(Icons.error_outline, color: context.colors.danger, size: 40),
               const SizedBox(height: AppSpacing.sm),
-              Text('Failed to load children', style: AppTextStyles.labelBold),
+              Text('Failed to load children', style: context.textStyles.labelBold),
               const SizedBox(height: AppSpacing.xs),
-              Text(_errorMessage!, style: AppTextStyles.bodySmall, textAlign: TextAlign.center),
+              Text(_errorMessage!, style: context.textStyles.bodySmall, textAlign: TextAlign.center),
               const SizedBox(height: AppSpacing.md),
               FilledButton(onPressed: _load, child: const Text('Retry')),
             ],
@@ -172,9 +173,9 @@ class _ChildrenOverviewScreenState extends State<ChildrenOverviewScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.child_care_outlined,
-                size: 64, color: AppColors.primary.withValues(alpha: 0.4)),
+                size: 64, color: context.colors.primary.withValues(alpha: 0.4)),
             const SizedBox(height: AppSpacing.md),
-            Text('No children enrolled', style: AppTextStyles.heading3),
+            Text('No children enrolled', style: context.textStyles.heading3),
           ],
         ),
       );
@@ -185,10 +186,10 @@ class _ChildrenOverviewScreenState extends State<ChildrenOverviewScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.search_off, size: 48, color: AppColors.textMuted),
+            Icon(Icons.search_off, size: 48, color: context.colors.textMuted),
             const SizedBox(height: AppSpacing.md),
-            Text('No matches found', style: AppTextStyles.heading3),
-            Text('Try a different search term', style: AppTextStyles.bodyMuted),
+            Text('No matches found', style: context.textStyles.heading3),
+            Text('Try a different search term', style: context.textStyles.bodyMuted),
           ],
         ),
       );
@@ -213,9 +214,9 @@ class _ChildrenOverviewScreenState extends State<ChildrenOverviewScreen> {
         return Container(
           padding: const EdgeInsets.all(AppSpacing.md),
           decoration: BoxDecoration(
-            color: AppColors.white,
+            color: context.colors.bgSurface,
             borderRadius: BorderRadius.circular(AppRadius.md),
-            border: Border.all(color: AppColors.border),
+            border: Border.all(color: context.colors.border),
             boxShadow: AppShadows.card,
           ),
           child: Row(
@@ -223,14 +224,14 @@ class _ChildrenOverviewScreenState extends State<ChildrenOverviewScreen> {
               CircleAvatar(
                 radius: 22,
                 backgroundColor: classroom != null
-                    ? AppColors.primaryLight
-                    : AppColors.warning.withValues(alpha: 0.15),
+                    ? context.colors.primaryLight
+                    : context.colors.warning.withValues(alpha: 0.15),
                 child: Text(
                   (c['full_name'] as String? ?? 'C')[0].toUpperCase(),
-                  style: AppTextStyles.labelBold.copyWith(
+                  style: context.textStyles.labelBold.copyWith(
                     color: classroom != null
-                        ? AppColors.primary
-                        : AppColors.warning,
+                        ? context.colors.primary
+                        : context.colors.warning,
                   ),
                 ),
               ),
@@ -240,17 +241,17 @@ class _ChildrenOverviewScreenState extends State<ChildrenOverviewScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(c['full_name'] ?? '—',
-                        style: AppTextStyles.labelBold),
+                        style: context.textStyles.labelBold),
                     Text(
                       'Parent: $parentName',
-                      style: AppTextStyles.bodySmall,
+                      style: context.textStyles.bodySmall,
                     ),
                     Text(
                       'Classroom: $classroomLabel',
-                      style: AppTextStyles.caption.copyWith(
+                      style: context.textStyles.caption.copyWith(
                         color: classroom != null
-                            ? AppColors.textMuted
-                            : AppColors.warning,
+                            ? context.colors.textMuted
+                            : context.colors.warning,
                       ),
                     ),
                   ],
@@ -276,11 +277,11 @@ class _ChildrenOverviewScreenState extends State<ChildrenOverviewScreen> {
   };
 
   Color _statusColor(String s) => switch (s) {
-    'active' => AppColors.success,
-    'withdrawn' => AppColors.danger,
-    'waitlisted' => AppColors.warning,
-    'graduated' => AppColors.secondary,
-    _ => AppColors.textMuted,
+    'active' => context.colors.success,
+    'withdrawn' => context.colors.danger,
+    'waitlisted' => context.colors.warning,
+    'graduated' => context.colors.secondary,
+    _ => context.colors.textMuted,
   };
 }
 
@@ -300,7 +301,7 @@ class _StatusBadge extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: AppTextStyles.caption.copyWith(
+        style: context.textStyles.caption.copyWith(
           color: color,
           fontWeight: FontWeight.bold,
         ),

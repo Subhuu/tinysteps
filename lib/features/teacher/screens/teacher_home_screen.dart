@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 import 'package:tinysteps/core/constants/app_theme.dart';
 import 'package:tinysteps/core/widgets/bottom_nav_bar.dart';
 import 'package:tinysteps/core/widgets/logout_dialog.dart';
 import 'package:tinysteps/features/teacher/screens/teacher_settings_screen.dart';
 import 'package:tinysteps/core/widgets/app_calendar.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 /// Teacher Home Shell — wraps all teacher tab screens with shared BottomNavBar.
 /// Includes an approval gate: unapproved teachers see a pending screen.
@@ -64,9 +66,9 @@ class _TeacherHomeScreenState extends State<TeacherHomeScreen> {
   Widget build(BuildContext context) {
     // Still loading
     if (_isApproved == null) {
-      return const Scaffold(
+      return Scaffold(
         body: Center(
-          child: CircularProgressIndicator(color: AppColors.primary),
+          child: CircularProgressIndicator(color: context.colors.primary),
         ),
       );
     }
@@ -125,10 +127,10 @@ class _PendingApprovalScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgLight,
+      backgroundColor: context.colors.bgLight,
       appBar: AppBar(
-        title: Text('TinySteps', style: AppTextStyles.heading2),
-        backgroundColor: AppColors.bgLight,
+        title: Text('TinySteps', style: context.textStyles.heading2),
+        backgroundColor: context.colors.bgLight,
         elevation: 0,
         actions: [
           IconButton(
@@ -147,22 +149,22 @@ class _PendingApprovalScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(AppSpacing.xxl),
                 decoration: BoxDecoration(
-                  color: AppColors.warning.withValues(alpha: 0.1),
+                  color: context.colors.warning.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.hourglass_top_rounded,
                   size: 72,
-                  color: AppColors.warning,
+                  color: context.colors.warning,
                 ),
               ),
               const SizedBox(height: AppSpacing.xl),
-              Text('Pending Approval', style: AppTextStyles.heading1),
+              Text('Pending Approval', style: context.textStyles.heading1),
               const SizedBox(height: AppSpacing.md),
               Text(
                 'Your account is waiting for admin approval.\n'
                 'You\'ll be able to access the dashboard\nonce an admin approves your account.',
-                style: AppTextStyles.bodyMuted,
+                style: context.textStyles.bodyMuted,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: AppSpacing.xxl),
@@ -173,8 +175,8 @@ class _PendingApprovalScreen extends StatelessWidget {
                   icon: const Icon(Icons.refresh),
                   label: const Text('Check Again'),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.primary,
-                    side: const BorderSide(color: AppColors.primary),
+                    foregroundColor: context.colors.primary,
+                    side: BorderSide(color: context.colors.primary),
                     padding: const EdgeInsets.symmetric(
                       vertical: AppSpacing.md,
                     ),
@@ -204,10 +206,10 @@ class _TeacherDashboardTab extends StatelessWidget {
     final name = user?.userMetadata?['full_name'] as String? ?? 'Teacher';
 
     return Scaffold(
-      backgroundColor: AppColors.bgLight,
+      backgroundColor: context.colors.bgLight,
       appBar: AppBar(
-        title: Text('TinySteps', style: AppTextStyles.heading2),
-        backgroundColor: AppColors.bgLight,
+        title: Text('TinySteps', style: context.textStyles.heading2),
+        backgroundColor: context.colors.bgLight,
         elevation: 0,
         automaticallyImplyLeading: false,
         actions: [
@@ -233,8 +235,8 @@ class _TeacherDashboardTab extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Good day, $name', style: AppTextStyles.heading1),
-            Text('Ready to take attendance?', style: AppTextStyles.bodyMuted),
+            Text('Good day, $name', style: context.textStyles.heading1),
+            Text('Ready to take attendance?', style: context.textStyles.bodyMuted),
             const SizedBox(height: AppSpacing.xl),
 
             // Scan QR — primary CTA
@@ -242,10 +244,10 @@ class _TeacherDashboardTab extends StatelessWidget {
               width: double.infinity,
               child: FilledButton.icon(
                 onPressed: () => context.push('/teacher/attendance'),
-                icon: const Icon(Icons.qr_code_scanner, color: AppColors.white),
-                label: Text('Scan QR Code', style: AppTextStyles.buttonLabel),
+                icon: Icon(Icons.qr_code_scanner, color: context.colors.white),
+                label: Text('Scan QR Code', style: context.textStyles.buttonLabel),
                 style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.primary,
+                  backgroundColor: context.colors.primary,
                   padding: const EdgeInsets.symmetric(vertical: 18),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(AppRadius.lg),
@@ -257,7 +259,7 @@ class _TeacherDashboardTab extends StatelessWidget {
             ),
 
             const SizedBox(height: AppSpacing.lg),
-            Text('Calendar', style: AppTextStyles.heading2),
+            Text('Calendar', style: context.textStyles.heading2),
             const SizedBox(height: AppSpacing.md),
             const AppCalendar(),
 
@@ -266,10 +268,10 @@ class _TeacherDashboardTab extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Today\'s Attendance', style: AppTextStyles.heading2),
+                Text('Today\'s Attendance', style: context.textStyles.heading2),
                 Text(
                   DateFormat('dd MMM').format(DateTime.now()),
-                  style: AppTextStyles.caption,
+                  style: context.textStyles.caption,
                 ),
               ],
             ),
@@ -320,10 +322,10 @@ class _TodayAttendanceSummaryState extends State<_TodayAttendanceSummary> {
       future: _future,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
+          return Center(
             child: Padding(
               padding: EdgeInsets.all(AppSpacing.xl),
-              child: CircularProgressIndicator(color: AppColors.primary),
+              child: CircularProgressIndicator(color: context.colors.primary),
             ),
           );
         }
@@ -333,22 +335,22 @@ class _TodayAttendanceSummaryState extends State<_TodayAttendanceSummary> {
             width: double.infinity,
             padding: const EdgeInsets.all(AppSpacing.xl),
             decoration: BoxDecoration(
-              color: AppColors.white,
+              color: context.colors.bgSurface,
               borderRadius: BorderRadius.circular(AppRadius.md),
-              border: Border.all(color: AppColors.border),
+              border: Border.all(color: context.colors.border),
             ),
             child: Column(
               children: [
                 Icon(
                   Icons.assignment_outlined,
                   size: 48,
-                  color: AppColors.primary.withValues(alpha: 0.4),
+                  color: context.colors.primary.withValues(alpha: 0.4),
                 ),
                 const SizedBox(height: AppSpacing.md),
-                Text('No scans yet today', style: AppTextStyles.bodyMuted),
+                Text('No scans yet today', style: context.textStyles.bodyMuted),
                 Text(
                   'Tap "Scan QR Code" above to mark attendance',
-                  style: AppTextStyles.caption,
+                  style: context.textStyles.caption,
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -406,10 +408,10 @@ class _TeacherAttendanceTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgLight,
+      backgroundColor: context.colors.bgLight,
       appBar: AppBar(
-        title: Text('Attendance', style: AppTextStyles.heading2),
-        backgroundColor: AppColors.bgLight,
+        title: Text('Attendance', style: context.textStyles.heading2),
+        backgroundColor: context.colors.bgLight,
         elevation: 0,
         automaticallyImplyLeading: false,
       ),
@@ -421,22 +423,22 @@ class _TeacherAttendanceTab extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(AppSpacing.xxl),
               decoration: BoxDecoration(
-                color: AppColors.primaryLight,
+                color: context.colors.primaryLight,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.qr_code_scanner,
                 size: 80,
-                color: AppColors.primary,
+                color: context.colors.primary,
               ),
             ),
             const SizedBox(height: AppSpacing.xl),
-            Text('Scan to Mark Attendance', style: AppTextStyles.heading2),
+            Text('Scan to Mark Attendance', style: context.textStyles.heading2),
             const SizedBox(height: AppSpacing.sm),
             Text(
               'Ask the parent to open their child\'s QR code '
               'in the TinySteps parent app, then scan it here.',
-              style: AppTextStyles.bodyMuted,
+              style: context.textStyles.bodyMuted,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppSpacing.xxl),
@@ -445,9 +447,9 @@ class _TeacherAttendanceTab extends StatelessWidget {
               child: FilledButton.icon(
                 onPressed: () => context.push('/teacher/attendance'),
                 icon: const Icon(Icons.camera_alt_rounded),
-                label: Text('Open Scanner', style: AppTextStyles.buttonLabel),
+                label: Text('Open Scanner', style: context.textStyles.buttonLabel),
                 style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.primary,
+                  backgroundColor: context.colors.primary,
                   padding: const EdgeInsets.symmetric(vertical: 18),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(AppRadius.lg),
@@ -494,10 +496,10 @@ class _TeacherChildrenTabState extends State<_TeacherChildrenTab> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgLight,
+      backgroundColor: context.colors.bgLight,
       appBar: AppBar(
-        title: Text('My Children', style: AppTextStyles.heading2),
-        backgroundColor: AppColors.bgLight,
+        title: Text('My Children', style: context.textStyles.heading2),
+        backgroundColor: context.colors.bgLight,
         elevation: 0,
         automaticallyImplyLeading: false,
         actions: [
@@ -510,14 +512,14 @@ class _TeacherChildrenTabState extends State<_TeacherChildrenTab> {
         ],
       ),
       body: RefreshIndicator(
-        color: AppColors.primary,
+        color: context.colors.primary,
         onRefresh: () async => setState(() => _load()),
         child: FutureBuilder<List<dynamic>>(
           future: _childrenFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(color: AppColors.primary),
+              return Center(
+                child: CircularProgressIndicator(color: context.colors.primary),
               );
             }
             final children = snapshot.data ?? [];
@@ -531,17 +533,17 @@ class _TeacherChildrenTabState extends State<_TeacherChildrenTab> {
                       Icon(
                         Icons.face_outlined,
                         size: 64,
-                        color: AppColors.primary.withValues(alpha: 0.4),
+                        color: context.colors.primary.withValues(alpha: 0.4),
                       ),
                       const SizedBox(height: AppSpacing.md),
                       Text(
                         'No children assigned yet',
-                        style: AppTextStyles.heading3,
+                        style: context.textStyles.heading3,
                       ),
                       const SizedBox(height: AppSpacing.sm),
                       Text(
                         'Admin will assign children to you\nonce they are enrolled.',
-                        style: AppTextStyles.bodyMuted,
+                        style: context.textStyles.bodyMuted,
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -570,19 +572,19 @@ class _TeacherChildrenTabState extends State<_TeacherChildrenTab> {
                   child: Container(
                     padding: const EdgeInsets.all(AppSpacing.md),
                     decoration: BoxDecoration(
-                      color: AppColors.white,
+                      color: context.colors.bgSurface,
                       borderRadius: BorderRadius.circular(AppRadius.md),
-                      border: Border.all(color: AppColors.border),
+                      border: Border.all(color: context.colors.border),
                       boxShadow: AppShadows.card,
                     ),
                     child: Row(
                       children: [
                         CircleAvatar(
                           radius: 24,
-                          backgroundColor: AppColors.primaryLight,
+                          backgroundColor: context.colors.primaryLight,
                           child: Text(
                             nameStr.isNotEmpty ? nameStr[0].toUpperCase() : 'C',
-                            style: AppTextStyles.heading3.copyWith(color: AppColors.primary),
+                            style: context.textStyles.heading3.copyWith(color: context.colors.primary),
                           ),
                         ),
                         const SizedBox(width: AppSpacing.md),
@@ -590,21 +592,21 @@ class _TeacherChildrenTabState extends State<_TeacherChildrenTab> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(nameStr, style: AppTextStyles.labelBold),
+                              Text(nameStr, style: context.textStyles.labelBold),
                               if (age != null)
-                                Text(age, style: AppTextStyles.bodySmall),
+                                Text(age, style: context.textStyles.bodySmall),
                               if (c['allergies'] != null &&
                                   (c['allergies'] as String).isNotEmpty)
                                 Row(
                                   children: [
-                                    const Icon(Icons.warning_amber,
-                                        size: 12, color: AppColors.warning),
+                                    Icon(Icons.warning_amber,
+                                        size: 12, color: context.colors.warning),
                                     const SizedBox(width: 4),
                                     Flexible(
                                       child: Text(
                                         c['allergies'] as String,
-                                        style: AppTextStyles.caption.copyWith(
-                                          color: AppColors.warning,
+                                        style: context.textStyles.caption.copyWith(
+                                          color: context.colors.warning,
                                         ),
                                         overflow: TextOverflow.ellipsis,
                                       ),
@@ -647,9 +649,9 @@ class _TeacherChildrenTabState extends State<_TeacherChildrenTab> {
 
   Widget _statusBadge(String status) {
     final color = switch (status) {
-      'checked_in' => AppColors.success,
-      'checked_out' => AppColors.textMuted,
-      _ => AppColors.secondary,
+      'checked_in' => context.colors.success,
+      'checked_out' => context.colors.textMuted,
+      _ => context.colors.secondary,
     };
     final label = switch (status) {
       'checked_in' => 'In Class',
@@ -667,7 +669,7 @@ class _TeacherChildrenTabState extends State<_TeacherChildrenTab> {
       ),
       child: Text(
         label,
-        style: AppTextStyles.caption.copyWith(
+        style: context.textStyles.caption.copyWith(
           color: color,
           fontWeight: FontWeight.bold,
         ),
@@ -696,18 +698,18 @@ class _AttendanceTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: context.colors.bgSurface,
         borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.colors.border),
         boxShadow: AppShadows.card,
       ),
       child: Row(
         children: [
           CircleAvatar(
-            backgroundColor: AppColors.primaryLight,
+            backgroundColor: context.colors.primaryLight,
             child: Text(
               name[0].toUpperCase(),
-              style: AppTextStyles.labelBold.copyWith(color: AppColors.primary),
+              style: context.textStyles.labelBold.copyWith(color: context.colors.primary),
             ),
           ),
           const SizedBox(width: AppSpacing.md),
@@ -715,12 +717,12 @@ class _AttendanceTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(name, style: AppTextStyles.labelBold),
+                Text(name, style: context.textStyles.labelBold),
                 Text(
                   isOut
                       ? 'In: $checkIn  ·  Out: $checkOut'
                       : 'Checked in at $checkIn',
-                  style: AppTextStyles.bodySmall,
+                  style: context.textStyles.bodySmall,
                 ),
               ],
             ),
@@ -732,14 +734,14 @@ class _AttendanceTile extends StatelessWidget {
             ),
             decoration: BoxDecoration(
               color: isOut
-                  ? AppColors.textMuted.withValues(alpha: 0.1)
-                  : AppColors.success.withValues(alpha: 0.1),
+                  ? context.colors.textMuted.withValues(alpha: 0.1)
+                  : context.colors.success.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(AppRadius.full),
             ),
             child: Text(
               isOut ? 'Picked Up' : 'In Class',
-              style: AppTextStyles.caption.copyWith(
-                color: isOut ? AppColors.textMuted : AppColors.success,
+              style: context.textStyles.caption.copyWith(
+                color: isOut ? context.colors.textMuted : context.colors.success,
                 fontWeight: FontWeight.bold,
               ),
             ),

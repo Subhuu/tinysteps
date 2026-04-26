@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tinysteps/core/constants/app_theme.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 /// A small UI badge for displaying status
 class StatusChip extends StatelessWidget {
@@ -16,20 +17,20 @@ class StatusChip extends StatelessWidget {
     switch (status) {
       case 'Checked In':
       case 'In Class':
-        color = AppColors.success;
-        bgColor = AppColors.successLight;
+        color = context.colors.success;
+        bgColor = context.colors.successLight;
         break;
       case 'At Home':
-        color = AppColors.danger;
-        bgColor = AppColors.dangerLight;
+        color = context.colors.danger;
+        bgColor = context.colors.dangerLight;
         break;
       case 'Checked Out':
-        color = AppColors.danger;
-        bgColor = AppColors.dangerLight;
+        color = context.colors.danger;
+        bgColor = context.colors.dangerLight;
         break;
       default:
-        color = AppColors.textMuted;
-        bgColor = AppColors.divider;
+        color = context.colors.textMuted;
+        bgColor = context.colors.divider;
     }
 
     return Container(
@@ -43,7 +44,7 @@ class StatusChip extends StatelessWidget {
       ),
       child: Text(
         status.toUpperCase(),
-        style: AppTextStyles.caption.copyWith(
+        style: context.textStyles.caption.copyWith(
           color: color,
           fontWeight: FontWeight.w700,
           fontSize: 9,

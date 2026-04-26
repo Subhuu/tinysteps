@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tinysteps/core/constants/app_theme.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 /// Admin Classroom Management — CRUD + detail + referral codes
 class ClassroomsScreen extends StatefulWidget {
@@ -64,7 +65,7 @@ class _ClassroomsScreenState extends State<ClassroomsScreen> {
             child: const Text('Cancel'),
           ),
           FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: AppColors.danger),
+            style: FilledButton.styleFrom(backgroundColor: context.colors.danger),
             onPressed: () => Navigator.pop(ctx, true),
             child: const Text('Delete'),
           ),
@@ -83,14 +84,14 @@ class _ClassroomsScreenState extends State<ClassroomsScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Classroom deleted'), backgroundColor: AppColors.danger),
+          SnackBar(content: Text('Classroom deleted'), backgroundColor: context.colors.danger),
         );
       }
       setState(() => _load());
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Delete failed: $e'), backgroundColor: AppColors.danger),
+          SnackBar(content: Text('Delete failed: $e'), backgroundColor: context.colors.danger),
         );
       }
     }
@@ -99,10 +100,10 @@ class _ClassroomsScreenState extends State<ClassroomsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgLight,
+      backgroundColor: context.colors.bgLight,
       appBar: AppBar(
-        title: Text('Classrooms', style: AppTextStyles.heading2),
-        backgroundColor: AppColors.bgLight,
+        title: Text('Classrooms', style: context.textStyles.heading2),
+        backgroundColor: context.colors.bgLight,
         elevation: 0,
         automaticallyImplyLeading: false,
         actions: [
@@ -136,9 +137,9 @@ class _ClassroomsScreenState extends State<ClassroomsScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.class_outlined, size: 64, color: AppColors.textMuted),
+                    Icon(Icons.class_outlined, size: 64, color: context.colors.textMuted),
                     const SizedBox(height: AppSpacing.md),
-                    Text('No classrooms yet', style: AppTextStyles.heading3),
+                    Text('No classrooms yet', style: context.textStyles.heading3),
                   ],
                 ),
               );
@@ -200,9 +201,9 @@ class _ClassroomListItem extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: context.colors.bgSurface,
         borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.colors.border),
         boxShadow: AppShadows.card,
       ),
       child: InkWell(
@@ -214,10 +215,10 @@ class _ClassroomListItem extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 24,
-                backgroundColor: AppColors.secondaryLight,
+                backgroundColor: context.colors.secondaryLight,
                 child: Text(
                   (classroom['name'] as String? ?? 'C')[0].toUpperCase(),
-                  style: AppTextStyles.heading3.copyWith(color: AppColors.secondary),
+                  style: context.textStyles.heading3.copyWith(color: context.colors.secondary),
                 ),
               ),
               const SizedBox(width: AppSpacing.md),
@@ -225,16 +226,16 @@ class _ClassroomListItem extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(classroom['name'] ?? '—', style: AppTextStyles.labelBold),
-                    Text('Age: $ageGroup', style: AppTextStyles.bodySmall),
+                    Text(classroom['name'] ?? '—', style: context.textStyles.labelBold),
+                    Text('Age: $ageGroup', style: context.textStyles.bodySmall),
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        Icon(Icons.person_outlined, size: 14, color: teacherMap != null ? AppColors.success : AppColors.textMuted),
+                        Icon(Icons.person_outlined, size: 14, color: teacherMap != null ? context.colors.success : context.colors.textMuted),
                         const SizedBox(width: 4),
-                        Text(teacherName, style: AppTextStyles.caption),
+                        Text(teacherName, style: context.textStyles.caption),
                         const Spacer(),
-                        Text('$childCount / $maxCapacity', style: AppTextStyles.caption.copyWith(fontWeight: FontWeight.bold)),
+                        Text('$childCount / $maxCapacity', style: context.textStyles.caption.copyWith(fontWeight: FontWeight.bold)),
                       ],
                     ),
                     const SizedBox(height: 6),
@@ -242,8 +243,8 @@ class _ClassroomListItem extends StatelessWidget {
                       borderRadius: BorderRadius.circular(AppRadius.full),
                       child: LinearProgressIndicator(
                         value: progress,
-                        backgroundColor: AppColors.divider,
-                        valueColor: AlwaysStoppedAnimation<Color>(progress >= 1.0 ? AppColors.danger : AppColors.primary),
+                        backgroundColor: context.colors.divider,
+                        valueColor: AlwaysStoppedAnimation<Color>(progress >= 1.0 ? context.colors.danger : context.colors.primary),
                         minHeight: 6,
                       ),
                     ),
@@ -371,7 +372,7 @@ class _UpsertClassroomDialogState extends State<_UpsertClassroomDialog> {
             TextField(controller: _capCtrl, decoration: const InputDecoration(labelText: 'Max Capacity'), keyboardType: TextInputType.number),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
-              dropdownColor: AppColors.bgSurface,
+              dropdownColor: context.colors.bgSurface,
               initialValue: _selectedTeacherId,
               hint: const Text('Assign Teacher'),
               items: [
@@ -430,7 +431,7 @@ class _ReferralCodesSheetState extends State<_ReferralCodesSheet> {
             mainAxisSize: MainAxisSize.min,
             children: [
               DropdownButtonFormField<String>(
-                dropdownColor: AppColors.bgSurface,
+                dropdownColor: context.colors.bgSurface,
                 initialValue: selectedRole,
                 items: ['parent', 'teacher', 'admin'].map((r) => DropdownMenuItem(value: r, child: Text(r))).toList(),
                 onChanged: (v) => setS(() => selectedRole = v!),
@@ -468,7 +469,7 @@ class _ReferralCodesSheetState extends State<_ReferralCodesSheet> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(color: AppColors.bgLight, borderRadius: AppRadius.sheetRadius),
+      decoration: BoxDecoration(color: context.colors.bgLight, borderRadius: AppRadius.sheetRadius),
       padding: EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.lg, AppSpacing.md, MediaQuery.of(context).viewInsets.bottom + AppSpacing.md),
       height: MediaQuery.of(context).size.height * 0.75,
       child: Column(
@@ -476,7 +477,7 @@ class _ReferralCodesSheetState extends State<_ReferralCodesSheet> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Referral Codes', style: AppTextStyles.heading2),
+              Text('Referral Codes', style: context.textStyles.heading2),
               IconButton(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.close)),
             ],
           ),
@@ -491,10 +492,10 @@ class _ReferralCodesSheetState extends State<_ReferralCodesSheet> {
                 final bool isUsed = item['is_used'] ?? false;
                 final bool isExpired = DateTime.parse(item['expires_at']).isBefore(DateTime.now());
                 final status = isUsed ? 'Used' : (isExpired ? 'Expired' : 'Active');
-                final color = isUsed ? AppColors.info : (isExpired ? AppColors.danger : AppColors.success);
+                final color = isUsed ? context.colors.info : (isExpired ? context.colors.danger : context.colors.success);
 
                 return ListTile(
-                  title: Text(item['code'], style: AppTextStyles.labelBold),
+                  title: Text(item['code'], style: context.textStyles.labelBold),
                   subtitle: Text('Role: ${item['role']} • Exp: ${item['expires_at'].split('T')[0]}'),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -577,7 +578,7 @@ class _ClassroomDetailScreenState extends State<ClassroomDetailScreen> {
             child: const Text('Cancel'),
           ),
           FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: AppColors.danger),
+            style: FilledButton.styleFrom(backgroundColor: context.colors.danger),
             onPressed: () => Navigator.pop(ctx, true),
             child: const Text('Delete'),
           ),
@@ -597,14 +598,14 @@ class _ClassroomDetailScreenState extends State<ClassroomDetailScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Classroom deleted'), backgroundColor: AppColors.danger),
+          SnackBar(content: Text('Classroom deleted'), backgroundColor: context.colors.danger),
         );
         Navigator.pop(context); // Go back to the list
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Delete failed: $e'), backgroundColor: AppColors.danger),
+          SnackBar(content: Text('Delete failed: $e'), backgroundColor: context.colors.danger),
         );
       }
     }
@@ -622,7 +623,7 @@ class _ClassroomDetailScreenState extends State<ClassroomDetailScreen> {
             if (res == true) _refresh(silent: true);
           }),
           IconButton(
-            icon: const Icon(Icons.delete, color: AppColors.danger),
+            icon: Icon(Icons.delete, color: context.colors.danger),
             onPressed: _deleteClassroom,
           ),
         ],
@@ -647,11 +648,11 @@ class _ClassroomDetailScreenState extends State<ClassroomDetailScreen> {
               ),
             ),
             const SizedBox(height: AppSpacing.lg),
-            Text('Children (${_children.length})', style: AppTextStyles.heading3),
+            Text('Children (${_children.length})', style: context.textStyles.heading3),
             ..._children.map((c) => _childRow(c, isAssigned: true)),
             if (_unassigned.isNotEmpty) ...[
               const SizedBox(height: AppSpacing.lg),
-              Text('Unassigned (${_unassigned.length})', style: AppTextStyles.heading3),
+              Text('Unassigned (${_unassigned.length})', style: context.textStyles.heading3),
               ..._unassigned.map((c) => _childRow(c, isAssigned: false)),
             ],
           ],
@@ -660,13 +661,13 @@ class _ClassroomDetailScreenState extends State<ClassroomDetailScreen> {
     );
   }
 
-  Widget _info(String l, String v) => Padding(padding: const EdgeInsets.symmetric(vertical: 4), child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text(l, style: AppTextStyles.bodyMuted), Text(v, style: AppTextStyles.labelBold)]));
+  Widget _info(String l, String v) => Padding(padding: const EdgeInsets.symmetric(vertical: 4), child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text(l, style: context.textStyles.bodyMuted), Text(v, style: context.textStyles.labelBold)]));
 
   Widget _childRow(dynamic c, {required bool isAssigned}) => ListTile(
     title: Text(c['full_name'] ?? 'Unknown'),
     leading: const CircleAvatar(child: Icon(Icons.child_care, size: 18)),
     trailing: isAssigned
-      ? IconButton(icon: const Icon(Icons.remove_circle_outline, color: AppColors.danger), onPressed: () async {
+      ? IconButton(icon: Icon(Icons.remove_circle_outline, color: context.colors.danger), onPressed: () async {
           await _supabase.from('children').update({'classroom_id': null, 'teacher_id': null}).eq('id', c['id']);
           _refresh(silent: true);
         })
