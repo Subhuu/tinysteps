@@ -21,8 +21,9 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen>
     with SingleTickerProviderStateMixin {
-  final _step1Key = GlobalKey<FormState>();
-  final _step2Key = GlobalKey<FormState>();
+  final _step1Key = GlobalKey<FormState>(); // Login details
+  final _step2Key = GlobalKey<FormState>(); // Profile details
+  final _step3Key = GlobalKey<FormState>(); // Child details
 
   int _step = 0;
   String _selectedRole = 'parent';
@@ -242,7 +243,7 @@ class _RegisterScreenState extends State<RegisterScreen>
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final totalSteps = _selectedRole == 'parent' ? 3 : 2;
+    final totalSteps = _selectedRole == 'parent' ? 4 : 3;
 
     return Scaffold(
       backgroundColor: cs.surface,
@@ -367,14 +368,30 @@ class _RegisterScreenState extends State<RegisterScreen>
           isDark: isDark,
         );
       case 1:
-        return _DetailsStep(
+        return _LoginStep(
           formKey: _step1Key,
-          role: _selectedRole,
-          nameCtrl: _nameCtrl,
           emailCtrl: _emailCtrl,
-          phoneCtrl: _phoneCtrl,
           passCtrl: _passCtrl,
           confirmCtrl: _confirmCtrl,
+          obscurePass: _obscurePass,
+          obscureConfirm: _obscureConfirm,
+          onTogglePass: () => setState(() => _obscurePass = !_obscurePass),
+          onToggleConfirm: () =>
+              setState(() => _obscureConfirm = !_obscureConfirm),
+          isDark: isDark,
+          cs: cs,
+          onNext: () {
+            if (_step1Key.currentState!.validate()) {
+              _goToStep(2);
+            }
+          },
+        );
+      case 2:
+        return _ProfileStep(
+          formKey: _step2Key,
+          role: _selectedRole,
+          nameCtrl: _nameCtrl,
+          phoneCtrl: _phoneCtrl,
           referralCtrl: _referralCtrl,
           emergencyNameCtrl: _emergencyNameCtrl,
           emergencyPhoneCtrl: _emergencyPhoneCtrl,
@@ -383,27 +400,22 @@ class _RegisterScreenState extends State<RegisterScreen>
           designationCtrl: _designationCtrl,
           centerNameCtrl: _centerNameCtrl,
           adminDesigCtrl: _adminDesigCtrl,
-          obscurePass: _obscurePass,
-          obscureConfirm: _obscureConfirm,
-          onTogglePass: () => setState(() => _obscurePass = !_obscurePass),
-          onToggleConfirm: () =>
-              setState(() => _obscureConfirm = !_obscureConfirm),
           isDark: isDark,
           cs: cs,
           loading: _loading,
           onNext: () {
-            if (_step1Key.currentState!.validate()) {
+            if (_step2Key.currentState!.validate()) {
               if (_selectedRole == 'parent') {
-                _goToStep(2);   // Parents fill child info next
+                _goToStep(3); // Parents fill child info next
               } else {
-                _submit();       // Others go straight to submit
+                _submit(); // Others go straight to submit
               }
             }
           },
         );
-      case 2:
+      case 3:
         return _ChildInfoStep(
-          formKey: _step2Key,
+          formKey: _step3Key,
           childNameCtrl: _childNameCtrl,
           childDob: _childDob,
           childGender: _childGender,
@@ -416,7 +428,7 @@ class _RegisterScreenState extends State<RegisterScreen>
           onPickDob: _pickDob,
           onGenderChange: (v) => setState(() => _childGender = v!),
           onSubmit: () {
-            if (_step2Key.currentState!.validate()) {
+            if (_step3Key.currentState!.validate()) {
               if (_childDob == null) {
                 _showError('Please select your child\'s date of birth.');
                 return;
@@ -778,15 +790,105 @@ class _CompactRoleCard extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────────────────
 // STEP 1 — Account details form
 // ─────────────────────────────────────────────────────────────────────────────
-class _DetailsStep extends StatefulWidget {
-  const _DetailsStep({
+// ─────────────────────────────────────────────────────────────────────────────
+// STEP 1 — Login details form
+// ─────────────────────────────────────────────────────────────────────────────
+class _LoginStep extends StatelessWidget {
+  const _LoginStep({
+    required this.formKey,
+    required this.emailCtrl,
+    required this.passCtrl,
+    required this.confirmCtrl,
+    required this.obscurePass,
+    required this.obscureConfirm,
+    required this.onTogglePass,
+    required this.onToggleConfirm,
+    required this.isDark,
+    required this.cs,
+    required this.onNext,
+  });
+
+  final GlobalKey<FormState> formKey;
+  final TextEditingController emailCtrl, passCtrl, confirmCtrl;
+  final bool obscurePass, obscureConfirm, isDark;
+  final VoidCallback onTogglePass, onToggleConfirm, onNext;
+  final ColorScheme cs;
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: AppSpacing.md),
+          Text('Create login',
+              style: Theme.of(context).textTheme.displayMedium),
+          const SizedBox(height: AppSpacing.xs),
+          Text('Enter your email and a secure password',
+              style: AppTextStyles.bodyMuted
+                  .copyWith(color: cs.onSurface.withValues(alpha: 0.5))),
+          const SizedBox(height: AppSpacing.lg),
+
+          // ── Email
+          AuthTextField(
+              label: 'Email Address',
+              hint: 'jane@example.com',
+              controller: emailCtrl,
+              icon: Icons.email_outlined,
+              keyboardType: TextInputType.emailAddress,
+              validator: (v) {
+                if (v == null || v.isEmpty) return 'Required';
+                if (!v.contains('@')) return 'Enter a valid email';
+                return null;
+              }),
+
+          // ── Password
+          _PassField(
+              label: 'Password',
+              hint: '8+ characters',
+              ctrl: passCtrl,
+              obscure: obscurePass,
+              toggle: onTogglePass,
+              validator: (v) {
+                if (v == null || v.isEmpty) return 'Required';
+                if (v.length < 8) return 'Min 8 characters';
+                return null;
+              }),
+          _PassField(
+              label: 'Confirm Password',
+              hint: 'Re-enter password',
+              ctrl: confirmCtrl,
+              obscure: obscureConfirm,
+              toggle: onToggleConfirm,
+              validator: (v) {
+                if (v == null || v.isEmpty) return 'Required';
+                if (v != passCtrl.text) return "Passwords don't match";
+                return null;
+              }),
+
+          const SizedBox(height: AppSpacing.lg),
+          AuthGradientButton(
+            label: 'Next: Personal info',
+            icon: Icons.arrow_forward_rounded,
+            onTap: onNext,
+          ),
+          const SizedBox(height: AppSpacing.xxl),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// STEP 2 — Profile/Parent details form
+// ─────────────────────────────────────────────────────────────────────────────
+class _ProfileStep extends StatefulWidget {
+  const _ProfileStep({
     required this.formKey,
     required this.role,
     required this.nameCtrl,
-    required this.emailCtrl,
     required this.phoneCtrl,
-    required this.passCtrl,
-    required this.confirmCtrl,
     required this.referralCtrl,
     required this.emergencyNameCtrl,
     required this.emergencyPhoneCtrl,
@@ -795,10 +897,6 @@ class _DetailsStep extends StatefulWidget {
     required this.designationCtrl,
     required this.centerNameCtrl,
     required this.adminDesigCtrl,
-    required this.obscurePass,
-    required this.obscureConfirm,
-    required this.onTogglePass,
-    required this.onToggleConfirm,
     required this.isDark,
     required this.cs,
     required this.loading,
@@ -807,18 +905,18 @@ class _DetailsStep extends StatefulWidget {
 
   final GlobalKey<FormState> formKey;
   final String role;
-  final TextEditingController nameCtrl, emailCtrl, phoneCtrl, passCtrl,
-      confirmCtrl, referralCtrl, emergencyNameCtrl, emergencyPhoneCtrl,
+  final TextEditingController nameCtrl, phoneCtrl,
+      referralCtrl, emergencyNameCtrl, emergencyPhoneCtrl,
       relationCtrl, staffIdCtrl, designationCtrl, centerNameCtrl, adminDesigCtrl;
-  final bool obscurePass, obscureConfirm, isDark, loading;
-  final VoidCallback onTogglePass, onToggleConfirm, onNext;
+  final bool isDark, loading;
+  final VoidCallback onNext;
   final ColorScheme cs;
 
   @override
-  State<_DetailsStep> createState() => _DetailsStepState();
+  State<_ProfileStep> createState() => _ProfileStepState();
 }
 
-class _DetailsStepState extends State<_DetailsStep> {
+class _ProfileStepState extends State<_ProfileStep> {
   // Dropdown selections (stored as lowercase for DB consistency)
   String _relation = 'mother';
   bool _relationOther = false;
@@ -900,10 +998,10 @@ class _DetailsStepState extends State<_DetailsStep> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: AppSpacing.md),
-          Text('Your details',
+          Text(widget.role == 'parent' ? 'Parent details' : 'Your details',
               style: Theme.of(context).textTheme.displayMedium),
           const SizedBox(height: AppSpacing.xs),
-          Text('Fill in your account information',
+          Text('Tell us a bit more about yourself',
               style: AppTextStyles.bodyMuted
                   .copyWith(color: cs.onSurface.withValues(alpha: 0.5))),
           const SizedBox(height: AppSpacing.lg),
@@ -916,19 +1014,6 @@ class _DetailsStepState extends State<_DetailsStep> {
               icon: Icons.person_outline_rounded,
               validator: _req),
 
-          // ── Email
-          AuthTextField(
-              label: 'Email Address',
-              hint: 'jane@example.com',
-              controller: widget.emailCtrl,
-              icon: Icons.email_outlined,
-              keyboardType: TextInputType.emailAddress,
-              validator: (v) {
-                if (v == null || v.isEmpty) return 'Required';
-                if (!v.contains('@')) return 'Enter a valid email';
-                return null;
-              }),
-
           // ── Phone with locked +91 prefix
           _PhoneField(
             label: 'Phone Number',
@@ -936,30 +1021,6 @@ class _DetailsStepState extends State<_DetailsStep> {
             isDark: isDark,
             cs: cs,
           ),
-
-          // ── Password
-          _PassField(
-              label: 'Password',
-              hint: '8+ characters',
-              ctrl: widget.passCtrl,
-              obscure: widget.obscurePass,
-              toggle: widget.onTogglePass,
-              validator: (v) {
-                if (v == null || v.isEmpty) return 'Required';
-                if (v.length < 8) return 'Min 8 characters';
-                return null;
-              }),
-          _PassField(
-              label: 'Confirm Password',
-              hint: 'Re-enter password',
-              ctrl: widget.confirmCtrl,
-              obscure: widget.obscureConfirm,
-              toggle: widget.onToggleConfirm,
-              validator: (v) {
-                if (v == null || v.isEmpty) return 'Required';
-                if (v != widget.passCtrl.text) return "Passwords don't match";
-                return null;
-              }),
 
           // ── Referral code (teacher/admin only)
           if (widget.role != 'parent')

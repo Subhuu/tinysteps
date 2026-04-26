@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -13,9 +14,6 @@ Future<void> main() async {
   await dotenv.load(fileName: '.env');
 
   // Initialize Supabase with deep link callback URL
-  // The custom scheme io.tinysteps://login-callback is registered in AndroidManifest.xml
-  // In Supabase dashboard > Auth > URL Configuration > Redirect URLs, add:
-  //   io.tinysteps://login-callback
   await Supabase.initialize(
     url: dotenv.env['SUPABASE_URL']!,
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
@@ -23,6 +21,16 @@ Future<void> main() async {
       authFlowType: AuthFlowType.pkce,
     ),
   );
+
+  // Enable edge-to-edge mode for a truly immersive experience
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+
+  // Set system overlay style globally for transparent status & navigation bars
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+    systemNavigationBarColor: Colors.transparent,
+    systemNavigationBarIconBrightness: Brightness.dark,
+  ));
 
   runApp(const ProviderScope(child: TinyStepsApp()));
 }
@@ -33,6 +41,11 @@ class TinyStepsApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(appRouterProvider);
+
+    // Ensure status bar remains transparent on rebuilds
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+    ));
 
     return MaterialApp.router(
       title: 'TinySteps',
