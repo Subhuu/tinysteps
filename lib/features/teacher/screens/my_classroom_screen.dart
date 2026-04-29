@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tinysteps/core/constants/app_theme.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 class MyClassroomScreen extends StatefulWidget {
   const MyClassroomScreen({super.key});
@@ -35,13 +36,13 @@ class _MyClassroomScreenState extends State<MyClassroomScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgLight,
+      backgroundColor: context.colors.bgLight,
       appBar: AppBar(
         title: Text(
           'Classroom Settings',
-          style: AppTextStyles.labelBold.copyWith(fontSize: 18),
+          style: context.textStyles.labelBold.copyWith(fontSize: 18),
         ),
-        backgroundColor: AppColors.bgLight,
+        backgroundColor: context.colors.bgLight,
         elevation: 0,
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
@@ -50,8 +51,8 @@ class _MyClassroomScreenState extends State<MyClassroomScreen> {
 
           /// LOADING
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(color: AppColors.primary),
+            return Center(
+              child: CircularProgressIndicator(color: context.colors.primary),
             );
           }
 
@@ -63,7 +64,7 @@ class _MyClassroomScreenState extends State<MyClassroomScreen> {
                 child: Text(
                   'Something went wrong.\nPlease try again.',
                   textAlign: TextAlign.center,
-                  style: AppTextStyles.bodyMuted,
+                  style: context.textStyles.bodyMuted,
                 ),
               ),
             );
@@ -82,18 +83,18 @@ class _MyClassroomScreenState extends State<MyClassroomScreen> {
                     Icon(
                       Icons.meeting_room_outlined,
                       size: 72,
-                      color: AppColors.primary.withValues(alpha: 0.3),
+                      color: context.colors.primary.withValues(alpha: 0.3),
                     ),
                     const SizedBox(height: AppSpacing.md),
                     Text(
                       'No Classrooms Yet',
-                      style: AppTextStyles.labelBold.copyWith(fontSize: 18),
+                      style: context.textStyles.labelBold.copyWith(fontSize: 18),
                     ),
                     const SizedBox(height: 6),
                     Text(
                       'You will see your classrooms here\nonce assigned by admin.',
                       textAlign: TextAlign.center,
-                      style: AppTextStyles.bodyMuted,
+                      style: context.textStyles.bodyMuted,
                     ),
                   ],
                 ),
@@ -111,7 +112,7 @@ class _MyClassroomScreenState extends State<MyClassroomScreen> {
                 padding: const EdgeInsets.all(AppSpacing.lg),
                 child: Text(
                   'Your Classrooms',
-                  style: AppTextStyles.labelBold.copyWith(fontSize: 18),
+                  style: context.textStyles.labelBold.copyWith(fontSize: 18),
                 ),
               ),
 
@@ -144,9 +145,9 @@ class _MyClassroomScreenState extends State<MyClassroomScreen> {
 
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: context.colors.bgSurface,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.colors.border),
         boxShadow: AppShadows.card,
       ),
       child: Column(
@@ -156,21 +157,21 @@ class _MyClassroomScreenState extends State<MyClassroomScreen> {
           /// Header
           Container(
             padding: const EdgeInsets.all(AppSpacing.md),
-            decoration: const BoxDecoration(
-              color: AppColors.primaryLight,
+            decoration: BoxDecoration(
+              color: context.colors.primaryLight,
               borderRadius: BorderRadius.vertical(
                 top: Radius.circular(AppRadius.lg),
               ),
             ),
             child: Row(
               children: [
-                const Icon(Icons.school_rounded,
-                    color: AppColors.primary),
+                Icon(Icons.school_rounded,
+                    color: context.colors.primary),
                 const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Text(
                     name,
-                    style: AppTextStyles.labelBold,
+                    style: context.textStyles.labelBold,
                   ),
                 ),
               ],
@@ -226,11 +227,11 @@ class _MyClassroomScreenState extends State<MyClassroomScreen> {
       IconData icon, String label, String value) {
     return Row(
       children: [
-        Icon(icon, size: 20, color: AppColors.textMuted),
+        Icon(icon, size: 20, color: context.colors.textMuted),
         const SizedBox(width: AppSpacing.sm),
-        Text('$label:', style: AppTextStyles.bodyMuted),
+        Text('$label:', style: context.textStyles.bodyMuted),
         const SizedBox(width: AppSpacing.sm),
-        Text(value, style: AppTextStyles.labelBold),
+        Text(value, style: context.textStyles.labelBold),
       ],
     );
   }

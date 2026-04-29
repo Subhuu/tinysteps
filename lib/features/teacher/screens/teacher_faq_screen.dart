@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tinysteps/core/constants/app_theme.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 class TeacherFAQScreen extends StatelessWidget {
   const TeacherFAQScreen({super.key});
@@ -30,10 +31,10 @@ class TeacherFAQScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-      backgroundColor: AppColors.bgLight,
+      backgroundColor: context.colors.bgLight,
       appBar: AppBar(
-        title: Text("FAQs", style: AppTextStyles.heading2),
-        backgroundColor: AppColors.bgLight,
+        title: Text("FAQs", style: context.textStyles.heading2),
+        backgroundColor: context.colors.bgLight,
         elevation: 0,
         surfaceTintColor: Colors.transparent,
       ),
@@ -75,12 +76,12 @@ class _FaqCardState extends State<_FaqCard> {
       duration: const Duration(milliseconds: 250),
       margin: const EdgeInsets.only(bottom: AppSpacing.md),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: context.colors.bgSurface,
         borderRadius: BorderRadius.circular(AppRadius.lg),
         border: Border.all(
           color: isOpen
               ? accentOrange
-              : AppColors.border.withValues(alpha: 0.5),
+              : context.colors.border.withValues(alpha: 0.5),
         ),
         boxShadow: AppShadows.card,
       ),
@@ -100,7 +101,7 @@ class _FaqCardState extends State<_FaqCard> {
                   Expanded(
                     child: Text(
                       widget.question,
-                      style: AppTextStyles.labelBold.copyWith(
+                      style: context.textStyles.labelBold.copyWith(
                         color: isOpen ? accentOrange : Colors.black,
                       ),
                     ),
@@ -125,8 +126,8 @@ class _FaqCardState extends State<_FaqCard> {
                   padding: const EdgeInsets.only(top: AppSpacing.sm),
                   child: Text(
                     widget.answer,
-                    style: AppTextStyles.bodySmall.copyWith(
-                      color: AppColors.textMuted,
+                    style: context.textStyles.bodySmall.copyWith(
+                      color: context.colors.textMuted,
                     ),
                   ),
                 ),

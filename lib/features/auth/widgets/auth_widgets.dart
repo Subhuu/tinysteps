@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 import 'package:tinysteps/core/constants/app_theme.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared auth widgets — used by LoginScreen & RegisterScreen
@@ -38,7 +40,7 @@ class AuthGradientButton extends StatelessWidget {
           boxShadow: enabled
               ? [
                   BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.35),
+                    color: context.colors.primary.withValues(alpha: 0.35),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -116,7 +118,7 @@ class AuthTextField extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(label,
-              style: AppTextStyles.labelBold.copyWith(color: cs.onSurface)),
+              style: context.textStyles.labelBold.copyWith(color: cs.onSurface)),
           const SizedBox(height: 6),
           TextFormField(
             controller: controller,
@@ -126,13 +128,13 @@ class AuthTextField extends StatelessWidget {
             style: TextStyle(color: cs.onSurface),
             decoration: InputDecoration(
               hintText: hint,
-              hintStyle: AppTextStyles.bodyMuted
+              hintStyle: context.textStyles.bodyMuted
                   .copyWith(color: cs.onSurface.withValues(alpha: 0.35)),
               prefixIcon: Icon(icon,
                   color: cs.onSurface.withValues(alpha: 0.4), size: 20),
               suffixIcon: suffix,
               filled: true,
-              fillColor: isDark ? AppColors.bgDarkMuted : AppColors.bgLight,
+              fillColor: isDark ? context.colors.bgDarkMuted : context.colors.bgLight,
               contentPadding: const EdgeInsets.symmetric(
                   horizontal: AppSpacing.md, vertical: 15),
               border: OutlineInputBorder(
@@ -146,15 +148,15 @@ class AuthTextField extends StatelessWidget {
               focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(AppRadius.md),
                   borderSide:
-                      const BorderSide(color: AppColors.primary, width: 2)),
+                      BorderSide(color: context.colors.primary, width: 2)),
               errorBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(AppRadius.md),
                   borderSide:
-                      const BorderSide(color: AppColors.danger, width: 1.5)),
+                      BorderSide(color: context.colors.danger, width: 1.5)),
               focusedErrorBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(AppRadius.md),
                   borderSide:
-                      const BorderSide(color: AppColors.danger, width: 2)),
+                      BorderSide(color: context.colors.danger, width: 2)),
             ),
           ),
         ],

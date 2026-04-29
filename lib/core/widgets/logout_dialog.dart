@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tinysteps/core/constants/app_theme.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 /// Shows a styled logout confirmation dialog.
 /// Returns [true] if the user confirmed, [false] if they cancelled.
@@ -8,27 +9,27 @@ Future<bool> showLogoutDialog(BuildContext context) async {
         context: context,
         barrierDismissible: false,
         builder: (ctx) => AlertDialog(
-          backgroundColor: AppColors.bgLight,
+          backgroundColor: context.colors.bgLight,
           surfaceTintColor: Colors.transparent,
-          title: Text('Sign out?', style: AppTextStyles.heading3),
+          title: Text('Sign out?', style: context.textStyles.heading3),
           content: Text(
             'You will be returned to the login screen.',
-            style: AppTextStyles.bodyMedium,
+            style: context.textStyles.bodyMedium,
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx, false),
               child: Text(
                 'Cancel',
-                style: AppTextStyles.labelBold
-                    .copyWith(color: AppColors.textMuted),
+                style: context.textStyles.labelBold
+                    .copyWith(color: context.colors.textMuted),
               ),
             ),
             FilledButton(
               style:
-                  FilledButton.styleFrom(backgroundColor: AppColors.danger),
+                  FilledButton.styleFrom(backgroundColor: context.colors.danger),
               onPressed: () => Navigator.pop(ctx, true),
-              child: Text('Sign out', style: AppTextStyles.buttonLabel),
+              child: Text('Sign out', style: context.textStyles.buttonLabel),
             ),
           ],
         ),

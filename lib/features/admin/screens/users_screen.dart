@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 import 'package:tinysteps/core/constants/app_theme.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 class UsersScreen extends StatefulWidget {
   const UsersScreen({super.key});
@@ -51,18 +53,18 @@ class _UsersScreenState extends State<UsersScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgLight,
+      backgroundColor: context.colors.bgLight,
       appBar: AppBar(
-        title: Text('Users Management', style: AppTextStyles.heading2),
-        backgroundColor: AppColors.bgLight,
+        title: Text('Users Management', style: context.textStyles.heading2),
+        backgroundColor: context.colors.bgLight,
         elevation: 0,
         bottom: TabBar(
           controller: _tabController,
-          labelStyle: AppTextStyles.labelBold,
-          unselectedLabelStyle: AppTextStyles.labelMedium,
-          indicatorColor: AppColors.primary,
-          labelColor: AppColors.primary,
-          unselectedLabelColor: AppColors.textMuted,
+          labelStyle: context.textStyles.labelBold,
+          unselectedLabelStyle: context.textStyles.labelMedium,
+          indicatorColor: context.colors.primary,
+          labelColor: context.colors.primary,
+          unselectedLabelColor: context.colors.textMuted,
           tabs: const [
             Tab(text: 'Teachers'),
             Tab(text: 'Parents'),
@@ -87,7 +89,7 @@ class _UsersScreenState extends State<UsersScreen>
       future: _teachersFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator(color: AppColors.primary));
+          return Center(child: CircularProgressIndicator(color: context.colors.primary));
         }
         if (snapshot.hasError) {
           return Center(
@@ -96,13 +98,13 @@ class _UsersScreenState extends State<UsersScreen>
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.error_outline, color: AppColors.danger, size: 40),
+                  Icon(Icons.error_outline, color: context.colors.danger, size: 40),
                   const SizedBox(height: AppSpacing.sm),
-                  Text('Failed to load teachers', style: AppTextStyles.bodyMuted),
+                  Text('Failed to load teachers', style: context.textStyles.bodyMuted),
                   const SizedBox(height: AppSpacing.xs),
                   Text(
                     snapshot.error.toString(),
-                    style: AppTextStyles.caption.copyWith(color: AppColors.danger),
+                    style: context.textStyles.caption.copyWith(color: context.colors.danger),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -113,7 +115,7 @@ class _UsersScreenState extends State<UsersScreen>
         final teachers = snapshot.data ?? [];
         if (teachers.isEmpty) {
           return Center(
-            child: Text('No teachers found', style: AppTextStyles.bodyMuted),
+            child: Text('No teachers found', style: context.textStyles.bodyMuted),
           );
         }
         return ListView.separated(
@@ -132,21 +134,21 @@ class _UsersScreenState extends State<UsersScreen>
             final Color statusColor;
             if (isApproved && isActive) {
               statusLabel = 'Active';
-              statusColor = AppColors.success;
+              statusColor = context.colors.success;
             } else if (!isApproved) {
               statusLabel = 'Pending';
-              statusColor = AppColors.warning;
+              statusColor = context.colors.warning;
             } else {
               statusLabel = 'Inactive';
-              statusColor = AppColors.danger;
+              statusColor = context.colors.danger;
             }
 
             return Card(
               elevation: 0,
-              color: AppColors.white,
+              color: context.colors.bgSurface,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(AppRadius.md),
-                side: const BorderSide(color: AppColors.border),
+                side: BorderSide(color: context.colors.border),
               ),
               child: ListTile(
                 contentPadding: const EdgeInsets.symmetric(
@@ -154,13 +156,13 @@ class _UsersScreenState extends State<UsersScreen>
                   vertical: AppSpacing.xs,
                 ),
                 leading: CircleAvatar(
-                  backgroundColor: AppColors.primaryLight,
+                  backgroundColor: context.colors.primaryLight,
                   child: Text(
                     (t['full_name'] as String? ?? 'T')[0].toUpperCase(),
-                    style: AppTextStyles.labelBold.copyWith(color: AppColors.primary),
+                    style: context.textStyles.labelBold.copyWith(color: context.colors.primary),
                   ),
                 ),
-                title: Text(t['full_name'] ?? 'Unknown', style: AppTextStyles.labelBold),
+                title: Text(t['full_name'] ?? 'Unknown', style: context.textStyles.labelBold),
                 subtitle: Builder(builder: (_) {
                   final classroomsData = t['classrooms'] as List<dynamic>? ?? [];
                   final classroomName = classroomsData.isNotEmpty 
@@ -174,7 +176,7 @@ class _UsersScreenState extends State<UsersScreen>
                   ];
                   return Text(
                     parts.isEmpty ? 'No details provided' : parts.join('  ·  '),
-                    style: AppTextStyles.bodySmall,
+                    style: context.textStyles.bodySmall,
                   );
                 }),
                 trailing: _StatusBadge(label: statusLabel, color: statusColor),
@@ -213,7 +215,7 @@ class _UsersScreenState extends State<UsersScreen>
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
-          backgroundColor: AppColors.bgLight,
+          backgroundColor: context.colors.bgLight,
           surfaceTintColor: Colors.transparent,
           contentPadding: const EdgeInsets.fromLTRB(
             AppSpacing.lg, AppSpacing.md, AppSpacing.lg, AppSpacing.lg,
@@ -225,25 +227,25 @@ class _UsersScreenState extends State<UsersScreen>
                 // ── Avatar + Name + Status ─────────────────────────────
                 CircleAvatar(
                   radius: 32,
-                  backgroundColor: AppColors.primary.withValues(alpha: 0.15),
+                  backgroundColor: context.colors.primary.withValues(alpha: 0.15),
                   child: Text(
                     initial,
-                    style: AppTextStyles.heading1.copyWith(color: AppColors.primary),
+                    style: context.textStyles.heading1.copyWith(color: context.colors.primary),
                   ),
                 ),
                 const SizedBox(height: AppSpacing.md),
-                Text(name, style: AppTextStyles.heading3),
+                Text(name, style: context.textStyles.heading3),
                 const SizedBox(height: 4),
                 Wrap(
                   spacing: AppSpacing.xs,
                   children: [
                     _StatusBadge(
                       label: isApproved ? 'Approved' : 'Pending',
-                      color: isApproved ? AppColors.success : AppColors.warning,
+                      color: isApproved ? context.colors.success : context.colors.warning,
                     ),
                     _StatusBadge(
                       label: isActive ? 'Active' : 'Inactive',
-                      color: isActive ? AppColors.success : AppColors.danger,
+                      color: isActive ? context.colors.success : context.colors.danger,
                     ),
                   ],
                 ),
@@ -254,9 +256,9 @@ class _UsersScreenState extends State<UsersScreen>
                   width: double.infinity,
                   padding: const EdgeInsets.all(AppSpacing.md),
                   decoration: BoxDecoration(
-                    color: AppColors.bgSurface,
+                    color: context.colors.bgSurface,
                     borderRadius: BorderRadius.circular(AppRadius.md),
-                    border: Border.all(color: AppColors.border),
+                    border: Border.all(color: context.colors.border),
                   ),
                   child: Column(
                     children: [
@@ -266,7 +268,7 @@ class _UsersScreenState extends State<UsersScreen>
                           label: 'Designation',
                           value: designation,
                         ),
-                        const Divider(height: AppSpacing.lg, color: AppColors.border),
+                        Divider(height: AppSpacing.lg, color: context.colors.border),
                       ],
                       if (staffId != null && staffId.isNotEmpty) ...[
                         _DetailRow(
@@ -274,14 +276,14 @@ class _UsersScreenState extends State<UsersScreen>
                           label: 'Staff ID',
                           value: staffId,
                         ),
-                        const Divider(height: AppSpacing.lg, color: AppColors.border),
+                        Divider(height: AppSpacing.lg, color: context.colors.border),
                       ],
                       _DetailRow(
                         icon: Icons.meeting_room_outlined,
                         label: 'Classroom',
                         value: currentClassroomName,
                       ),
-                      const Divider(height: AppSpacing.lg, color: AppColors.border),
+                      Divider(height: AppSpacing.lg, color: context.colors.border),
                       _DetailRow(
                         icon: Icons.email_outlined,
                         label: 'Email',
@@ -299,7 +301,7 @@ class _UsersScreenState extends State<UsersScreen>
                     child: FilledButton.icon(
                       icon: const Icon(Icons.check_circle_outline, size: 18),
                       style: FilledButton.styleFrom(
-                        backgroundColor: AppColors.success,
+                        backgroundColor: context.colors.success,
                         padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
                         shape: RoundedRectangleBorder(borderRadius: AppRadius.buttonRadius),
                       ),
@@ -311,7 +313,7 @@ class _UsersScreenState extends State<UsersScreen>
                         if (ctx.mounted) Navigator.pop(ctx);
                         setState(() => _refresh());
                       },
-                      label: Text('Approve', style: AppTextStyles.buttonLabel),
+                      label: Text('Approve', style: context.textStyles.buttonLabel),
                     ),
                   )
                 else
@@ -320,8 +322,8 @@ class _UsersScreenState extends State<UsersScreen>
                     child: OutlinedButton.icon(
                       icon: const Icon(Icons.remove_circle_outline, size: 18),
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.warning,
-                        side: const BorderSide(color: AppColors.warning),
+                        foregroundColor: context.colors.warning,
+                        side: BorderSide(color: context.colors.warning),
                         padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
                         shape: RoundedRectangleBorder(borderRadius: AppRadius.buttonRadius),
                       ),
@@ -335,7 +337,7 @@ class _UsersScreenState extends State<UsersScreen>
                       },
                       label: Text(
                         'Revoke Approval',
-                        style: AppTextStyles.labelBold.copyWith(color: AppColors.warning),
+                        style: context.textStyles.labelBold.copyWith(color: context.colors.warning),
                       ),
                     ),
                   ),
@@ -351,8 +353,8 @@ class _UsersScreenState extends State<UsersScreen>
                         size: 18,
                       ),
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: isActive ? AppColors.danger : AppColors.success,
-                        side: BorderSide(color: isActive ? AppColors.danger : AppColors.success),
+                        foregroundColor: isActive ? context.colors.danger : context.colors.success,
+                        side: BorderSide(color: isActive ? context.colors.danger : context.colors.success),
                         padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
                         shape: RoundedRectangleBorder(borderRadius: AppRadius.buttonRadius),
                       ),
@@ -366,8 +368,8 @@ class _UsersScreenState extends State<UsersScreen>
                       },
                       label: Text(
                         isActive ? 'Deactivate' : 'Activate',
-                        style: AppTextStyles.labelBold.copyWith(
-                          color: isActive ? AppColors.danger : AppColors.success,
+                        style: context.textStyles.labelBold.copyWith(
+                          color: isActive ? context.colors.danger : context.colors.success,
                         ),
                       ),
                     ),
@@ -375,30 +377,30 @@ class _UsersScreenState extends State<UsersScreen>
                 const SizedBox(height: AppSpacing.lg),
 
                 // ── Assign Classroom ───────────────────────────────────
-                Text('Assign Classroom', style: AppTextStyles.labelBold),
+                Text('Assign Classroom', style: context.textStyles.labelBold),
                 const SizedBox(height: AppSpacing.sm),
                 if (classrooms.isEmpty)
-                  Text('No classrooms available', style: AppTextStyles.bodyMuted)
+                  Text('No classrooms available', style: context.textStyles.bodyMuted)
                 else
                   DropdownButtonFormField<String>(
-                    dropdownColor: AppColors.bgSurface,
+                    dropdownColor: context.colors.bgSurface,
                     decoration: InputDecoration(
                       filled: true,
-                      fillColor: AppColors.bgSurface,
+                      fillColor: context.colors.bgSurface,
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: AppSpacing.md,
                         vertical: AppSpacing.sm,
                       ),
                       border: OutlineInputBorder(
                         borderRadius: AppRadius.inputRadius,
-                        borderSide: const BorderSide(color: AppColors.border),
+                        borderSide: BorderSide(color: context.colors.border),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: AppRadius.inputRadius,
-                        borderSide: const BorderSide(color: AppColors.border),
+                        borderSide: BorderSide(color: context.colors.border),
                       ),
                     ),
-                    hint: Text('Select classroom', style: AppTextStyles.bodyMuted),
+                    hint: Text('Select classroom', style: context.textStyles.bodyMuted),
                     initialValue: selectedClassroomId,
                     items: classrooms.map((c) {
                       // FIX: code is nullable — fallback to name only
@@ -408,7 +410,7 @@ class _UsersScreenState extends State<UsersScreen>
                           : '${c['name']}';
                       return DropdownMenuItem<String>(
                         value: c['id'] as String,
-                        child: Text(label, style: AppTextStyles.bodyMedium),
+                        child: Text(label, style: context.textStyles.bodyMedium),
                       );
                     }).toList(),
                     onChanged: (val) =>
@@ -420,7 +422,7 @@ class _UsersScreenState extends State<UsersScreen>
                     width: double.infinity,
                     child: FilledButton(
                       style: FilledButton.styleFrom(
-                        backgroundColor: AppColors.secondary,
+                        backgroundColor: context.colors.secondary,
                         padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
                         shape: RoundedRectangleBorder(borderRadius: AppRadius.buttonRadius),
                       ),
@@ -441,9 +443,9 @@ class _UsersScreenState extends State<UsersScreen>
                                 if (ctx.mounted) {
                                   Navigator.pop(ctx);
                                   ScaffoldMessenger.of(ctx).showSnackBar(
-                                    const SnackBar(
+                                    SnackBar(
                                       content: Text('Classroom assigned successfully'),
-                                      backgroundColor: AppColors.success,
+                                      backgroundColor: context.colors.success,
                                     ),
                                   );
                                 }
@@ -453,13 +455,13 @@ class _UsersScreenState extends State<UsersScreen>
                                   ScaffoldMessenger.of(ctx).showSnackBar(
                                     SnackBar(
                                       content: Text('Error: ${e.message}'),
-                                      backgroundColor: AppColors.danger,
+                                      backgroundColor: context.colors.danger,
                                     ),
                                   );
                                 }
                               }
                             },
-                      child: Text('Confirm Assignment', style: AppTextStyles.buttonLabel),
+                      child: Text('Confirm Assignment', style: context.textStyles.buttonLabel),
                     ),
                   ),
                 ],
@@ -479,7 +481,7 @@ class _UsersScreenState extends State<UsersScreen>
       future: _parentsFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator(color: AppColors.primary));
+          return Center(child: CircularProgressIndicator(color: context.colors.primary));
         }
         if (snapshot.hasError) {
           return Center(
@@ -488,13 +490,13 @@ class _UsersScreenState extends State<UsersScreen>
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.error_outline, color: AppColors.danger, size: 40),
+                  Icon(Icons.error_outline, color: context.colors.danger, size: 40),
                   const SizedBox(height: AppSpacing.sm),
-                  Text('Failed to load parents', style: AppTextStyles.bodyMuted),
+                  Text('Failed to load parents', style: context.textStyles.bodyMuted),
                   const SizedBox(height: AppSpacing.xs),
                   Text(
                     snapshot.error.toString(),
-                    style: AppTextStyles.caption.copyWith(color: AppColors.danger),
+                    style: context.textStyles.caption.copyWith(color: context.colors.danger),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -505,7 +507,7 @@ class _UsersScreenState extends State<UsersScreen>
         final parents = snapshot.data ?? [];
         if (parents.isEmpty) {
           return Center(
-            child: Text('No parents found', style: AppTextStyles.bodyMuted),
+            child: Text('No parents found', style: context.textStyles.bodyMuted),
           );
         }
         return ListView.separated(
@@ -524,10 +526,10 @@ class _UsersScreenState extends State<UsersScreen>
 
             return Card(
               elevation: 0,
-              color: AppColors.white,
+              color: context.colors.bgSurface,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(AppRadius.md),
-                side: const BorderSide(color: AppColors.border),
+                side: BorderSide(color: context.colors.border),
               ),
               child: ListTile(
                 contentPadding: const EdgeInsets.symmetric(
@@ -535,24 +537,24 @@ class _UsersScreenState extends State<UsersScreen>
                   vertical: AppSpacing.xs,
                 ),
                 leading: CircleAvatar(
-                  backgroundColor: AppColors.secondaryLight,
+                  backgroundColor: context.colors.secondaryLight,
                   child: Text(
                     (p['full_name'] as String? ?? 'P')[0].toUpperCase(),
-                    style: AppTextStyles.labelBold
-                        .copyWith(color: AppColors.secondary),
+                    style: context.textStyles.labelBold
+                        .copyWith(color: context.colors.secondary),
                   ),
                 ),
                 title: Text(
                   p['full_name'] ?? 'Unknown',
-                  style: AppTextStyles.labelBold,
+                  style: context.textStyles.labelBold,
                 ),
                 subtitle: Text(
                   '${p['phone'] ?? '—'}  ·  $childCount ${childCount == 1 ? 'child' : 'children'}',
-                  style: AppTextStyles.bodySmall,
+                  style: context.textStyles.bodySmall,
                 ),
                 trailing: _StatusBadge(
                   label: p['is_active'] == true ? 'Active' : 'Inactive',
-                  color: p['is_active'] == true ? AppColors.success : AppColors.danger,
+                  color: p['is_active'] == true ? context.colors.success : context.colors.danger,
                 ),
                 onTap: () => _showParentDetail(context, p),
               ),
@@ -574,7 +576,7 @@ class _UsersScreenState extends State<UsersScreen>
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
-          backgroundColor: AppColors.bgLight,
+          backgroundColor: context.colors.bgLight,
           surfaceTintColor: Colors.transparent,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadius.lg),
@@ -589,18 +591,18 @@ class _UsersScreenState extends State<UsersScreen>
                 // ── Avatar + Name ──────────────────────────────────────────
                 CircleAvatar(
                   radius: 32,
-                  backgroundColor: AppColors.secondary.withValues(alpha: 0.15),
+                  backgroundColor: context.colors.secondary.withValues(alpha: 0.15),
                   child: Text(
                     initial,
-                    style: AppTextStyles.heading1.copyWith(color: AppColors.secondary),
+                    style: context.textStyles.heading1.copyWith(color: context.colors.secondary),
                   ),
                 ),
                 const SizedBox(height: AppSpacing.md),
-                Text(name, style: AppTextStyles.heading3),
+                Text(name, style: context.textStyles.heading3),
                 const SizedBox(height: 4),
                 _StatusBadge(
                   label: isActive ? 'Active' : 'Inactive',
-                  color: isActive ? AppColors.success : AppColors.danger,
+                  color: isActive ? context.colors.success : context.colors.danger,
                 ),
                 const SizedBox(height: AppSpacing.lg),
 
@@ -609,9 +611,9 @@ class _UsersScreenState extends State<UsersScreen>
                   width: double.infinity,
                   padding: const EdgeInsets.all(AppSpacing.md),
                   decoration: BoxDecoration(
-                    color: AppColors.bgSurface,
+                    color: context.colors.bgSurface,
                     borderRadius: BorderRadius.circular(AppRadius.md),
-                    border: Border.all(color: AppColors.border),
+                    border: Border.all(color: context.colors.border),
                   ),
                   child: Column(
                     children: [
@@ -620,7 +622,7 @@ class _UsersScreenState extends State<UsersScreen>
                         label: 'Phone',
                         value: parent['phone'] ?? '—',
                       ),
-                      const Divider(height: AppSpacing.lg, color: AppColors.border),
+                      Divider(height: AppSpacing.lg, color: context.colors.border),
                       // FIX: Show relationship_to_child from DB
                       if (parent['relationship_to_child'] != null) ...[
                         _DetailRow(
@@ -628,20 +630,20 @@ class _UsersScreenState extends State<UsersScreen>
                           label: 'Relationship',
                           value: parent['relationship_to_child'] as String,
                         ),
-                        const Divider(height: AppSpacing.lg, color: AppColors.border),
+                        Divider(height: AppSpacing.lg, color: context.colors.border),
                       ],
                       _DetailRow(
                         icon: Icons.person_outline,
                         label: 'Emergency Contact',
                         value: parent['emergency_contact_name'] ?? '—',
                       ),
-                      const Divider(height: AppSpacing.lg, color: AppColors.border),
+                      Divider(height: AppSpacing.lg, color: context.colors.border),
                       _DetailRow(
                         icon: Icons.contact_phone_outlined,
                         label: 'Emergency Phone',
                         value: parent['emergency_contact_phone'] ?? '—',
                       ),
-                      const Divider(height: AppSpacing.lg, color: AppColors.border),
+                      Divider(height: AppSpacing.lg, color: context.colors.border),
                       _DetailRow(
                         icon: Icons.child_care_rounded,
                         label: 'Children Enrolled',
@@ -661,9 +663,9 @@ class _UsersScreenState extends State<UsersScreen>
                       size: 18,
                     ),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: isActive ? AppColors.danger : AppColors.success,
+                      foregroundColor: isActive ? context.colors.danger : context.colors.success,
                       side: BorderSide(
-                          color: isActive ? AppColors.danger : AppColors.success),
+                          color: isActive ? context.colors.danger : context.colors.success),
                       padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
                       shape: RoundedRectangleBorder(
                           borderRadius: AppRadius.buttonRadius),
@@ -681,7 +683,7 @@ class _UsersScreenState extends State<UsersScreen>
                           ScaffoldMessenger.of(ctx).showSnackBar(
                             SnackBar(
                               content: Text('Error: ${e.message}'),
-                              backgroundColor: AppColors.danger,
+                              backgroundColor: context.colors.danger,
                             ),
                           );
                         }
@@ -689,8 +691,8 @@ class _UsersScreenState extends State<UsersScreen>
                     },
                     label: Text(
                       isActive ? 'Deactivate Account' : 'Activate Account',
-                      style: AppTextStyles.labelBold.copyWith(
-                        color: isActive ? AppColors.danger : AppColors.success,
+                      style: context.textStyles.labelBold.copyWith(
+                        color: isActive ? context.colors.danger : context.colors.success,
                       ),
                     ),
                   ),
@@ -704,13 +706,13 @@ class _UsersScreenState extends State<UsersScreen>
               child: OutlinedButton(
                 onPressed: () => Navigator.pop(ctx),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.textMedium,
-                  side: const BorderSide(color: AppColors.border),
+                  foregroundColor: context.colors.textMedium,
+                  side: BorderSide(color: context.colors.border),
                   shape: RoundedRectangleBorder(
                       borderRadius: AppRadius.buttonRadius),
                   padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
                 ),
-                child: Text('Close', style: AppTextStyles.labelBold),
+                child: Text('Close', style: context.textStyles.labelBold),
               ),
             ),
           ],
@@ -739,7 +741,7 @@ class _StatusBadge extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: AppTextStyles.bodySmall.copyWith(
+        style: context.textStyles.bodySmall.copyWith(
           color: color,
           fontWeight: FontWeight.bold,
         ),
@@ -759,14 +761,14 @@ class _DetailRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 16, color: AppColors.textMuted),
+        Icon(icon, size: 16, color: context.colors.textMuted),
         const SizedBox(width: AppSpacing.sm),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: AppTextStyles.caption),
-              Text(value, style: AppTextStyles.labelBold),
+              Text(label, style: context.textStyles.caption),
+              Text(value, style: context.textStyles.labelBold),
             ],
           ),
         ),

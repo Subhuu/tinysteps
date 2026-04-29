@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tinysteps/core/constants/app_theme.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 enum AttendanceStatus {
   checkedIn,
@@ -12,25 +13,25 @@ class StatusChip extends StatelessWidget {
 
   const StatusChip({super.key, required this.status});
 
-  Color get bgColor {
+  Color bgColor(BuildContext context) {
     switch (status) {
       case AttendanceStatus.checkedIn:
-        return AppColors.successLight;
+        return context.colors.successLight;
       case AttendanceStatus.checkedOut:
-        return AppColors.accentLight;
+        return context.colors.accentLight;
       case AttendanceStatus.absent:
-        return AppColors.dangerLight;
+        return context.colors.dangerLight;
     }
   }
 
-  Color get textColor {
+  Color textColor(BuildContext context) {
     switch (status) {
       case AttendanceStatus.checkedIn:
-        return AppColors.success;
+        return context.colors.success;
       case AttendanceStatus.checkedOut:
-        return AppColors.accent;
+        return context.colors.accent;
       case AttendanceStatus.absent:
-        return AppColors.danger;
+        return context.colors.danger;
     }
   }
 
@@ -53,12 +54,12 @@ class StatusChip extends StatelessWidget {
         vertical: AppSpacing.xs,
       ),
       decoration: BoxDecoration(
-        color: bgColor,
+        color: bgColor(context),
         borderRadius: AppRadius.chipRadius,
       ),
       child: Text(
         label,
-        style: AppTextStyles.labelMedium.copyWith(color: textColor),
+        style: context.textStyles.labelMedium.copyWith(color: textColor(context)),
       ),
     );
   }

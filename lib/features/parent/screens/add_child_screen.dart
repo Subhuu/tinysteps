@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tinysteps/core/constants/app_theme.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 class AddChildScreen extends StatefulWidget {
   const AddChildScreen({super.key});
@@ -55,47 +56,49 @@ class _AddChildScreenState extends State<AddChildScreen> {
 
     try {
       // Generate a UUID for qr_code upfront
-      final qrCode = DateTime.now().microsecondsSinceEpoch.toRadixString(36) +
+      final qrCode =
+          DateTime.now().microsecondsSinceEpoch.toRadixString(36) +
           _nameController.text.trim().hashCode.toRadixString(36);
 
       // Insert child row with qr_code in one atomic operation
-      await _supabase
-          .from('children')
-          .insert({
-            'full_name': _nameController.text.trim(),
-            'date_of_birth': _selectedDob!.toIso8601String().substring(0, 10),
-            'gender': _selectedGender,
-            'allergies': _allergiesController.text.trim().isEmpty
-                ? null
-                : _allergiesController.text.trim(),
-            'medical_notes': _medicalNotesController.text.trim().isEmpty
-                ? null
-                : _medicalNotesController.text.trim(),
-            'parent_id': uid,
-            'status': 'active',
-            'qr_code': qrCode,
-          });
+      await _supabase.from('children').insert({
+        'full_name': _nameController.text.trim(),
+        'date_of_birth': _selectedDob!.toIso8601String().substring(0, 10),
+        'gender': _selectedGender,
+        'allergies': _allergiesController.text.trim().isEmpty
+            ? null
+            : _allergiesController.text.trim(),
+        'medical_notes': _medicalNotesController.text.trim().isEmpty
+            ? null
+            : _medicalNotesController.text.trim(),
+        'parent_id': uid,
+        'status': 'active',
+        'qr_code': qrCode,
+      });
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          backgroundColor: AppColors.success,
+          backgroundColor: context.colors.success,
           content: Text(
             '${_nameController.text.trim()} added successfully!',
-            style: AppTextStyles.bodySmall.copyWith(color: AppColors.white),
+            style: context.textStyles.bodySmall.copyWith(color: context.colors.white),
           ),
         ),
       );
-      Navigator.pop(context, true); // true = child was added, parent should refresh
+      Navigator.pop(
+        context,
+        true,
+      ); // true = child was added, parent should refresh
     } on PostgrestException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          backgroundColor: AppColors.danger,
+          backgroundColor: context.colors.danger,
           duration: const Duration(seconds: 5),
           content: Text(
             'Failed to add child: ${e.message}\nCode: ${e.code}',
-            style: AppTextStyles.bodySmall.copyWith(color: AppColors.white),
+            style: context.textStyles.bodySmall.copyWith(color: context.colors.white),
           ),
         ),
       );
@@ -107,10 +110,10 @@ class _AddChildScreenState extends State<AddChildScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgLight,
+      backgroundColor: context.colors.bgLight,
       appBar: AppBar(
-        title: Text('Add Child', style: AppTextStyles.heading2),
-        backgroundColor: AppColors.bgLight,
+        title: Text('Add Child', style: context.textStyles.heading2),
+        backgroundColor: context.colors.bgLight,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -128,10 +131,10 @@ class _AddChildScreenState extends State<AddChildScreen> {
               Center(
                 child: CircleAvatar(
                   radius: 40,
-                  backgroundColor: AppColors.accent.withValues(alpha: 0.15),
-                  child: const Icon(
+                  backgroundColor: context.colors.accent.withValues(alpha: 0.15),
+                  child: Icon(
                     Icons.child_care_rounded,
-                    color: AppColors.accent,
+                    color: context.colors.accent,
                     size: 40,
                   ),
                 ),
@@ -140,21 +143,22 @@ class _AddChildScreenState extends State<AddChildScreen> {
               Center(
                 child: Text(
                   'Tell us about your child',
-                  style: AppTextStyles.bodyMuted,
+                  style: context.textStyles.bodyMuted,
                 ),
               ),
               const SizedBox(height: AppSpacing.xl),
 
-              Text('Child Details', style: AppTextStyles.heading3),
+              Text('Child Details', style: context.textStyles.heading3),
               const SizedBox(height: AppSpacing.md),
 
               // Full Name
               TextFormField(
                 controller: _nameController,
-                style: AppTextStyles.bodyLarge,
+                style: context.textStyles.bodyLarge,
                 textCapitalization: TextCapitalization.words,
-                validator: (val) =>
-                    (val == null || val.trim().isEmpty) ? 'Full name is required' : null,
+                validator: (val) => (val == null || val.trim().isEmpty)
+                    ? 'Full name is required'
+                    : null,
                 decoration: _inputDecoration(
                   label: 'Full Name',
                   icon: Icons.person_outline,
@@ -167,7 +171,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
                 onTap: () => _pickDate(context),
                 child: AbsorbPointer(
                   child: TextFormField(
-                    style: AppTextStyles.bodyLarge,
+                    style: context.textStyles.bodyLarge,
                     decoration: _inputDecoration(
                       label: 'Date of Birth',
                       icon: Icons.cake_outlined,
@@ -190,6 +194,10 @@ class _AddChildScreenState extends State<AddChildScreen> {
                   label: 'Gender',
                   icon: Icons.people_outline,
                 ),
+                dropdownColor: AppColors.bgSurface,
+                style: AppTextStyles.bodyLarge.copyWith(
+                  color: AppColors.textDark,
+                ),
                 items: ['Male', 'Female', 'Other']
                     .map((g) => DropdownMenuItem(value: g, child: Text(g)))
                     .toList(),
@@ -200,7 +208,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
               // Allergies
               TextFormField(
                 controller: _allergiesController,
-                style: AppTextStyles.bodyLarge,
+                style: context.textStyles.bodyLarge,
                 decoration: _inputDecoration(
                   label: 'Allergies (optional)',
                   icon: Icons.warning_amber_outlined,
@@ -212,7 +220,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
               TextFormField(
                 controller: _medicalNotesController,
                 maxLines: 3,
-                style: AppTextStyles.bodyLarge,
+                style: context.textStyles.bodyLarge,
                 decoration: _inputDecoration(
                   label: 'Medical Notes (optional)',
                   icon: Icons.medical_information_outlined,
@@ -222,7 +230,7 @@ class _AddChildScreenState extends State<AddChildScreen> {
               const SizedBox(height: AppSpacing.sm),
               Text(
                 'A classroom will be assigned by admin after submission.',
-                style: AppTextStyles.caption,
+                style: context.textStyles.caption,
               ),
 
               const SizedBox(height: AppSpacing.xxl),
@@ -233,23 +241,26 @@ class _AddChildScreenState extends State<AddChildScreen> {
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _submit,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.6),
+
+                    backgroundColor: context.colors.primary,
+                    disabledBackgroundColor: context.colors.primary.withValues(alpha: 0.6),
                     shape: RoundedRectangleBorder(
                       borderRadius: AppRadius.buttonRadius,
                     ),
-                    padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: AppSpacing.md,
+                    ),
                   ),
                   child: _isLoading
-                      ? const SizedBox(
+                      ? SizedBox(
                           height: 20,
                           width: 20,
                           child: CircularProgressIndicator(
-                            color: AppColors.white,
+                            color: context.colors.white,
                             strokeWidth: 2,
                           ),
                         )
-                      : Text('Add Child', style: AppTextStyles.buttonLabel),
+                      : Text('Add Child', style: context.textStyles.buttonLabel),
                 ),
               ),
             ],
@@ -259,25 +270,29 @@ class _AddChildScreenState extends State<AddChildScreen> {
     );
   }
 
-  InputDecoration _inputDecoration({required String label, required IconData icon}) {
+  InputDecoration _inputDecoration({
+    required String label,
+    required IconData icon,
+  }) {
     return InputDecoration(
       labelText: label,
-      labelStyle: AppTextStyles.labelMedium,
-      prefixIcon: Icon(icon, color: AppColors.secondary),
+      labelStyle: context.textStyles.labelMedium,
+      prefixIcon: Icon(icon, color: context.colors.secondary),
       filled: true,
-      fillColor: AppColors.bgSurface,
+      fillColor: context.colors.bgSurface,
       border: OutlineInputBorder(
         borderRadius: AppRadius.inputRadius,
-        borderSide: const BorderSide(color: AppColors.border),
+        borderSide: BorderSide(color: context.colors.border),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: AppRadius.inputRadius,
-        borderSide: const BorderSide(color: AppColors.border),
+        borderSide: BorderSide(color: context.colors.border),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: AppRadius.inputRadius,
-        borderSide: const BorderSide(color: AppColors.primary, width: 2),
+        borderSide: BorderSide(color: context.colors.primary, width: 2),
       ),
     );
   }
 }
+

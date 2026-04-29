@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import 'package:tinysteps/core/constants/app_theme.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 class AppCalendar extends StatefulWidget {
   const AppCalendar({super.key});
@@ -23,7 +24,7 @@ class _AppCalendarState extends State<AppCalendar> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             IconButton(
-              icon: Icon(Icons.chevron_left, color: AppColors.primary),
+              icon: Icon(Icons.chevron_left, color: context.colors.primary),
               onPressed: () {
                 setState(() {
                   _focusedDay = DateTime(
@@ -36,11 +37,11 @@ class _AppCalendarState extends State<AppCalendar> {
 
             Text(
               DateFormat.yMMMM().format(_focusedDay),
-              style: AppTextStyles.heading2,
+              style: context.textStyles.heading2,
             ),
 
             IconButton(
-              icon: Icon(Icons.chevron_right, color: AppColors.primary),
+              icon: Icon(Icons.chevron_right, color: context.colors.primary),
               onPressed: () {
                 setState(() {
                   _focusedDay = DateTime(
@@ -74,23 +75,23 @@ class _AppCalendarState extends State<AppCalendar> {
 
           calendarStyle: CalendarStyle(
             todayDecoration: BoxDecoration(
-              color: AppColors.primary, // today highlight
+              color: context.colors.primary, // today highlight
               shape: BoxShape.circle,
             ),
             selectedDecoration: BoxDecoration(
-              color: AppColors.success,
+              color: context.colors.success,
               shape: BoxShape.circle,
             ),
-            weekendTextStyle: AppTextStyles.bodySmall.copyWith(
-              color: AppColors.danger,
+            weekendTextStyle: context.textStyles.bodySmall.copyWith(
+              color: context.colors.danger,
             ),
-            defaultTextStyle: AppTextStyles.bodySmall,
+            defaultTextStyle: context.textStyles.bodySmall,
           ),
 
           daysOfWeekStyle: DaysOfWeekStyle(
-            weekdayStyle: AppTextStyles.labelBold,
-            weekendStyle: AppTextStyles.labelBold.copyWith(
-              color: AppColors.danger,
+            weekdayStyle: context.textStyles.labelBold,
+            weekendStyle: context.textStyles.labelBold.copyWith(
+              color: context.colors.danger,
             ),
           ),
         ),
@@ -100,7 +101,7 @@ class _AppCalendarState extends State<AppCalendar> {
         // 📍 Selected Date Display
         Text(
           "Selected: ${DateFormat.yMMMd().format(_selectedDay)}",
-          style: AppTextStyles.bodyMuted,
+          style: context.textStyles.bodyMuted,
         ),
       ],
     );

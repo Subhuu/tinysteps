@@ -5,6 +5,7 @@ import 'package:tinysteps/core/constants/app_theme.dart';
 import 'package:tinysteps/core/widgets/logout_dialog.dart';
 import 'package:tinysteps/features/auth/screens/change_password_screen.dart';
 import 'package:tinysteps/features/admin/screens/users_screen.dart';
+import 'package:tinysteps/core/theme/theme_ext.dart';
 
 
 class AdminSettingsScreen extends StatefulWidget {
@@ -73,12 +74,12 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
     await showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.bgLight,
+        backgroundColor: context.colors.bgLight,
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.xl),
         ),
-        title: Text('Edit Profile', style: AppTextStyles.heading3),
+        title: Text('Edit Profile', style: context.textStyles.heading3),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -103,14 +104,14 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
             onPressed: () => Navigator.pop(ctx),
             child: Text(
               'Cancel',
-              style: AppTextStyles.labelBold.copyWith(
-                color: AppColors.textMuted,
+              style: context.textStyles.labelBold.copyWith(
+                color: context.colors.textMuted,
               ),
             ),
           ),
           FilledButton(
             style: FilledButton.styleFrom(
-              backgroundColor: AppColors.primary,
+              backgroundColor: context.colors.primary,
               shape: RoundedRectangleBorder(
                 borderRadius: AppRadius.buttonRadius,
               ),
@@ -130,7 +131,7 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
               if (ctx.mounted) Navigator.pop(ctx);
               await _loadProfile();
             },
-            child: Text('Save', style: AppTextStyles.buttonLabel),
+            child: Text('Save', style: context.textStyles.buttonLabel),
           ),
         ],
       ),
@@ -146,24 +147,24 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
     return TextFormField(
       controller: ctrl,
       keyboardType: keyboardType,
-      style: AppTextStyles.bodyMedium,
+      style: context.textStyles.bodyMedium,
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: AppTextStyles.labelMedium,
-        prefixIcon: Icon(icon, color: AppColors.primary, size: 20),
+        labelStyle: context.textStyles.labelMedium,
+        prefixIcon: Icon(icon, color: context.colors.primary, size: 20),
         filled: true,
-        fillColor: AppColors.bgSurface,
+        fillColor: context.colors.bgSurface,
         border: OutlineInputBorder(
           borderRadius: AppRadius.inputRadius,
-          borderSide: const BorderSide(color: AppColors.border),
+          borderSide: BorderSide(color: context.colors.border),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: AppRadius.inputRadius,
-          borderSide: const BorderSide(color: AppColors.border),
+          borderSide: BorderSide(color: context.colors.border),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: AppRadius.inputRadius,
-          borderSide: const BorderSide(color: AppColors.primary, width: 2),
+          borderSide: BorderSide(color: context.colors.primary, width: 2),
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.md,
@@ -178,10 +179,10 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
     final initial = _fullName.isNotEmpty ? _fullName[0].toUpperCase() : 'A';
 
     return Scaffold(
-      backgroundColor: AppColors.bgLight,
+      backgroundColor: context.colors.bgLight,
       body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(color: AppColors.primary),
+          ? Center(
+              child: CircularProgressIndicator(color: context.colors.primary),
             )
           : CustomScrollView(
               slivers: [
@@ -209,8 +210,8 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                               children: [
                                 Text(
                                   'Settings',
-                                  style: AppTextStyles.heading2.copyWith(
-                                    color: AppColors.white,
+                                  style: context.textStyles.heading2.copyWith(
+                                    color: context.colors.white,
                                   ),
                                 ),
                                 const Spacer(),
@@ -221,16 +222,16 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                                       AppSpacing.xs,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: AppColors.white.withValues(
+                                      color: context.colors.white.withValues(
                                         alpha: 0.25,
                                       ),
                                       borderRadius: BorderRadius.circular(
                                         AppRadius.sm,
                                       ),
                                     ),
-                                    child: const Icon(
+                                    child: Icon(
                                       Icons.edit_outlined,
-                                      color: AppColors.white,
+                                      color: context.colors.white,
                                       size: 20,
                                     ),
                                   ),
@@ -244,20 +245,20 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                                   width: 72,
                                   height: 72,
                                   decoration: BoxDecoration(
-                                    color: AppColors.white.withValues(
+                                    color: context.colors.white.withValues(
                                       alpha: 0.25,
                                     ),
                                     shape: BoxShape.circle,
                                     border: Border.all(
-                                      color: AppColors.white,
+                                      color: context.colors.white,
                                       width: 2,
                                     ),
                                   ),
                                   child: Center(
                                     child: Text(
                                       initial,
-                                      style: AppTextStyles.heading1.copyWith(
-                                        color: AppColors.white,
+                                      style: context.textStyles.heading1.copyWith(
+                                        color: context.colors.white,
                                       ),
                                     ),
                                   ),
@@ -272,15 +273,15 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                                         _fullName.isNotEmpty
                                             ? _fullName
                                             : 'Admin',
-                                        style: AppTextStyles.heading3.copyWith(
-                                          color: AppColors.white,
+                                        style: context.textStyles.heading3.copyWith(
+                                          color: context.colors.white,
                                         ),
                                       ),
                                       const SizedBox(height: 2),
                                       Text(
                                         _email,
-                                        style: AppTextStyles.bodySmall.copyWith(
-                                          color: AppColors.white.withValues(
+                                        style: context.textStyles.bodySmall.copyWith(
+                                          color: context.colors.white.withValues(
                                             alpha: 0.85,
                                           ),
                                         ),
@@ -290,7 +291,7 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                                         _designation.isNotEmpty
                                             ? _designation
                                             : 'Administrator',
-                                        AppColors.white,
+                                        context.colors.white,
                                       ),
                                     ],
                                   ),
@@ -306,7 +307,7 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                                   vertical: AppSpacing.sm,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: AppColors.white.withValues(
+                                  color: context.colors.white.withValues(
                                     alpha: 0.15,
                                   ),
                                   borderRadius: BorderRadius.circular(
@@ -315,16 +316,16 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                                 ),
                                 child: Row(
                                   children: [
-                                    const Icon(
+                                    Icon(
                                       Icons.business_rounded,
-                                      color: AppColors.white,
+                                      color: context.colors.white,
                                       size: 16,
                                     ),
                                     const SizedBox(width: AppSpacing.sm),
                                     Text(
                                       _centerName,
-                                      style: AppTextStyles.labelBold.copyWith(
-                                        color: AppColors.white,
+                                      style: context.textStyles.labelBold.copyWith(
+                                        color: context.colors.white,
                                       ),
                                     ),
                                   ],
@@ -357,14 +358,14 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                       _sectionLabel('App Preferences'),
                       _settingsTile(
                         icon: Icons.notifications_none_rounded,
-                        iconColor: AppColors.accent,
+                        iconColor: context.colors.accent,
                         title: 'Push Notifications',
                         subtitle: 'Alerts for attendance & messages',
                         onTap: () => context.push('/notifications'),
                       ),
                       _settingsTile(
                         icon: Icons.settings_outlined,
-                        iconColor: AppColors.info,
+                        iconColor: context.colors.info,
                         title: 'App Settings',
                         subtitle: 'Appearance and language',
                         onTap: () => context.push('/app-settings'),
@@ -374,14 +375,14 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                       _sectionLabel('Daycare Management'),
                       _settingsTile(
                         icon: Icons.business_rounded,
-                        iconColor: AppColors.secondary,
+                        iconColor: context.colors.secondary,
                         title: 'Daycare Profile',
                         subtitle: 'Contact info, hours, and logo',
                         onTap: () {},
                       ),
                       _settingsTile(
                         icon: Icons.security_rounded,
-                        iconColor: AppColors.info,
+                        iconColor: context.colors.info,
                         title: 'Roles & Permissions',
                         subtitle: 'Control staff access',
                         onTap: () {
@@ -395,7 +396,7 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                       ),
                       _settingsTile(
                         icon: Icons.card_membership_rounded,
-                        iconColor: AppColors.success,
+                        iconColor: context.colors.success,
                         title: 'Subscription',
                         subtitle: 'Manage your TinySteps plan',
                         onTap: () {},
@@ -405,19 +406,19 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                       _sectionLabel('Support & Legal'),
                       _settingsTile(
                         icon: Icons.help_outline_rounded,
-                        iconColor: AppColors.primary,
+                        iconColor: context.colors.primary,
                         title: 'Help Center & FAQ',
                         onTap: () => context.push('/support'),
                       ),
                       _settingsTile(
                         icon: Icons.description_outlined,
-                        iconColor: AppColors.textMuted,
+                        iconColor: context.colors.textMuted,
                         title: 'Privacy Policy',
                         onTap: () => context.push('/privacy-policy'),
                       ),
                       _settingsTile(
                         icon: Icons.info_outline_rounded,
-                        iconColor: AppColors.textMuted,
+                        iconColor: context.colors.textMuted,
                         title: 'About TinySteps',
                         subtitle: 'Version info & credits',
                         onTap: () => context.push('/about'),
@@ -427,7 +428,7 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
                       _sectionLabel('Account'),
                       _settingsTile(
                         icon: Icons.lock_outline_rounded,
-                        iconColor: AppColors.warning,
+                        iconColor: context.colors.warning,
                         title: 'Change Password',
                         onTap: () => Navigator.push(
                           context,
@@ -467,7 +468,7 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
       ),
       child: Text(
         label,
-        style: AppTextStyles.caption.copyWith(
+        style: context.textStyles.caption.copyWith(
           color: color,
           fontWeight: FontWeight.bold,
           letterSpacing: 0.3,
@@ -480,9 +481,9 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: context.colors.bgSurface,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: context.colors.border),
         boxShadow: AppShadows.card,
       ),
       child: Column(children: children),
@@ -495,17 +496,17 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
         Container(
           padding: const EdgeInsets.all(AppSpacing.sm),
           decoration: BoxDecoration(
-            color: AppColors.primaryLight,
+            color: context.colors.primaryLight,
             borderRadius: BorderRadius.circular(AppRadius.sm),
           ),
-          child: Icon(icon, color: AppColors.primary, size: 16),
+          child: Icon(icon, color: context.colors.primary, size: 16),
         ),
         const SizedBox(width: AppSpacing.md),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label, style: AppTextStyles.caption),
-            Text(value, style: AppTextStyles.labelBold),
+            Text(label, style: context.textStyles.caption),
+            Text(value, style: context.textStyles.labelBold),
           ],
         ),
       ],
@@ -517,10 +518,10 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
       padding: const EdgeInsets.only(bottom: AppSpacing.sm, top: AppSpacing.xs),
       child: Text(
         label.toUpperCase(),
-        style: AppTextStyles.caption.copyWith(
+        style: context.textStyles.caption.copyWith(
           fontWeight: FontWeight.w700,
           letterSpacing: 1.2,
-          color: AppColors.textMuted,
+          color: context.colors.textMuted,
         ),
       ),
     );
@@ -537,9 +538,9 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.sm),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: context.colors.bgSurface,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: AppColors.border.withValues(alpha: 0.6)),
+        border: Border.all(color: context.colors.border.withValues(alpha: 0.6)),
         boxShadow: AppShadows.card,
       ),
       child: ListTile(
@@ -554,20 +555,20 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
           ),
           child: Icon(icon, color: iconColor, size: 20),
         ),
-        title: Text(title, style: AppTextStyles.bodyLarge),
+        title: Text(title, style: context.textStyles.bodyLarge),
         subtitle: subtitle != null
             ? Text(
                 subtitle,
-                style: AppTextStyles.bodySmall.copyWith(
-                  color: AppColors.textMuted,
+                style: context.textStyles.bodySmall.copyWith(
+                  color: context.colors.textMuted,
                 ),
               )
             : null,
         trailing:
             trailing ??
-            const Icon(
+            Icon(
               Icons.chevron_right_rounded,
-              color: AppColors.textMuted,
+              color: context.colors.textMuted,
               size: 20,
             ),
         onTap: onTap,
@@ -583,9 +584,9 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: AppSpacing.sm),
       decoration: BoxDecoration(
-        color: AppColors.dangerLight,
+        color: context.colors.dangerLight,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: AppColors.danger.withValues(alpha: 0.25)),
+        border: Border.all(color: context.colors.danger.withValues(alpha: 0.25)),
       ),
       child: ListTile(
         shape: RoundedRectangleBorder(
@@ -594,18 +595,18 @@ class _AdminSettingsScreenState extends State<AdminSettingsScreen> {
         leading: Container(
           padding: const EdgeInsets.all(AppSpacing.sm),
           decoration: BoxDecoration(
-            color: AppColors.danger.withValues(alpha: 0.12),
+            color: context.colors.danger.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(AppRadius.sm),
           ),
-          child: Icon(icon, color: AppColors.danger, size: 20),
+          child: Icon(icon, color: context.colors.danger, size: 20),
         ),
         title: Text(
           title,
-          style: AppTextStyles.bodyLarge.copyWith(color: AppColors.danger),
+          style: context.textStyles.bodyLarge.copyWith(color: context.colors.danger),
         ),
-        trailing: const Icon(
+        trailing: Icon(
           Icons.chevron_right_rounded,
-          color: AppColors.danger,
+          color: context.colors.danger,
           size: 20,
         ),
         onTap: onTap,
